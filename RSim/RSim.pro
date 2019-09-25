@@ -18,11 +18,17 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     main.cpp \
     mainwindow.cpp \
-    navimath2d.cpp
+    navimath2d.cpp \
+    simsetting.cpp \
+    trackdrawer.cpp \
+    widgetdrawer.cpp
 
 HEADERS += \
     mainwindow.h \
-    navimath2d.h
+    navimath2d.h \
+    simsetting.h \
+    trackdrawer.h \
+    widgetdrawer.h
 
 FORMS += \
     mainwindow.ui

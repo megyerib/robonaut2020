@@ -10,7 +10,7 @@
 #include <math.h>
 
 #define WORLD nullptr
-//#define DOUBLE_PRECISION
+#define DOUBLE_PRECISION
 
 
 #ifdef DOUBLE_PRECISION
