@@ -17,8 +17,9 @@ public:
     ~MainWindow();
 
     void paintEvent(QPaintEvent* event);
-    void mouseMoveEvent(QMouseEvent *event);
-    void mouseReleaseEvent(QMouseEvent *event);
+    void mouseMoveEvent(QMouseEvent* event);
+    void mouseReleaseEvent(QMouseEvent* event);
+    void wheelEvent(QWheelEvent* event);
 
 private:
     Ui::MainWindow *ui;

@@ -58,6 +58,24 @@ void TrackDrawer::Drag(QPoint &start, QPoint &end)
 
 void TrackDrawer::Zoom(QPoint &center, double magnitude)
 {
-    Q_UNUSED(center)
-    Q_UNUSED(magnitude)
+    // New midpoint
+
+    CartesianLoc move
+    (
+        WindowCs,
+        double(center.x()) * (magnitude - 1.0) / magnitude, // X
+        double(center.y()) * (magnitude - 1.0) / magnitude  // Y
+    );
+
+    move.TransformTo(WORLD);
+
+    WindowCs->center_x = move.GetX();
+    WindowCs->center_y = move.GetY();
+
+    WindowCs->x_res /= magnitude;
+    WindowCs->y_res /= magnitude;
+
+    WindowCs->RecalcBaseVectors();
+
+    widget.repaint();
 }

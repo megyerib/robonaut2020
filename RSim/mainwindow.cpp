@@ -55,3 +55,13 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
     Q_UNUSED(event)
     moveInProgress = false;
 }
+
+void MainWindow::wheelEvent(QWheelEvent* event)
+{
+    // Mouse: +/-120; Touchpad: Much smaller(2+)
+
+    QPoint center = event->pos();
+    double zoom = 1.0 + event->delta() / 1200.0; // 120: 0.1* zoom
+
+    drawer->Zoom(center, zoom);
+}
