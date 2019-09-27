@@ -1,7 +1,17 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
-//  NaviMath2D v1.0.0
+//  NaviMath2D v1.1.0
 //  by Balazs Megyeri
+//
+////////////////////////////////////////////////////////////////////////////////
+//
+//  Files
+//  - (coordinatesystem.cpp)
+//  - cartesiancs.cpp
+//  - location.cpp
+//  - cartesianloc.cpp
+//  - position.cpp
+//  - cartesianpos.cpp
 //
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -36,15 +46,13 @@ void CartesianCS::RecalcBaseVectors()
 
 fp_t Location::getWorldX()
 {
-    this->CalcWorldCoordinates();
-
+    CalcWorldCoordinates();
     return world_x;
 }
 
 fp_t Location::getWorldY()
 {
-    this->CalcWorldCoordinates();
-
+    CalcWorldCoordinates();
     return world_y;
 }
 
@@ -106,11 +114,6 @@ void CartesianLoc::CalcOwnCoordinates()
     }
 }
 
-CartesianLoc::~CartesianLoc()
-{
-
-}
-
 void CartesianLoc::TransformTo(CoordinateSystem* csys)
 {
     CalcWorldCoordinates();
@@ -136,4 +139,123 @@ void CartesianLoc::SetX(fp_t x)
 void CartesianLoc::SetY(fp_t y)
 {
     this->y = y;
+}
+
+
+fp_t Position::getWorldX()
+{
+    CalcWorldCoordinates();
+    return world_x;
+}
+
+fp_t Position::getWorldY()
+{
+    CalcWorldCoordinates();
+    return world_y;
+}
+
+fp_t Position::getWorldPhi()
+{
+    CalcWorldCoordinates();
+    return world_phi;
+}
+
+CartesianPos::CartesianPos(CartesianCS* csys, fp_t x, fp_t y, fp_t phi) :
+    x(x),
+    y(y),
+    phi(phi)
+{
+    Position::cs = csys;
+}
+
+CartesianPos::CartesianPos(Position& p) :
+    Position(p)
+{
+    CalcOwnCoordinates();
+}
+
+CartesianPos::CartesianPos(CartesianCS* csys, CartesianPos& p) :
+    x(p.x),
+    y(p.y),
+    phi(p.phi)
+{
+    Position::cs = csys;
+}
+
+void CartesianPos::CalcWorldCoordinates()
+{
+    if (cs == nullptr) // World CS is used
+    {
+        world_x = x;
+        world_y = y;
+        world_phi = phi;
+    }
+    else
+    {
+        CartesianCS* cs = reinterpret_cast<CartesianCS*>(Position::cs);
+
+        world_x = cs->center_x + cs->a[0] * x + cs->b[0] * x;
+        world_y = cs->center_y + cs->a[1] * y + cs->b[1] * y;
+        world_phi = cs->alpha + phi;
+    }
+}
+
+void CartesianPos::CalcOwnCoordinates()
+{
+    if (cs == nullptr) // World CS is used
+    {
+        x = world_x;
+        y = world_y;
+    }
+    else
+    {
+        CartesianCS* cs = reinterpret_cast<CartesianCS*>(Position::cs);
+
+        fp_t p[2] =
+        {
+            p[0] = world_x - cs->center_x,
+            p[1] = world_y - cs->center_y
+        };
+
+        x = (cs->a[0] * p[0] + cs->a[1] * p[1]) / cs->a_len / cs->a_len;
+        y = (cs->b[0] * p[0] + cs->b[1] * p[1]) / cs->b_len / cs->a_len;
+        phi = world_phi - cs->alpha;
+    }
+}
+
+void CartesianPos::TransformTo(CoordinateSystem* csys)
+{
+    CalcWorldCoordinates();
+    this->cs = csys;
+    CalcOwnCoordinates();
+}
+
+fp_t CartesianPos::GetX()
+{
+    return x;
+}
+
+fp_t CartesianPos::GetY()
+{
+    return y;
+}
+
+fp_t CartesianPos::GetPhi()
+{
+    return phi;
+}
+
+void CartesianPos::SetX(fp_t x)
+{
+    this->x = x;
+}
+
+void CartesianPos::SetY(fp_t y)
+{
+    this->y = y;
+}
+
+void CartesianPos::SetPhi(fp_t phi)
+{
+    this->phi = phi;
 }

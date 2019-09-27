@@ -43,6 +43,8 @@ void TrackDrawer::Draw()
     QRect targetRect(imgTopLeft, imgBotRight);
 
     painter.drawImage(targetRect, bg, sourceRect);
+
+    setting.robot->Draw(widget, WindowCs);
 }
 
 void TrackDrawer::Drag(QPoint &start, QPoint &end)

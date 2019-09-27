@@ -3,9 +3,11 @@
 #include "trackdrawer.h"
 #include "simsetting.h"
 #include <QDebug>
+#include "simrobot1.h"
 
+static RobotProxy* robot;
 static WidgetDrawer* drawer;
-static SimSetting setting("track01.png", 100);
+static SimSetting* setting;
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -13,7 +15,11 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    drawer = new TrackDrawer(*this, setting);
+    robot  = new SimRobot1();
+    setting = new SimSetting("track01.png", 200, robot);
+    drawer = new TrackDrawer(*this, *setting);
+
+    // Img refresh!!
 }
 
 MainWindow::~MainWindow()

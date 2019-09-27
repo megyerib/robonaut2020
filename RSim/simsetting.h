@@ -2,14 +2,16 @@
 #define SIMSETTING_H
 
 #include "QImage"
+#include "robotproxy.h"
 
 class SimSetting
 {
 public:
     QImage trackImg;
     int pixelPerMeter;
+    RobotProxy* robot;
 
-    SimSetting(const char* imgPath, int pixelPerMeter);
+    SimSetting(const char* imgPath, int pixelPerMeter, RobotProxy* robot);
 };
 
 #endif // SIMSETTING_H

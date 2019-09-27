@@ -19,6 +19,7 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     navimath2d.cpp \
+    simrobot1.cpp \
     simsetting.cpp \
     trackdrawer.cpp \
     widgetdrawer.cpp
@@ -26,6 +27,8 @@ SOURCES += \
 HEADERS += \
     mainwindow.h \
     navimath2d.h \
+    robotproxy.h \
+    simrobot1.h \
     simsetting.h \
     trackdrawer.h \
     widgetdrawer.h
