@@ -2,6 +2,8 @@
 #include <QPainter>
 #include <QRect>
 
+#define REFRESH_INTERVAL 40 /* [ms] -> 25 FPS */
+
 TrackDrawer::TrackDrawer(QWidget &w, SimSetting& s) :
     WidgetDrawer(w),
     setting(s)
@@ -19,6 +21,13 @@ TrackDrawer::TrackDrawer(QWidget &w, SimSetting& s) :
         +1.0 / setting.pixelPerMeter,
         -1.0 / setting.pixelPerMeter  // Y inverted
     );
+
+    setting.vrobot->PassTrackParameters(widget, setting.trackImg, WindowCs);
+
+    // Set refresh timer
+    refreshTimer.setInterval(REFRESH_INTERVAL);
+    connect(&refreshTimer, SIGNAL(timeout()), this, SLOT(Refresh()));
+    refreshTimer.start();
 }
 
 void TrackDrawer::Draw()
@@ -44,7 +53,7 @@ void TrackDrawer::Draw()
 
     painter.drawImage(targetRect, bg, sourceRect);
 
-    setting.robot->Draw(widget, WindowCs);
+    setting.vrobot->Draw();
 }
 
 void TrackDrawer::Drag(QPoint &start, QPoint &end)
@@ -79,5 +88,10 @@ void TrackDrawer::Zoom(QPoint &center, double magnitude)
 
     WindowCs->RecalcBaseVectors();
 
+    widget.repaint();
+}
+
+void TrackDrawer::Refresh()
+{
     widget.repaint();
 }

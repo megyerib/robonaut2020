@@ -2,10 +2,11 @@
 #define SIMROBOT1_H
 
 #include "robotproxy.h"
+#include "virtualrobot.h"
 #include <QWidget>
 #include <QTimer>
 
-class SimRobot1 : public QObject, public RobotProxy
+class SimRobot1 : public QObject, public RobotProxy, public VirtualRobot
 {
     Q_OBJECT
 
@@ -22,7 +23,7 @@ public:
     void SetSpeed(double speed) override;
     void SetSteering(double angle) override;
 
-    void Draw(QWidget& w, CartesianCS* targetCS) override;
+    void Draw() override;
 
 private slots:
     void Refresh();

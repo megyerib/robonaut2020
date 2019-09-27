@@ -6,8 +6,11 @@
 #include "simrobot1.h"
 
 static RobotProxy* robot;
+static VirtualRobot* vrobot;
 static WidgetDrawer* drawer;
 static SimSetting* setting;
+
+static SimRobot1* simrobot;
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -15,8 +18,11 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    robot  = new SimRobot1();
-    setting = new SimSetting("track01.png", 200, robot);
+    simrobot = new SimRobot1();
+
+    robot  = static_cast<RobotProxy*>(simrobot);
+    vrobot = static_cast<VirtualRobot*>(simrobot);
+    setting = new SimSetting("track01.png", 200, robot, vrobot);
     drawer = new TrackDrawer(*this, *setting);
 
     // Img refresh!!
