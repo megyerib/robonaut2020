@@ -15,7 +15,8 @@ public:
     virtual ~VirtualRobot() = default;
 
     void PassTrackParameters(QWidget& w, QImage& bgImg, CartesianCS* bgCS);
-    virtual void Draw() = 0; // For simulator only
+    virtual void Draw() = 0;
+    virtual void PostCfg() = 0; // TODO redesign!
 };
 
 #endif // VIRTUALROBOT_H

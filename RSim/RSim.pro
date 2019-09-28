@@ -16,6 +16,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    linesensor.cpp \
+    linesensoravg.cpp \
     main.cpp \
     mainwindow.cpp \
     navimath2d.cpp \
@@ -26,10 +28,13 @@ SOURCES += \
     widgetdrawer.cpp
 
 HEADERS += \
+    linesensor.h \
+    linesensoravg.h \
     mainwindow.h \
     navimath2d.h \
     robotproxy.h \
     simrobot1.h \
+    simrobot1params.h \
     simsetting.h \
     trackdrawer.h \
     virtualrobot.h \

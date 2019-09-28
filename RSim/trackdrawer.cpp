@@ -23,6 +23,7 @@ TrackDrawer::TrackDrawer(QWidget &w, SimSetting& s) :
     );
 
     setting.vrobot->PassTrackParameters(widget, setting.trackImg, WindowCs);
+    setting.vrobot->PostCfg();
 
     // Set refresh timer
     refreshTimer.setInterval(REFRESH_INTERVAL);

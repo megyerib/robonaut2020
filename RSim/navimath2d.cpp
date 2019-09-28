@@ -85,7 +85,7 @@ void CartesianLoc::CalcWorldCoordinates()
     }
     else
     {
-        CartesianCS* cs = reinterpret_cast<CartesianCS*>(Location::cs);
+        CartesianCS* cs = static_cast<CartesianCS*>(Location::cs);
 
         world_x = cs->center_x + cs->a[0] * x + cs->b[0] * x;
         world_y = cs->center_y + cs->a[1] * y + cs->b[1] * y;
@@ -101,7 +101,7 @@ void CartesianLoc::CalcOwnCoordinates()
     }
     else
     {
-        CartesianCS* cs = reinterpret_cast<CartesianCS*>(Location::cs);
+        CartesianCS* cs = static_cast<CartesianCS*>(Location::cs);
 
         fp_t p[2] =
         {
@@ -206,6 +206,7 @@ void CartesianPos::CalcOwnCoordinates()
     {
         x = world_x;
         y = world_y;
+        phi = world_phi;
     }
     else
     {

@@ -22,7 +22,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     robot  = static_cast<RobotProxy*>(simrobot);
     vrobot = static_cast<VirtualRobot*>(simrobot);
-    setting = new SimSetting("track01.png", 200, robot, vrobot);
+    setting = new SimSetting("../RSim/resource/track_q_sprint.png", 131, robot, vrobot);
     drawer = new TrackDrawer(*this, *setting);
 
     // Img refresh!!

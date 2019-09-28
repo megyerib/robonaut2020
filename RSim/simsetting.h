@@ -13,7 +13,10 @@ public:
     RobotProxy* robot;
     VirtualRobot* vrobot;
 
-    SimSetting(const char* imgPath, int pixelPerMeter, RobotProxy* robot, VirtualRobot* vrobot);
+    SimSetting(const char* imgPath,
+               int pixelPerMeter,
+               RobotProxy* robot,
+               VirtualRobot* vrobot);
 };
 
 #endif // SIMSETTING_H

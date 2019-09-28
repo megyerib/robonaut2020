@@ -5,17 +5,11 @@
 #include "virtualrobot.h"
 #include <QWidget>
 #include <QTimer>
+#include "linesensoravg.h"
 
 class SimRobot1 : public QObject, public RobotProxy, public VirtualRobot
 {
     Q_OBJECT
-
-    CartesianPos position;
-    QImage robotImg;
-    double speed;
-    double steerAngle;
-
-    QTimer refreshTimer;
 
 public:
     SimRobot1();
@@ -24,6 +18,27 @@ public:
     void SetSteering(double angle) override;
 
     void Draw() override;
+    void PostCfg() override;
+
+private:
+    CartesianPos position;
+    QImage robotImg;
+    CartesianCS carCs;
+
+    LineSensorAvg* lineSensor = nullptr;
+    CartesianLoc* lsStart;
+    CartesianLoc* lsEnd;
+
+    double speed, targetSpeed;
+    double steerAngle, targetSteerAngle;
+
+    QTimer refreshTimer;
+
+    void CalcPosition();
+    void CalcSpeed();
+    void CalcSteer();
+
+    void ConfigLineSensor();
 
 private slots:
     void Refresh();

@@ -29,11 +29,14 @@ typedef double fp_t;
 
 #define COS(x) cos(x)
 #define SIN(x) sin(x)
+#define TAN(x) tan(x)
 #define ABS(x) abs(x)
 #define SQRT(x) sqrt(x)
 
-#define DEG_TO_RAD(x) (x*3.1415926535/180.0)
-#define RAD_TO_DEG(x) (x*180.0/3.1415926535)
+#define PI 3.1415926535
+
+#define DEG_TO_RAD(x) (x*PI/180.0)
+#define RAD_TO_DEG(x) (x*180.0/PI)
 
 #else // SINGLE_PRECISION
 
@@ -41,11 +44,14 @@ typedef float fp_t;
 
 #define COS(x) cosf(x)
 #define SIN(x) sinf(x)
+#define TAN(x) tanf(x)
 #define ABS(x) fabs(x)
 #define SQRT(x) sqrtf(x)
 
-#define DEG_TO_RAD(x) (x*3.1415926535f/180.0f)
-#define RAD_TO_DEG(x) (x*180.0f/3.1415926535f)
+#define PI 3.1415926535f
+
+#define DEG_TO_RAD(x) (x*PI/180.0f)
+#define RAD_TO_DEG(x) (x*180.0f/PI)
 
 #endif
 
