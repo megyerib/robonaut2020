@@ -7,7 +7,7 @@
 
 static RobotProxy* robot;
 static VirtualRobot* vrobot;
-static WidgetDrawer* drawer;
+static TrackDrawer* drawer;
 static SimSetting* setting;
 
 static SimRobot1* simrobot;
@@ -24,8 +24,6 @@ MainWindow::MainWindow(QWidget *parent)
     vrobot = static_cast<VirtualRobot*>(simrobot);
     setting = new SimSetting("../RSim/resource/track_q_sprint.png", 131, robot, vrobot);
     drawer = new TrackDrawer(*this, *setting);
-
-    // Img refresh!!
 }
 
 MainWindow::~MainWindow()
@@ -40,7 +38,7 @@ void MainWindow::paintEvent(QPaintEvent* event)
     drawer->Draw();
 }
 
-static bool moveInProgress = false;
+static bool dragInProgress = false;
 
 void MainWindow::mouseMoveEvent(QMouseEvent *event)
 {
@@ -52,20 +50,20 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
     end.setX(event->x());
     end.setY(event->y());
 
-    if (moveInProgress)
+    if (dragInProgress) // Before drag no start position was set
     {
         drawer->Drag(start, end);
     }
 
     start = end;
 
-    moveInProgress = true;
+    dragInProgress = true;
 }
 
 void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 {
     Q_UNUSED(event)
-    moveInProgress = false;
+    dragInProgress = false;
 }
 
 void MainWindow::wheelEvent(QWheelEvent* event)

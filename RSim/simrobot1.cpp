@@ -15,7 +15,7 @@ SimRobot1::SimRobot1() :
     refreshTimer.start();
 
     // Initial values
-    SetSpeed(0);
+    SetSpeed(1);
     SetSteering(DEG_TO_RAD(0));
 
     // Configure line sensor
@@ -121,13 +121,17 @@ void SimRobot1::CalcSteer()
 
 void SimRobot1::Refresh()
 {
-    if (lineSensor != nullptr) // TODO ugly workaround
-    {
-        lineSensor->getLine();
-    }
+    double line = lineSensor->getLine();
+
+    double P = 4.0 * line / -0.15 * DEG_TO_RAD(60);
+    double D = -0 * (line - prev_line) * DEG_TO_RAD(60);
+    prev_line = line;
+
+    steerAngle = P + D;
+    //SetSteering(P + D);
 
     CalcSpeed();
-    CalcSteer();
+    //CalcSteer();
     CalcPosition();
 }
 

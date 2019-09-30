@@ -24,8 +24,7 @@ SOURCES += \
     simrobot1.cpp \
     simsetting.cpp \
     trackdrawer.cpp \
-    virtualrobot.cpp \
-    widgetdrawer.cpp
+    virtualrobot.cpp
 
 HEADERS += \
     linesensor.h \
@@ -37,8 +36,7 @@ HEADERS += \
     simrobot1params.h \
     simsetting.h \
     trackdrawer.h \
-    virtualrobot.h \
-    widgetdrawer.h
+    virtualrobot.h
 
 FORMS += \
     mainwindow.ui

@@ -5,7 +5,7 @@
 #define REFRESH_INTERVAL 40 /* [ms] -> 25 FPS */
 
 TrackDrawer::TrackDrawer(QWidget &w, SimSetting& s) :
-    WidgetDrawer(w),
+    widget(w),
     setting(s)
 {
     // Initial state: Image in the top left, original resolution

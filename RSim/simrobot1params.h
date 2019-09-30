@@ -5,7 +5,7 @@
 #define INITIAL_PHI DEG_TO_RAD(180)
 
 #define ROBOT_LENGTH 0.4 /* [m] */
-#define REFRESH_INTERVAL 0.02 /* [s] */
+#define REFRESH_INTERVAL 0.05 /* [s] */
 
 #define WHEELBASE 0.4 /* [m] Axle to axle distance */
 #define ACCELERATION 2.0 /* [m/s^2] */

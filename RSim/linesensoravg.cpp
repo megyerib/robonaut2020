@@ -9,7 +9,7 @@ LineSensorAvg::LineSensorAvg(CartesianLoc* startLoc,
 
 }
 
-fp_t LineSensorAvg::getLine()
+double LineSensorAvg::getLine()
 {
     double ret = 0;
 

@@ -34,6 +34,8 @@ private:
 
     QTimer refreshTimer;
 
+    double prev_line; // TODO make a separate controller class for this!
+
     void CalcPosition();
     void CalcSpeed();
     void CalcSteer();

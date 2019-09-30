@@ -31,7 +31,7 @@ void LineSensor::calcPoints()
     endPx.setY(int(sensorEnd.GetY()));
 }
 
-void LineSensor::getPixels()
+void LineSensor::getPixels() // TODO: Handle out of the range pixels
 {
     int x_incr = startPx.x() < endPx.x() ? 1 : -1;
     int y_incr = startPx.y() < endPx.y() ? 1 : -1;

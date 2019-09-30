@@ -1,16 +1,18 @@
 #ifndef TRACKDRAWER_H
 #define TRACKDRAWER_H
 
-#include "widgetdrawer.h"
 #include "simsetting.h"
 #include <QObject>
 #include <QImage>
 #include <QTimer>
+#include <QWidget>
 #include "navimath2d.h"
 
-class TrackDrawer : public QObject, public WidgetDrawer
+class TrackDrawer : public QObject
 {
     Q_OBJECT
+
+    QWidget& widget;
 
     SimSetting& setting;
     CartesianCS* WindowCs;
@@ -22,9 +24,9 @@ class TrackDrawer : public QObject, public WidgetDrawer
 public:
     TrackDrawer(QWidget& w, SimSetting& s);
 
-    void Draw() override;
-    void Drag(QPoint &start, QPoint &end) override;
-    void Zoom(QPoint &center, double magnitude) override;
+    void Draw();
+    void Drag(QPoint &start, QPoint &end);
+    void Zoom(QPoint &center, double magnitude);
 
 public slots:
     void Refresh();
