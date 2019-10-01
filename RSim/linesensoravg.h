@@ -11,7 +11,7 @@ public:
                   QImage* bgImg,
                   CartesianCS* bgCS);
 
-    fp_t getLine();
+    double getLine();
 };
 
 #endif // LINESENSORAVG_H

@@ -105,8 +105,8 @@ void CartesianLoc::CalcOwnCoordinates()
 
         fp_t p[2] =
         {
-            p[0] = world_x - cs->center_x,
-            p[1] = world_y - cs->center_y
+            world_x - cs->center_x,
+            world_y - cs->center_y
         };
 
         x = (cs->a[0] * p[0] + cs->a[1] * p[1]) / cs->a_len / cs->a_len;

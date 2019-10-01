@@ -22,7 +22,16 @@ TrackDrawer::TrackDrawer(QWidget &w, SimSetting& s) :
         -1.0 / setting.pixelPerMeter  // Y inverted
     );
 
-    setting.vrobot->PassTrackParameters(widget, setting.trackImg, WindowCs);
+    BgCs = new CartesianCS
+    (
+        0,
+        trackHeight,
+        0,
+        +1.0 / setting.pixelPerMeter,
+        -1.0 / setting.pixelPerMeter  // Y inverted
+    );
+
+    setting.vrobot->PassTrackParameters(widget, setting.trackImg, BgCs, WindowCs);
     setting.vrobot->PostCfg();
 
     // Set refresh timer

@@ -1,4 +1,5 @@
 #include "linesensor.h"
+#include "math.h"
 
 LineSensor::LineSensor
 (
@@ -7,10 +8,10 @@ LineSensor::LineSensor
     QImage* bgImg,
     CartesianCS* bgCS
 ) :
-    startLoc(startLoc),
-    endLoc(endLoc),
     bgImg(bgImg),
-    bgCS(bgCS)
+    bgCS(bgCS),
+    startLoc(startLoc),
+    endLoc(endLoc)
 {
     double x_diff = endLoc->GetX() - startLoc->GetX();
     double y_diff = endLoc->GetY() - startLoc->GetY();
@@ -31,43 +32,84 @@ void LineSensor::calcPoints()
     endPx.setY(int(sensorEnd.GetY()));
 }
 
-void LineSensor::getPixels() // TODO: Handle out of the range pixels
+void LineSensor::getPixels()
 {
-    int x_incr = startPx.x() < endPx.x() ? 1 : -1;
-    int y_incr = startPx.y() < endPx.y() ? 1 : -1;
-
-    int x_diff = x_incr * (endPx.x() - startPx.x());
-    int y_diff = y_incr * (endPx.y() - startPx.y());
-
     pixels.clear();
 
-    if (x_diff > y_diff)
-    {
-        double prop = double(y_diff) / double(x_diff);
-        double y = startPx.y();
+    // Steps
+    double x_step, y_step;
+    QLine line(startPx, endPx);
+    double len = lineLen(line);
 
-        for (int x = startPx.x();
-             x_incr * (endPx.x() - x) > 0;
-              x += x_incr)
-        {
-            int lightness = bgImg->pixelColor(x, int(y)).lightness();
-            y += prop;
-            pixels.push_back(lightness);
-        }
-    }
-    else
+    if (line.dx() == 0)
     {
-        double prop = double(x_diff) / double(y_diff);
-        double x = startPx.x();
-
-        for (int y = startPx.y();
-             y_incr * (endPx.y() - y) > 0;
-              y += y_incr)
-        {
-            QColor c = bgImg->pixelColor(int(x), y);
-            int lightness = c.lightness();
-            x += prop;
-            pixels.push_back(lightness);
-        }
+        x_step = 0;
+        y_step = 1;
     }
+    else if (line.dy() == 0)
+    {
+        y_step = 0;
+        x_step = 1;
+    }
+    else if (line.dx() > line.dy())
+    {
+        x_step = 1;
+        y_step = abs(double(line.dy())/double(line.dx()));
+    }
+    else // (line.dy() >= line.dy())
+    {
+        y_step = 1;
+        x_step = abs(double(line.dx())/double(line.dy()));
+    }
+
+    // Sign
+    if (x_step * line.dx() < 0) // Signs don't match
+    {
+        x_step *= -1;
+    }
+
+    if (y_step * line.dy() < 0) // Signs don't match
+    {
+        y_step *= -1;
+    }
+
+    QPoint i_point(startPx);
+    QLine i_line(startPx, startPx);
+
+    while (lineLen(i_line) <= len)
+    {
+        int lightness = 255;
+
+        if (rangeValid(i_point))
+        {
+            QColor c = bgImg->pixelColor(i_point);
+            lightness = c.lightness();
+        }
+
+        pixels.push_back(lightness);
+
+        i_point.setX(int(i_point.x() + x_step));
+        i_point.setY(int(i_point.y() + y_step));
+        i_line.setP2(i_point);
+    }
+}
+
+double LineSensor::lineLen(QLine& l)
+{
+    return sqrt(double(l.dx())*l.dx()+l.dy()*l.dy());
+}
+
+bool LineSensor::rangeValid(QPoint& p)
+{
+    bool ret = true;
+
+    if (p.x() < 0               ||
+        p.x() >= bgImg->width() ||
+        p.y() < 0               ||
+        p.y() >= bgImg->height())
+    {
+        ret = false;
+    }
+
+    return ret;
 }

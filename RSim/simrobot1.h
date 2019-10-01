@@ -41,6 +41,7 @@ private:
     void CalcSteer();
 
     void ConfigLineSensor();
+    void UpdateLineSensor();
 
 private slots:
     void Refresh();

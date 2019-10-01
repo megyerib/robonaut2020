@@ -16,6 +16,7 @@ class TrackDrawer : public QObject
 
     SimSetting& setting;
     CartesianCS* WindowCs;
+    CartesianCS* BgCs;
     QTimer refreshTimer;
 
     double trackWidth;

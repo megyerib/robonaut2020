@@ -6,14 +6,8 @@
 
 class LineSensor
 {
-    CartesianLoc* startLoc;
-    CartesianLoc* endLoc;
-
     QImage* bgImg;
     CartesianCS* bgCS;
-
-    QPoint startPx;
-    QPoint endPx;
 
 protected:
     double sensorLength; // [m]
@@ -29,6 +23,17 @@ protected:
 
     void calcPoints();
     void getPixels();
+
+private:
+    double lineLen(QLine& l);
+    bool rangeValid(QPoint& p);
+
+public:
+    CartesianLoc* startLoc;
+    CartesianLoc* endLoc;
+
+    QPoint startPx;
+    QPoint endPx;
 };
 
 #endif // LINESENSOR_H

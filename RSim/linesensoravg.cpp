@@ -1,10 +1,10 @@
 #include "linesensoravg.h"
 
-LineSensorAvg::LineSensorAvg(CartesianLoc* startLoc,
-                             CartesianLoc* endLoc,
+LineSensorAvg::LineSensorAvg(CartesianLoc* sLoc,
+                             CartesianLoc* eLoc,
                              QImage* bgImg,
                              CartesianCS* bgCS) :
-    LineSensor(startLoc, endLoc, bgImg, bgCS)
+    LineSensor(sLoc, eLoc, bgImg, bgCS)
 {
 
 }

@@ -41,9 +41,9 @@ void SimRobot1::Draw()
     QPainter painter(bgWidget);
 
     CartesianPos carPos(position);
-    carPos.TransformTo(bgCS);
+    carPos.TransformTo(windowCS);
 
-    int carLenPx = int(ROBOT_LENGTH / abs(bgCS->x_res));
+    int carLenPx = int(ROBOT_LENGTH / abs(windowCS->x_res));
     int carWidthPx = carLenPx * robotImg.height() / robotImg.width(); // See comment
 
     QRect source(0, 0, robotImg.width(), robotImg.height());
@@ -53,6 +53,16 @@ void SimRobot1::Draw()
     painter.rotate(-RAD_TO_DEG(carPos.GetPhi())); // Clockwise; degrees
 
     painter.drawImage(target, robotImg, source);
+
+    // Sensor draw
+    QPainter sensorPainter(bgWidget);
+
+    CartesianLoc sstart(*lineSensor->startLoc);
+    sstart.TransformTo(windowCS);
+    CartesianLoc send(*lineSensor->endLoc);
+    send.TransformTo(windowCS);
+
+    sensorPainter.drawLine(int(sstart.GetX()), int(sstart.GetY()), int(send.GetX()), int(send.GetY()));
 }
 
 void SimRobot1::CalcPosition()
@@ -123,8 +133,8 @@ void SimRobot1::Refresh()
 {
     double line = lineSensor->getLine();
 
-    double P = 4.0 * line / -0.15 * DEG_TO_RAD(60);
-    double D = -0 * (line - prev_line) * DEG_TO_RAD(60);
+    double P = 0.5 * line / -0.15 * DEG_TO_RAD(60);
+    double D = 0.0 * (line - prev_line) / -0.15 * DEG_TO_RAD(60);
     prev_line = line;
 
     steerAngle = P + D;
