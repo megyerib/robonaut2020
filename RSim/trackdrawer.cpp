@@ -56,8 +56,8 @@ void TrackDrawer::Draw()
     CartesianLoc botRightWindow(botRight);
     botRightWindow.TransformTo(WindowCs);
 
-    QPoint imgTopLeft(int(topLeftWindow.GetX()), int(topLeftWindow.GetY()));
-    QPoint imgBotRight(int(botRightWindow.GetX()), int(botRightWindow.GetY()));
+    QPoint imgTopLeft(int(topLeftWindow.x()), int(topLeftWindow.y()));
+    QPoint imgBotRight(int(botRightWindow.x()), int(botRightWindow.y()));
 
     QRect targetRect(imgTopLeft, imgBotRight);
 
@@ -71,8 +71,8 @@ void TrackDrawer::Drag(QPoint &start, QPoint &end)
     CartesianLoc move(WindowCs, -(end.x() - start.x()), -(end.y() - start.y())); // New midpoint
     move.TransformTo(WORLD);
 
-    WindowCs->center_x = move.GetX();
-    WindowCs->center_y = move.GetY();
+    WindowCs->center_x = move.x();
+    WindowCs->center_y = move.y();
 
     widget.repaint();
 }
@@ -90,8 +90,8 @@ void TrackDrawer::Zoom(QPoint &center, double magnitude)
 
     move.TransformTo(WORLD);
 
-    WindowCs->center_x = move.GetX();
-    WindowCs->center_y = move.GetY();
+    WindowCs->center_x = move.x();
+    WindowCs->center_y = move.y();
 
     WindowCs->x_res /= magnitude;
     WindowCs->y_res /= magnitude;

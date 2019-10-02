@@ -15,7 +15,7 @@ SimRobot1::SimRobot1() :
     refreshTimer.start();
 
     // Initial values
-    SetSpeed(1);
+    SetSpeed(0);
     SetSteering(DEG_TO_RAD(0));
 
     // Configure line sensor
@@ -49,8 +49,8 @@ void SimRobot1::Draw()
     QRect source(0, 0, robotImg.width(), robotImg.height());
     QRect target(-carLenPx/2, -carWidthPx/2, carLenPx, carWidthPx);
 
-    painter.translate(carPos.GetX(), carPos.GetY());
-    painter.rotate(-RAD_TO_DEG(carPos.GetPhi())); // Clockwise; degrees
+    painter.translate(carPos.x(), carPos.y());
+    painter.rotate(-RAD_TO_DEG(carPos.phi())); // Clockwise; degrees
 
     painter.drawImage(target, robotImg, source);
 
@@ -62,7 +62,7 @@ void SimRobot1::Draw()
     CartesianLoc send(*lineSensor->endLoc);
     send.TransformTo(windowCS);
 
-    sensorPainter.drawLine(int(sstart.GetX()), int(sstart.GetY()), int(send.GetX()), int(send.GetY()));
+    sensorPainter.drawLine(int(sstart.x()), int(sstart.y()), int(send.x()), int(send.y()));
 }
 
 void SimRobot1::CalcPosition()
@@ -77,13 +77,13 @@ void SimRobot1::CalcPosition()
 
     double s = speed * REFRESH_INTERVAL;
 
-    position.SetX(position.GetX() + s * cos(position.GetPhi()));
-    position.SetY(position.GetY() + s * sin(position.GetPhi()));
-    position.SetPhi(position.GetPhi() + sign * beta);
+    position.SetX(position.x() + s * cos(position.phi()));
+    position.SetY(position.y() + s * sin(position.phi()));
+    position.SetPhi(position.phi() + sign * beta);
 
-    carCs.center_x = position.GetX();
-    carCs.center_y = position.GetY();
-    carCs.alpha = position.GetPhi();
+    carCs.center_x = position.x();
+    carCs.center_y = position.y();
+    carCs.alpha = position.phi();
     carCs.RecalcBaseVectors();
 }
 
@@ -131,9 +131,11 @@ void SimRobot1::CalcSteer()
 
 void SimRobot1::Refresh()
 {
+    CalcPosition();
     double line = lineSensor->getLine();
+    Q_UNUSED(line)
 
-    double P = 0.5 * line / -0.15 * DEG_TO_RAD(60);
+    /*double P = 0.5 * line / -0.15 * DEG_TO_RAD(60);
     double D = 0.0 * (line - prev_line) / -0.15 * DEG_TO_RAD(60);
     prev_line = line;
 
@@ -141,7 +143,9 @@ void SimRobot1::Refresh()
     //SetSteering(P + D);
 
     CalcSpeed();
-    //CalcSteer();
+    //CalcSteer();*/
+
+    position.SetPhi(position.phi() + DEG_TO_RAD(1));
     CalcPosition();
 }
 

@@ -2,7 +2,7 @@
 
 #define INITIAL_X 2.5
 #define INITIAL_Y 16.48
-#define INITIAL_PHI DEG_TO_RAD(180)
+#define INITIAL_PHI DEG_TO_RAD(30)
 
 #define ROBOT_LENGTH 0.4 /* [m] */
 #define REFRESH_INTERVAL 0.05 /* [s] */

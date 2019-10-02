@@ -35,8 +35,8 @@ typedef double fp_t;
 
 #define PI 3.1415926535
 
-#define DEG_TO_RAD(x) (x*PI/180.0)
-#define RAD_TO_DEG(x) (x*180.0/PI)
+#define DEG_TO_RAD(x) ((x)*PI/180.0)
+#define RAD_TO_DEG(x) ((x)*180.0/PI)
 
 #else // SINGLE_PRECISION
 
@@ -87,7 +87,7 @@ public:
 
 class Location
 {
-protected:
+public: // TODO back to protected
     CoordinateSystem* cs;
     fp_t world_x;
     fp_t world_y;
@@ -106,24 +106,24 @@ public:
 class CartesianLoc : public Location
 {
 protected:
-    fp_t x;
-    fp_t y;
+    fp_t c_x;
+    fp_t c_y;
 
     void CalcWorldCoordinates() override;
     void CalcOwnCoordinates() override;
 
 public:
-    CartesianLoc(CartesianCS* csys, fp_t x, fp_t y);
+    CartesianLoc(CartesianCS* csys, fp_t c_x, fp_t c_y);
     CartesianLoc(Location& l);
     CartesianLoc(CartesianCS* csys, CartesianLoc& l); // Does no transformation
 
     ~CartesianLoc() override = default;
 
-    fp_t GetX();
-    fp_t GetY();
+    fp_t x();
+    fp_t y();
 
-    void SetX(fp_t x);
-    void SetY(fp_t y);
+    void SetX(fp_t c_x);
+    void SetY(fp_t c_y);
 
     void TransformTo(CoordinateSystem* cs) override;
 };
@@ -152,27 +152,27 @@ public:
 class CartesianPos : public Position
 {
 protected:
-    fp_t x;
-    fp_t y;
-    fp_t phi;
+    fp_t c_x;
+    fp_t c_y;
+    fp_t c_phi;
 
     void CalcWorldCoordinates() override;
     void CalcOwnCoordinates() override;
 
 public:
-    CartesianPos(CartesianCS* csys, fp_t x, fp_t y, fp_t phi);
+    CartesianPos(CartesianCS* csys, fp_t c_x, fp_t c_y, fp_t c_phi);
     CartesianPos(Position& p);
     CartesianPos(CartesianCS* csys, CartesianPos& p); // Does no transformation
 
     ~CartesianPos() override = default;
 
-    fp_t GetX();
-    fp_t GetY();
-    fp_t GetPhi();
+    fp_t x();
+    fp_t y();
+    fp_t phi();
 
-    void SetX(fp_t x);
-    void SetY(fp_t y);
-    void SetPhi(fp_t phi);
+    void SetX(fp_t c_x);
+    void SetY(fp_t c_y);
+    void SetPhi(fp_t c_phi);
 
     void TransformTo(CoordinateSystem* cs) override;
 };

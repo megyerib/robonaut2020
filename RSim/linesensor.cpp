@@ -13,23 +13,26 @@ LineSensor::LineSensor
     startLoc(startLoc),
     endLoc(endLoc)
 {
-    double x_diff = endLoc->GetX() - startLoc->GetX();
-    double y_diff = endLoc->GetY() - startLoc->GetY();
+    double x_diff = endLoc->x() - startLoc->x();
+    double y_diff = endLoc->y() - startLoc->y();
 
     sensorLength = sqrt(x_diff * x_diff + y_diff * y_diff);
 }
 
 void LineSensor::calcPoints()
 {
-    CartesianLoc sensorStart = *startLoc;
+    CartesianCS* carCS1 = static_cast<CartesianCS*>(startLoc->cs);
+    CartesianCS* carCS2 = static_cast<CartesianCS*>(endLoc->cs);
+
+    CartesianLoc sensorStart = *startLoc; // alpha doesn't change
     sensorStart.TransformTo(bgCS);
-    startPx.setX(int(sensorStart.GetX()));
-    startPx.setY(int(sensorStart.GetY()));
+    startPx.setX(int(sensorStart.x()));
+    startPx.setY(int(sensorStart.y()));
 
     CartesianLoc sensorEnd = *endLoc;
     sensorEnd.TransformTo(bgCS);
-    endPx.setX(int(sensorEnd.GetX()));
-    endPx.setY(int(sensorEnd.GetY()));
+    endPx.setX(int(sensorEnd.x()));
+    endPx.setY(int(sensorEnd.y()));
 }
 
 void LineSensor::getPixels()
