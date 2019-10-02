@@ -21,8 +21,8 @@ LineSensor::LineSensor
 
 void LineSensor::calcPoints()
 {
-    CartesianCS* carCS1 = static_cast<CartesianCS*>(startLoc->cs);
-    CartesianCS* carCS2 = static_cast<CartesianCS*>(endLoc->cs);
+    /*CartesianCS* carCS1 = static_cast<CartesianCS*>(startLoc->cs);
+    CartesianCS* carCS2 = static_cast<CartesianCS*>(endLoc->cs);*/
 
     CartesianLoc sensorStart = *startLoc; // alpha doesn't change
     sensorStart.TransformTo(bgCS);
@@ -41,43 +41,47 @@ void LineSensor::getPixels()
 
     // Steps
     double x_step, y_step;
+    double x_pos, y_pos;
     QLine line(startPx, endPx);
     double len = lineLen(line);
 
     if (line.dx() == 0)
     {
-        x_step = 0;
-        y_step = 1;
+        x_step = 0.0;
+        y_step = 1.0;
     }
     else if (line.dy() == 0)
     {
-        y_step = 0;
-        x_step = 1;
+        y_step = 0.0;
+        x_step = 1.0;
     }
-    else if (line.dx() > line.dy())
+    else if (abs(line.dx()) > abs(line.dy()))
     {
-        x_step = 1;
+        x_step = 1.0;
         y_step = abs(double(line.dy())/double(line.dx()));
     }
     else // (line.dy() >= line.dy())
     {
-        y_step = 1;
+        y_step = 1.0;
         x_step = abs(double(line.dx())/double(line.dy()));
     }
 
     // Sign
     if (x_step * line.dx() < 0) // Signs don't match
     {
-        x_step *= -1;
+        x_step *= -1.0;
     }
 
     if (y_step * line.dy() < 0) // Signs don't match
     {
-        y_step *= -1;
+        y_step *= -1.0;
     }
 
     QPoint i_point(startPx);
     QLine i_line(startPx, startPx);
+
+    x_pos = startPx.x();
+    y_pos = startPx.y();
 
     while (lineLen(i_line) <= len)
     {
@@ -91,8 +95,11 @@ void LineSensor::getPixels()
 
         pixels.push_back(lightness);
 
-        i_point.setX(int(i_point.x() + x_step));
-        i_point.setY(int(i_point.y() + y_step));
+        x_pos += x_step;
+        y_pos += y_step;
+
+        i_point.setX(int(x_pos));
+        i_point.setY(int(y_pos));
         i_line.setP2(i_point);
     }
 }
