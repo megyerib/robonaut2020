@@ -43,6 +43,7 @@ TrackDrawer::TrackDrawer(QWidget &w, SimSetting& s) :
 void TrackDrawer::Draw()
 {
     QPainter painter(&widget);
+    //painter.setRenderHint(QPainter::SmoothPixmapTransform);
     QImage& bg = setting.trackImg;
 
     QRect sourceRect(0, 0, bg.width(), bg.height()); // Constant

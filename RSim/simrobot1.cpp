@@ -34,9 +34,9 @@ void SimRobot1::SetSteering(double angle)
 
 void SimRobot1::Draw()
 {
-    //  +---> width, length
-    //  | [CAR>
-    //  V height, width
+    //  +---> length  +---> width
+    //  | [CAR>       | [Window]
+    //  V width       V height
 
     QPainter painter(bgWidget);
 
@@ -137,13 +137,11 @@ void SimRobot1::Refresh()
     double D = 1.5 * (line - prev_line) / -0.15 * DEG_TO_RAD(60);
     prev_line = line;
 
-    //steerAngle = P + D;
     SetSteering(P + D);
 
     CalcSpeed();
     CalcSteer();
 
-    //position.SetPhi(position.phi() + DEG_TO_RAD(1));
     CalcPosition();
 }
 

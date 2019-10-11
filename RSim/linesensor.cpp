@@ -21,9 +21,6 @@ LineSensor::LineSensor
 
 void LineSensor::calcPoints()
 {
-    /*CartesianCS* carCS1 = static_cast<CartesianCS*>(startLoc->cs);
-    CartesianCS* carCS2 = static_cast<CartesianCS*>(endLoc->cs);*/
-
     CartesianLoc sensorStart = *startLoc; // alpha doesn't change
     sensorStart.TransformTo(bgCS);
     startPx.setX(int(sensorStart.x()));
