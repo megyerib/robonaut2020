@@ -5,7 +5,7 @@
 #include "virtualrobot.h"
 #include <QWidget>
 #include <QTimer>
-#include "linesensoravg.h"
+#include "sensor/linesensoravg.h"
 
 class SimRobot1 : public QObject, public RobotProxy, public VirtualRobot
 {

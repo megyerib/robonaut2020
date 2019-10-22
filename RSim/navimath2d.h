@@ -17,6 +17,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
+// TODO copy constructors
+
 #include <math.h>
 
 #define WORLD nullptr
@@ -81,6 +83,8 @@ public:
         fp_t x_res,
         fp_t y_res
     );
+
+    CartesianCS(CartesianCS* c);
 
     void RecalcBaseVectors();
 };

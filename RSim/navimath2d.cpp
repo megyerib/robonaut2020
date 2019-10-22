@@ -33,6 +33,28 @@ CartesianCS::CartesianCS(
     RecalcBaseVectors();
 }
 
+CartesianCS::CartesianCS(CartesianCS* c)
+{
+    if (c == nullptr)
+    {
+        center_x = 0;
+        center_y = 0;
+        alpha    = 0;
+        x_res    = 1;
+        y_res    = 1;
+    }
+    else
+    {
+        center_x = c->center_x;
+        center_y = c->center_y;
+        alpha    = c->alpha;
+        x_res    = c->x_res;
+        y_res    = c->y_res;
+    }
+
+    RecalcBaseVectors();
+}
+
 void CartesianCS::RecalcBaseVectors()
 {
     a[0] = x_res * COS(alpha);
