@@ -1,10 +1,10 @@
 #include "linesensoravg.h"
 
-LineSensorAvg::LineSensorAvg(CartesianLoc* sLoc,
-                             CartesianLoc* eLoc,
-                             QImage* bgImg,
-                             CartesianCS* bgCS) :
-    LineSensor(sLoc, eLoc, bgImg, bgCS)
+LineSensorAvg::LineSensorAvg(Display *d,
+                             Track *t,
+                             CartesianLoc *start,
+                             CartesianLoc *end) :
+    LineSensor(d, t, start, end)
 {
 
 }
@@ -13,7 +13,6 @@ double LineSensorAvg::getLine()
 {
     double ret = 0;
 
-    calcPoints();
     getPixels();
 
     int blackSum = 0; // Sum of black pixel coordinates

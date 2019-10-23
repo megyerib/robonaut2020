@@ -6,10 +6,10 @@
 class LineSensorAvg : public LineSensor
 {
 public:
-    LineSensorAvg(CartesianLoc* startLoc,
-                  CartesianLoc* endLoc,
-                  QImage* bgImg,
-                  CartesianCS* bgCS);
+    LineSensorAvg(Display*      d,
+                  Track*        t,
+                  CartesianLoc* start,
+                  CartesianLoc* end);
 
     double getLine();
 };

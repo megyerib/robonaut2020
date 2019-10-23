@@ -2,12 +2,16 @@
 #define LINESENSOR_H
 
 #include "navimath2d.h"
-#include <QImage>
+#include "simulation/track.h"
+#include "simulation/display.h"
 
 class LineSensor
 {
-    QImage* bgImg;
-    CartesianCS* bgCS;
+    Display* display;
+    Track*   track;
+
+public:
+    void Draw();
 
 protected:
     double sensorLength; // [m]
@@ -15,20 +19,19 @@ protected:
 
     LineSensor
     (
-        CartesianLoc* startLoc,
-        CartesianLoc* endLoc,
-        QImage* bgImg,
-        CartesianCS* bgCS
+        Display*      d,
+        Track*        t,
+        CartesianLoc* start,
+        CartesianLoc* end
     );
 
-    void calcPoints();
     void getPixels();
 
 private:
+    void calcPoints();
     double lineLen(QLine& l);
-    bool rangeValid(QPoint& p);
+    bool pointValid(QPoint& p);
 
-public:
     CartesianLoc* startLoc;
     CartesianLoc* endLoc;
 

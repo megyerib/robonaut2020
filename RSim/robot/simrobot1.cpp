@@ -10,17 +10,25 @@
 #define ACCELERATION 2.0 /* [m/s^2] */
 #define MAX_SPEED 10.0
 #define STEER_SPEED DEG_TO_RAD(350) /* [rad/s] */
-#define MAX_STEER DEG_TO_RAD(60) /* [rad] */
+#define MAX_STEER DEG_TO_RAD(45) /* [rad] */
 
-SimRobot1::SimRobot1(Display* d, CartesianPos* initialPos)
+SimRobot1::SimRobot1(Display* d, Track *t, CartesianPos* initialPos)
 {
     display = d;
+    track   = t;
 
     position = new CartesianPos(*initialPos);
 
     robotImg = new QImage("../RSim/resource/car_red.png");
 
+    carCs = new CartesianCS(position->x(), position->y(), position->phi(), 1, 1);
+
+    ConfigLineSensor();
+
     InitRefreshTimer(REFRESH_INTERVAL);
+
+    SetSpeed(1.5);
+    SetSteering(0);
 }
 
 void SimRobot1::Draw()
@@ -44,19 +52,9 @@ void SimRobot1::Draw()
     painter.rotate(-RAD_TO_DEG(carPos.phi())); // Clockwise; degrees
 
     painter.drawImage(target, *robotImg, source);
+
+    lineSensor->Draw();
 }
-
-/*
- * // Sensor draw
-    QPainter sensorPainter(bgWidget);
-
-    CartesianLoc sstart(*lineSensor->startLoc);
-    sstart.TransformTo(windowCS);
-    CartesianLoc send(*lineSensor->endLoc);
-    send.TransformTo(windowCS);
-
-    sensorPainter.drawLine(int(sstart.x()), int(sstart.y()), int(send.x()), int(send.y()));
- * */
 
 void SimRobot1::SetSpeed(double speed)
 {
@@ -72,7 +70,7 @@ void SimRobot1::SetSteering(double angle)
 
 void SimRobot1::CalcPosition()
 {
-    /*double sign = steerAngle > 0 ? 1.0 : -1.0;
+    double sign = steerAngle > 0 ? 1.0 : -1.0;
     double alpha = steerAngle * sign; // abs
     double R_rear = WHEELBASE / tan(alpha);
     double h = WHEELBASE / 2;
@@ -82,14 +80,14 @@ void SimRobot1::CalcPosition()
 
     double s = speed * REFRESH_INTERVAL;
 
-    position.SetX(position.x() + s * cos(position.phi()));
-    position.SetY(position.y() + s * sin(position.phi()));
-    position.SetPhi(position.phi() + sign * beta);
+    position->SetX(position->x() + s * cos(position->phi()));
+    position->SetY(position->y() + s * sin(position->phi()));
+    position->SetPhi(position->phi() + sign * beta);
 
-    carCs.center_x = position.x();
-    carCs.center_y = position.y();
-    carCs.alpha = position.phi();
-    carCs.RecalcBaseVectors();*/
+    carCs->center_x = position->x();
+    carCs->center_y = position->y();
+    carCs->alpha = position->phi();
+    carCs->RecalcBaseVectors();
 }
 
 void SimRobot1::CalcSpeed()
@@ -136,9 +134,7 @@ void SimRobot1::CalcSteer()
 
 void SimRobot1::Refresh()
 {
-    position->SetPhi(position->phi()+DEG_TO_RAD(1));
-
-    /*double line = lineSensor->getLine();
+    double line = lineSensor->getLine();
 
     double P = 3.5 * line / -0.15 * DEG_TO_RAD(60);
     double D = 1.5 * (line - prev_line) / -0.15 * DEG_TO_RAD(60);
@@ -149,13 +145,12 @@ void SimRobot1::Refresh()
     CalcSpeed();
     CalcSteer();
 
-    CalcPosition();*/
+    CalcPosition();
 }
 
 void SimRobot1::ConfigLineSensor()
 {
-    /*lsStart = new CartesianLoc(&carCs, WHEELBASE/2,  0.15);
-    lsEnd   = new CartesianLoc(&carCs, WHEELBASE/2, -0.15);
-
-    lineSensor = new LineSensorAvg(lsStart, lsEnd, bgImg, bgCS);*/
+    lsStart = new CartesianLoc(carCs, WHEELBASE/2,  0.15);
+    lsEnd   = new CartesianLoc(carCs, WHEELBASE/2, -0.15);
+    lineSensor = new LineSensorAvg(display, track, lsStart, lsEnd);
 }

@@ -11,7 +11,7 @@ DemoSim::DemoSim(QWidget& w)
     track   = new Track(*display, "../RSim/resource/track_q_sprint.png", 131);
 
     CartesianPos initialRobotPos(WORLD, INITIAL_X, INITIAL_Y, INITIAL_PHI); // It will be copied so local scope is no problem.
-    robot   = new SimRobot1(display, &initialRobotPos);
+    robot   = new SimRobot1(display, track, &initialRobotPos);
 }
 
 void DemoSim::Draw()

@@ -1,18 +1,20 @@
 #include "linesensor.h"
 #include "math.h"
+#include <QPainter>
 
 LineSensor::LineSensor
 (
-    CartesianLoc* startLoc,
-    CartesianLoc* endLoc,
-    QImage* bgImg,
-    CartesianCS* bgCS
-) :
-    bgImg(bgImg),
-    bgCS(bgCS),
-    startLoc(startLoc),
-    endLoc(endLoc)
+    Display*      d,
+    Track*        t,
+    CartesianLoc* start,
+    CartesianLoc* end
+)
 {
+    display  = d;
+    track    = t;
+    startLoc = start;
+    endLoc   = end;
+
     double x_diff = endLoc->x() - startLoc->x();
     double y_diff = endLoc->y() - startLoc->y();
 
@@ -21,19 +23,20 @@ LineSensor::LineSensor
 
 void LineSensor::calcPoints()
 {
-    /*CartesianLoc sensorStart = *startLoc; // alpha doesn't change
-    sensorStart.TransformTo(bgCS);
+    CartesianLoc sensorStart = *startLoc;
+    sensorStart.TransformTo(track->bgCs);
     startPx.setX(int(sensorStart.x()));
     startPx.setY(int(sensorStart.y()));
 
     CartesianLoc sensorEnd = *endLoc;
-    sensorEnd.TransformTo(bgCS);
+    sensorEnd.TransformTo(track->bgCs);
     endPx.setX(int(sensorEnd.x()));
-    endPx.setY(int(sensorEnd.y()));*/
+    endPx.setY(int(sensorEnd.y()));
 }
 
 void LineSensor::getPixels()
 {
+    calcPoints();
     pixels.clear();
 
     // Steps
@@ -84,9 +87,9 @@ void LineSensor::getPixels()
     {
         int lightness = 255;
 
-        if (rangeValid(i_point))
+        if (pointValid(i_point))
         {
-            QColor c = bgImg->pixelColor(i_point);
+            QColor c = track->bgImg.pixelColor(i_point);
             lightness = c.lightness();
         }
 
@@ -106,17 +109,29 @@ double LineSensor::lineLen(QLine& l)
     return sqrt(double(l.dx())*l.dx()+l.dy()*l.dy());
 }
 
-bool LineSensor::rangeValid(QPoint& p)
+bool LineSensor::pointValid(QPoint& p)
 {
     bool ret = true;
 
-    if (p.x() < 0               ||
-        p.x() >= bgImg->width() ||
-        p.y() < 0               ||
-        p.y() >= bgImg->height())
+    if (p.x() < 0                      ||
+        p.x() >= track->bgImg.width()  ||
+        p.y() < 0                      ||
+        p.y() >= track->bgImg.height())
     {
         ret = false;
     }
 
     return ret;
+}
+
+void LineSensor::Draw()
+{
+    QPainter painter(&display->widget);
+
+    CartesianLoc start(*startLoc);
+    start.TransformTo(&display->cs);
+    CartesianLoc end(*endLoc);
+    end.TransformTo(&display->cs);
+
+    painter.drawLine(int(start.x()), int(start.y()), int(end.x()), int(end.y()));
 }

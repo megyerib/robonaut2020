@@ -8,11 +8,17 @@
 
 class SimRobot1 : public VirtualRobot,  public RobotProxy
 {
+    Track* track;
+    CartesianCS* carCs;
     CartesianPos* position;
     QImage* robotImg;
 
+    LineSensorAvg* lineSensor;
+    CartesianLoc* lsStart;
+    CartesianLoc* lsEnd;
+
 public:
-    SimRobot1(Display* d, CartesianPos* initialPos);
+    SimRobot1(Display* d, Track* t, CartesianPos* initialPos);
 
     void SetSpeed(double speed) override;
     void SetSteering(double angle) override;
@@ -23,7 +29,7 @@ private:
     void Refresh() override;
 
 
-    CartesianCS* carCs;
+
 
     /*LineSensorAvg* lineSensor = nullptr;
     CartesianLoc* lsStart;
