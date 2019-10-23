@@ -23,6 +23,7 @@ SOURCES += \
     simulation/checkpoint.cpp \
     simulation/demosim.cpp \
     simulation/display.cpp \
+    simulation/mazesim1.cpp \
     simulation/track.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -38,6 +39,7 @@ HEADERS += \
     simulation/checkpoint.h \
     simulation/demosim.h \
     simulation/display.h \
+    simulation/mazesim1.h \
     simulation/simulation.h \
     simulation/track.h \
     mainwindow.h \

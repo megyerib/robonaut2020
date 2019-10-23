@@ -2,7 +2,7 @@
 #include "ui_mainwindow.h"
 
 #include "simulation/simulation.h"
-#include "simulation/demosim.h"
+#include "simulation/mazesim1.h"
 
 #define REFRESH_INTERVAL 0.04
 
@@ -14,7 +14,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     // Initialize simulation
-    simulation = dynamic_cast<Simulation*>(new DemoSim(*this));
+    simulation = dynamic_cast<Simulation*>(new MazeSim1(*this));
 
     // Set timer
     refreshTimer.setInterval(int(REFRESH_INTERVAL*1000));

@@ -7,14 +7,14 @@
 #include "simulation/checkpoint.h"
 #include "track.h"
 
-class DemoSim : public Simulation
+class MazeSim1 : public Simulation
 {
     Track* track;
     SimRobot1* robot;
     std::vector<Checkpoint*> checkpoints;
 
 public:
-    DemoSim(QWidget& w);
+    MazeSim1(QWidget& w);
 
     void Draw() override;
 };

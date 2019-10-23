@@ -2,7 +2,7 @@
 #include <QPainter>
 
 #define REFRESH_RATE 0.1
-#define GATE_WIDTH 1.0
+#define GATE_WIDTH 0.7
 #define GATE_LENGTH 0.2
 
 #define DISTANCE_THRESHOLD 0.2
