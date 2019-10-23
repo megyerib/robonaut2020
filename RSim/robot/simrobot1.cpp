@@ -1,11 +1,7 @@
 #include "simrobot1.h"
 #include "navimath2d.h"
 #include <QPainter>
-#include "QDebug"
-
-#define INITIAL_X 2.5
-#define INITIAL_Y 16.48
-#define INITIAL_PHI DEG_TO_RAD(180)
+#include <cstdlib>
 
 #define ROBOT_LENGTH 0.4 /* [m] */
 #define REFRESH_INTERVAL 0.05 /* [s] */
@@ -16,24 +12,51 @@
 #define STEER_SPEED DEG_TO_RAD(350) /* [rad/s] */
 #define MAX_STEER DEG_TO_RAD(60) /* [rad] */
 
-
-SimRobot1::SimRobot1() :
-    position(WORLD, INITIAL_X, INITIAL_Y, INITIAL_PHI),
-    robotImg("../RSim/resource/car_red.png"),
-    carCs(INITIAL_X, INITIAL_Y, INITIAL_PHI, 1, 1)
+SimRobot1::SimRobot1(Display* d, CartesianPos* initialPos)
 {
-    // Set timer
-    refreshTimer.setInterval(int(REFRESH_INTERVAL*1000));
-    connect(&refreshTimer, SIGNAL(timeout()), this, SLOT(Refresh()));
-    refreshTimer.start();
+    display = d;
 
-    // Initial values
-    SetSpeed(2);
-    SetSteering(DEG_TO_RAD(0));
+    position = new CartesianPos(*initialPos);
 
-    // Configure line sensor
-    ConfigLineSensor();
+    robotImg = new QImage("../RSim/resource/car_red.png");
+
+    InitRefreshTimer(REFRESH_INTERVAL);
 }
+
+void SimRobot1::Draw()
+{
+    //  +---> length  +---> width
+    //  | [CAR>       | [Display]
+    //  V width       V height
+
+    QPainter painter(&display->widget);
+
+    CartesianPos carPos(*position);
+    carPos.TransformTo(&display->cs);
+
+    int carLenPx = int(ROBOT_LENGTH / abs(display->cs.x_res));
+    int carWidthPx = carLenPx * robotImg->height() / robotImg->width(); // See comment
+
+    QRect source(0, 0, robotImg->width(), robotImg->height());
+    QRect target(-carLenPx/2, -carWidthPx/2, carLenPx, carWidthPx);
+
+    painter.translate(carPos.x(), carPos.y());
+    painter.rotate(-RAD_TO_DEG(carPos.phi())); // Clockwise; degrees
+
+    painter.drawImage(target, *robotImg, source);
+}
+
+/*
+ * // Sensor draw
+    QPainter sensorPainter(bgWidget);
+
+    CartesianLoc sstart(*lineSensor->startLoc);
+    sstart.TransformTo(windowCS);
+    CartesianLoc send(*lineSensor->endLoc);
+    send.TransformTo(windowCS);
+
+    sensorPainter.drawLine(int(sstart.x()), int(sstart.y()), int(send.x()), int(send.y()));
+ * */
 
 void SimRobot1::SetSpeed(double speed)
 {
@@ -45,42 +68,11 @@ void SimRobot1::SetSteering(double angle)
     targetSteerAngle = angle;
 }
 
-void SimRobot1::Draw()
-{
-    //  +---> length  +---> width
-    //  | [CAR>       | [Window]
-    //  V width       V height
 
-    QPainter painter(bgWidget);
-
-    CartesianPos carPos(position);
-    carPos.TransformTo(windowCS);
-
-    int carLenPx = int(ROBOT_LENGTH / abs(windowCS->x_res));
-    int carWidthPx = carLenPx * robotImg.height() / robotImg.width(); // See comment
-
-    QRect source(0, 0, robotImg.width(), robotImg.height());
-    QRect target(-carLenPx/2, -carWidthPx/2, carLenPx, carWidthPx);
-
-    painter.translate(carPos.x(), carPos.y());
-    painter.rotate(-RAD_TO_DEG(carPos.phi())); // Clockwise; degrees
-
-    painter.drawImage(target, robotImg, source);
-
-    // Sensor draw
-    QPainter sensorPainter(bgWidget);
-
-    CartesianLoc sstart(*lineSensor->startLoc);
-    sstart.TransformTo(windowCS);
-    CartesianLoc send(*lineSensor->endLoc);
-    send.TransformTo(windowCS);
-
-    sensorPainter.drawLine(int(sstart.x()), int(sstart.y()), int(send.x()), int(send.y()));
-}
 
 void SimRobot1::CalcPosition()
 {
-    double sign = steerAngle > 0 ? 1.0 : -1.0;
+    /*double sign = steerAngle > 0 ? 1.0 : -1.0;
     double alpha = steerAngle * sign; // abs
     double R_rear = WHEELBASE / tan(alpha);
     double h = WHEELBASE / 2;
@@ -97,7 +89,7 @@ void SimRobot1::CalcPosition()
     carCs.center_x = position.x();
     carCs.center_y = position.y();
     carCs.alpha = position.phi();
-    carCs.RecalcBaseVectors();
+    carCs.RecalcBaseVectors();*/
 }
 
 void SimRobot1::CalcSpeed()
@@ -144,7 +136,9 @@ void SimRobot1::CalcSteer()
 
 void SimRobot1::Refresh()
 {
-    double line = lineSensor->getLine();
+    position->SetPhi(position->phi()+DEG_TO_RAD(1));
+
+    /*double line = lineSensor->getLine();
 
     double P = 3.5 * line / -0.15 * DEG_TO_RAD(60);
     double D = 1.5 * (line - prev_line) / -0.15 * DEG_TO_RAD(60);
@@ -155,18 +149,13 @@ void SimRobot1::Refresh()
     CalcSpeed();
     CalcSteer();
 
-    CalcPosition();
+    CalcPosition();*/
 }
 
 void SimRobot1::ConfigLineSensor()
 {
-    lsStart = new CartesianLoc(&carCs, WHEELBASE/2,  0.15);
+    /*lsStart = new CartesianLoc(&carCs, WHEELBASE/2,  0.15);
     lsEnd   = new CartesianLoc(&carCs, WHEELBASE/2, -0.15);
 
-    lineSensor = new LineSensorAvg(lsStart, lsEnd, bgImg, bgCS);
-}
-
-void SimRobot1::PostCfg()
-{
-    ConfigLineSensor();
+    lineSensor = new LineSensorAvg(lsStart, lsEnd, bgImg, bgCS);*/
 }

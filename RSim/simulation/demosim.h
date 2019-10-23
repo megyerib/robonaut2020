@@ -10,7 +10,7 @@
 class DemoSim : public Simulation
 {
     Track* track;
-    //SimRobot1* robot;
+    SimRobot1* robot;
 
 public:
     DemoSim(QWidget& w);

@@ -21,7 +21,7 @@ LineSensor::LineSensor
 
 void LineSensor::calcPoints()
 {
-    CartesianLoc sensorStart = *startLoc; // alpha doesn't change
+    /*CartesianLoc sensorStart = *startLoc; // alpha doesn't change
     sensorStart.TransformTo(bgCS);
     startPx.setX(int(sensorStart.x()));
     startPx.setY(int(sensorStart.y()));
@@ -29,7 +29,7 @@ void LineSensor::calcPoints()
     CartesianLoc sensorEnd = *endLoc;
     sensorEnd.TransformTo(bgCS);
     endPx.setX(int(sensorEnd.x()));
-    endPx.setY(int(sensorEnd.y()));
+    endPx.setY(int(sensorEnd.y()));*/
 }
 
 void LineSensor::getPixels()

@@ -1,23 +1,23 @@
-#ifndef VIRTUALROBOT_H
-#define VIRTUALROBOT_H
+#pragma once
 
-#include <QWidget>
-#include "navimath2d.h"
+#include "simulation/display.h"
+#include <QTimer>
 
-class VirtualRobot
+class VirtualRobot : public QObject
 {
+    Q_OBJECT
+
 protected:
-    QWidget* bgWidget;
-    QImage* bgImg;
-    CartesianCS* windowCS;
-    CartesianCS* bgCS;
+    Display* display;
+    QTimer*  refreshTimer;
+
+    void InitRefreshTimer(double interval);
 
 public:
     virtual ~VirtualRobot() = default;
 
-    void PassTrackParameters(QWidget& w, QImage& bgImg, CartesianCS* bgCS, CartesianCS* windowCS);
     virtual void Draw() = 0;
-    virtual void PostCfg() = 0; // TODO redesign!
-};
 
-#endif // VIRTUALROBOT_H
+private slots:
+    virtual void Refresh() = 0;
+};

@@ -1,9 +1,9 @@
 #include "virtualrobot.h"
 
-void VirtualRobot::PassTrackParameters(QWidget& w, QImage& bgImg, CartesianCS* bgCS, CartesianCS* windowCS)
+void VirtualRobot::InitRefreshTimer(double interval)
 {
-    this->bgWidget = &w;
-    this->bgImg    = &bgImg;
-    this->bgCS     = bgCS;
-    this->windowCS = windowCS;
+    refreshTimer = new QTimer();
+    refreshTimer->setInterval(int(interval*1000));
+    connect(refreshTimer, SIGNAL(timeout()), this, SLOT(Refresh()));
+    refreshTimer->start();
 }
