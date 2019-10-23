@@ -28,7 +28,6 @@ SimRobot1::SimRobot1(Display* d, Track *t, CartesianPos* initialPos)
     InitRefreshTimer(REFRESH_INTERVAL);
 
     SetSpeed(1.5);
-    SetSteering(0);
 }
 
 void SimRobot1::Draw()
@@ -153,4 +152,9 @@ void SimRobot1::ConfigLineSensor()
     lsStart = new CartesianLoc(carCs, WHEELBASE/2,  0.15);
     lsEnd   = new CartesianLoc(carCs, WHEELBASE/2, -0.15);
     lineSensor = new LineSensorAvg(display, track, lsStart, lsEnd);
+}
+
+CartesianPos SimRobot1::GetRealPosition()
+{
+    return *position;
 }

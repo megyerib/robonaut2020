@@ -1,12 +1,12 @@
 #pragma once
 
-#include "robotproxy.h"
+#include "robot.h"
 #include "virtualrobot.h"
 #include <QWidget>
 #include <QTimer>
 #include "sensor/linesensoravg.h"
 
-class SimRobot1 : public VirtualRobot,  public RobotProxy
+class SimRobot1 : public VirtualRobot,  public Robot
 {
     Track* track;
     CartesianCS* carCs;
@@ -20,6 +20,8 @@ class SimRobot1 : public VirtualRobot,  public RobotProxy
 public:
     SimRobot1(Display* d, Track* t, CartesianPos* initialPos);
 
+    CartesianPos GetRealPosition() override;
+
     void SetSpeed(double speed) override;
     void SetSteering(double angle) override;
 
@@ -28,17 +30,8 @@ public:
 private:
     void Refresh() override;
 
-
-
-
-    /*LineSensorAvg* lineSensor = nullptr;
-    CartesianLoc* lsStart;
-    CartesianLoc* lsEnd;*/
-
-    double speed, targetSpeed;
-    double steerAngle, targetSteerAngle;
-
-
+    double speed = 0, targetSpeed;
+    double steerAngle = 0, targetSteerAngle;
 
     double prev_line; // TODO make a separate controller class for this!
 
@@ -47,5 +40,4 @@ private:
     void CalcSteer();
 
     void ConfigLineSensor();
-    void UpdateLineSensor();
 };

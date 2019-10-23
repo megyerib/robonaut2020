@@ -1,6 +1,6 @@
-#include "virtualrobot.h"
+#include "refreshable.h"
 
-void VirtualRobot::InitRefreshTimer(double interval)
+void Refreshable::InitRefreshTimer(double interval /* [s] */)
 {
     refreshTimer = new QTimer();
     refreshTimer->setInterval(int(interval*1000));

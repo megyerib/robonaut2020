@@ -16,10 +16,11 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    refreshable.cpp \
     robot/simrobot1.cpp \
-    robot/virtualrobot.cpp \
     sensor/linesensor.cpp \
     sensor/linesensoravg.cpp \
+    simulation/checkpoint.cpp \
     simulation/demosim.cpp \
     simulation/display.cpp \
     simulation/track.cpp \
@@ -28,11 +29,13 @@ SOURCES += \
     navimath2d.cpp
 
 HEADERS += \
-    robot/robotproxy.h \
+    refreshable.h \
+    robot/robot.h \
     robot/simrobot1.h \
     robot/virtualrobot.h \
     sensor/linesensor.h \
     sensor/linesensoravg.h \
+    simulation/checkpoint.h \
     simulation/demosim.h \
     simulation/display.h \
     simulation/simulation.h \
