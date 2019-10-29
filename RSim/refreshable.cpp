@@ -7,3 +7,9 @@ void Refreshable::InitRefreshTimer(double interval /* [s] */)
     connect(refreshTimer, SIGNAL(timeout()), this, SLOT(Refresh()));
     refreshTimer->start();
 }
+
+Refreshable::~Refreshable()
+{
+    if (refreshTimer != nullptr)
+        delete refreshTimer;
+}

@@ -7,10 +7,10 @@ class Refreshable : public QObject
 {
     Q_OBJECT
 
-    QTimer*  refreshTimer;
+    QTimer*  refreshTimer = nullptr;
 
 protected:
-    ~Refreshable() = default;
+    ~Refreshable();
     void InitRefreshTimer(double interval /* [s] */);
 
 private slots:

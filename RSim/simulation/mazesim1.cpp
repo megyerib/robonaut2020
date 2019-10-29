@@ -30,6 +30,8 @@ MazeSim1::MazeSim1(QWidget& w)
     CartesianPos initialRobotPos(WORLD, INITIAL_X, INITIAL_Y, INITIAL_PHI); // It will be copied so local scope is no problem.
     robot   = new SimRobot1(display, track, &initialRobotPos);
 
+    robot->SetSpeed(1);
+
     for (uint i = 0; i < GATE_NUM; i++)
         checkpoints.push_back(new Checkpoint(*display, gates[i], *robot));
 }
