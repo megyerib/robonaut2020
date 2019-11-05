@@ -22,11 +22,10 @@ void IdleTask(void* p)
 
 void OsInit()
 {
+	HAL_NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_4);
 	HAL_InitTick(TICK_INT_PRIORITY);
 
 	TaskHandle_t htask1, htask2;
-
-	// TODO valami memóriát kéne foglalni az OS-nek
 
 	xTaskCreate (IdleTask, "IDLE", 128, NULL, tskIDLE_PRIORITY,     &htask1);
 	xTaskCreate (LedTask,  "LED",  128, NULL, tskIDLE_PRIORITY + 1, &htask2);
@@ -54,4 +53,16 @@ int main(void)
 	OsInit();
 
 	while (1);
+}
+
+extern "C" void SysTick_Handler(void)
+{
+	// HAL
+	HAL_IncTick();
+
+	// FreeRTOS
+	if (xTaskGetSchedulerState() != taskSCHEDULER_NOT_STARTED)
+	{
+		xPortSysTickHandler();
+	}
 }
