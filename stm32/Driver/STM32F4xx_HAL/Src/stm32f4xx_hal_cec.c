@@ -879,7 +879,7 @@ void HAL_CEC_IRQHandler(CEC_HandleTypeDef *hcec)
     }
     else
     {
-      /* Nothing todo*/
+      /* Nothing to do*/
     }
 #if (USE_HAL_CEC_REGISTER_CALLBACKS == 1U)
     hcec->ErrorCallback(hcec);
@@ -890,7 +890,7 @@ void HAL_CEC_IRQHandler(CEC_HandleTypeDef *hcec)
   }
   else
   {
-    /* Nothing todo*/
+    /* Nothing to do*/
   }
 }
 
