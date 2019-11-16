@@ -1,5 +1,5 @@
 #include "gpio.h"
-#include "stm32f4xx_hal.h"
+//#include "stm32f4xx_hal.h"
 
 void Gpio::EnablePortOfPin(GpioPin pin)
 {
