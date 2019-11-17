@@ -1,9 +1,8 @@
-#include "Rcc.h"
+#include "System.h"
 #include "stm32f0xx_hal.h"
 
-Rcc::Rcc()
+System::System()
 {
-	// TODO copied from generated code
 	__HAL_RCC_SYSCFG_CLK_ENABLE();
 	__HAL_RCC_PWR_CLK_ENABLE();
 
@@ -15,17 +14,15 @@ Rcc::Rcc()
 	/* SysTick_IRQn interrupt configuration */
 	HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
 
-	SystemClock_Config();
+	Clock_Config();
 }
 
-Rcc* Rcc::Init()
+void System::Init()
 {
-	static Rcc* instance = new Rcc;
-
-	return instance;
+	static System instance; // Calls the constructor
 }
 
-void Rcc::SystemClock_Config()
+void System::Clock_Config()
 {
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
@@ -64,4 +61,17 @@ void Rcc::SystemClock_Config()
   {
     //Error_Handler();
   }
+}
+
+// Systick handler
+extern "C" void SysTick_Handler(void)
+{
+	// HAL
+	HAL_IncTick();
+
+	// FreeRTOS
+	/*if (xTaskGetSchedulerState() != taskSCHEDULER_NOT_STARTED)
+	{
+		xPortSysTickHandler();
+	}*/
 }

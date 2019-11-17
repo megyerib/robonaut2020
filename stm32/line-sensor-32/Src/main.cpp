@@ -1,4 +1,4 @@
-#include "Rcc.h"
+#include "System.h"
 #include "LedDriver.h"
 #include "Adc.h"
 #include "StddevEval.h"
@@ -7,8 +7,7 @@
 
 int main(void)
 {
-	HAL_Init();
-	Rcc::Init();
+	System::Init();
 
 	Adc* adc = Adc::GetInstance(Set4);
 	SensorDriver sensors;
@@ -34,19 +33,6 @@ int main(void)
 		l = eval.GetLine();
 		d.DisplayLinePos(l);
 	}
-}
-
-// Systick handler TODO replace
-extern "C" void SysTick_Handler(void)
-{
-	// HAL
-	HAL_IncTick();
-
-	// FreeRTOS
-	/*if (xTaskGetSchedulerState() != taskSCHEDULER_NOT_STARTED)
-	{
-		xPortSysTickHandler();
-	}*/
 }
 
 // TODO UART
