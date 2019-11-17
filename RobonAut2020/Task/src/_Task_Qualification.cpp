@@ -27,7 +27,7 @@ void Task_Qualification::Task_Qualification_Process(void *pvParameters)
 
     while (1)
     {
-        // Car.Process();
+        robot.Process_Quali();
     }
 }
 

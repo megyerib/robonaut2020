@@ -8,10 +8,16 @@
 #ifndef CAR_H_
 #define CAR_H_
 
-enum QualificationSates
+#include "Remote.h"
+#include "Steer.h"
+#include "Distance.h"
+
+enum RobotState
 {
-    Ideal = 0,
+    Init = 0,
+    Ideal,
     Follow,
+    LineLost,
     Overtake,
     Stop
 };
@@ -19,10 +25,16 @@ enum QualificationSates
 class Car
 {
 private:
+    RobotState state;
 
+    Remote        remote;
+    Steer         wheel;
+    Pd_Controller lineFollowController;
 
 public:
+    Car(void);
 
+    void Process_Quali(void);
 
 };
 
