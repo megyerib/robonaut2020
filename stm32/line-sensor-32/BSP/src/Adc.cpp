@@ -112,7 +112,8 @@ void Adc::InitAdc()
 	HAL_ADC_Init(&handle);
 
 	sConfig.Rank = ADC_RANK_CHANNEL_NUMBER;
-	sConfig.SamplingTime = ADC_SAMPLETIME_239CYCLES_5; // TODO gyorsabb ADC
+	sConfig.SamplingTime = ADC_SAMPLETIME_55CYCLES_5;
+	// ADC_SAMPLETIME_41CYCLES_5 is the smallest ok value
 
 	if (sets == Set4)
 	{

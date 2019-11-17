@@ -29,6 +29,7 @@ Line StddevEval::GetLine()
 	Line ret;
 
 	// Filtering
+	removeSystematicError();
 	magicDiff(data, filtered);
 
 	// Average, standard deviation
@@ -229,4 +230,15 @@ uint32_t StddevEval::standardDeviation(uint32_t* data, uint32_t num, uint32_t av
     var = sqsum / num;
 
     return sqrt(var);
+}
+
+void StddevEval::removeSystematicError()
+{
+	const int32_t correctionData[SENSOR_SIZE] =
+	{-31, -24, -29, -21, -26, -32, -30, -11, -9, -8, -1, -2, -18, -7, 12, 16, 32, 34, 26, 36, 29, 22, 33};
+
+	for (int i = 0; i < SENSOR_SIZE; i++)
+	{
+		data[i] -= correctionData[i];
+	}
 }

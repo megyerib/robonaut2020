@@ -1,10 +1,9 @@
-#include "stm32f0xx_hal.h"
 #include "Rcc.h"
 #include "LedDriver.h"
 #include "Adc.h"
-#include "Line.h"
 #include "StddevEval.h"
 #include "Display.h"
+#include "SensorDriver.h"
 
 int main(void)
 {
@@ -12,28 +11,18 @@ int main(void)
 	Rcc::Init();
 
 	Adc* adc = Adc::GetInstance(Set4);
-
-	LedDriver sensors(1, 11);
-
-	uint32_t patterns[] =
-	{
-		0x11111111,
-		0x22222222,
-		0x44444444,
-		0x88888888
-	};
-
-	AdcMeasType measurements[32];
-
-	Line l;
+	SensorDriver sensors;
 	StddevEval eval;
 	Display d;
+
+	AdcMeasType measurements[32];
+	Line l;
 
 	while (1)
 	{
 		for (int i = 0; i < 4; i++)
 		{
-			sensors.Display(&patterns[i], 4);
+			sensors.SetSensors(4, i);
 			HAL_Delay(1);
 			adc->Measure((AdcInput) i);
 			adc->Measure((AdcInput)(i+4));
@@ -60,6 +49,7 @@ extern "C" void SysTick_Handler(void)
 	}*/
 }
 
+// TODO UART
 // TODO minden 2. vagy 3. LED világít
 // TODO nem blokkoló hívások
 // TODO Időmérés (usec)

@@ -19,6 +19,7 @@ private:
 	 int32_t evalWeightedMean(uint32_t* arr, uint32_t i);
 	uint32_t evalIsPeak(uint32_t* arr, uint32_t i, uint32_t mean, uint32_t stdDev);
 	 int     evalIsCross(uint32_t* arr, uint32_t threshold);
+	 void    removeSystematicError();
 
 	 // Math
 	 uint32_t mean(uint32_t* data, uint32_t num);
