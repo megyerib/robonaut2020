@@ -1,0 +1,86 @@
+Skip to content
+Search or jump to…
+
+Pull requests
+Issues
+Marketplace
+Explore
+ 
+@szujoz 
+2.9k
+91.8k46.9kgithub/gitignore
+ Code Pull requests 125 Actions Projects 0 Security Insights
+gitignore/Global/Eclipse.gitignore
+@koppor koppor Add apt_generated_test/ (#3193)
+e95b1be on Oct 3
+@shiftkey@sherzodv@tyutyutyu@aroben@Utumno@segfly@drasolka@rlee287@rafiw@raeglan@mimibar@fhemberger@lukoerfer@leandrodeleite@koppor@jcarsique@jayvdb@harshadsabne@gAmUssA@DenisGorbachev@pangratz@defunkt@cemremengu@arinto@apetresc@alexkaratarakis
+57 lines (42 sloc)  774 Bytes
+  
+.metadata
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.settings/
+.loadpath
+.recommenders
+
+# External tool builders
+.externalToolBuilders/
+
+# Locally stored "Eclipse launch configurations"
+*.launch
+
+# PyDev specific (Python IDE for Eclipse)
+*.pydevproject
+
+# CDT-specific (C/C++ Development Tooling)
+.cproject
+
+# CDT- autotools
+.autotools
+
+# Java annotation processor (APT)
+.factorypath
+
+# PDT-specific (PHP Development Tools)
+.buildpath
+
+# sbteclipse plugin
+.target
+
+# Tern plugin
+.tern-project
+
+# TeXlipse plugin
+.texlipse
+
+# STS (Spring Tool Suite)
+.springBeans
+
+# Code Recommenders
+.recommenders/
+
+# Annotation Processing
+.apt_generated/
+.apt_generated_test/
+
+# Scala IDE specific (Scala & Java development for Eclipse)
+.cache-main
+.scala_dependencies
+.worksheet
+© 2019 GitHub, Inc.
+Terms
+Privacy
+Security
+Status
+Help
+Contact GitHub
+Pricing
+API
+Training
+Blog
+About
