@@ -1,10 +1,11 @@
-#include "Spi1.h"
+#include "../inc/Spi.h"
+
 #include <string.h>
 
 static SPI_HandleTypeDef* hspi1;
-SPI_HandleTypeDef Spi1::handle;
+SPI_HandleTypeDef Spi::handle;
 
-Spi1::Spi1()
+Spi::Spi()
 {
 	hspi1 = &handle;
 
@@ -12,14 +13,14 @@ Spi1::Spi1()
 	Init();
 }
 
-Spi1* Spi1::GetInstance()
+Spi* Spi::GetInstance()
 {
-	static Spi1* instance = new Spi1();
+	static Spi* instance = new Spi();
 
 	return instance;
 }
 
-void Spi1::MspInit()
+void Spi::MspInit()
 {
 	// MSP = MCU Support Package
 
@@ -45,7 +46,7 @@ void Spi1::MspInit()
 	HAL_NVIC_EnableIRQ(SPI1_IRQn);
 }
 
-void Spi1::Init()
+void Spi::Init()
 {
 	handle.Instance = SPI1;
 	handle.Init.Mode = SPI_MODE_MASTER;
@@ -68,7 +69,7 @@ void Spi1::Init()
 	}
 }
 
-void Spi1::Send(void* data, size_t size)
+void Spi::Send(void* data, size_t size)
 {
 	if (size <= LOCAL_BUFFER_SIZE)
 	{
@@ -77,7 +78,7 @@ void Spi1::Send(void* data, size_t size)
 	}
 }
 
-bool Spi1::isReady()
+bool Spi::isReady()
 {
 	return HAL_SPI_GetState(&handle) == HAL_SPI_STATE_READY;
 }

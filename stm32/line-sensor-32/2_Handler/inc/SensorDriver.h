@@ -1,10 +1,10 @@
 #pragma once
 
-#include "LedDriver.h"
+#include "ShiftReg.h"
 
 class SensorDriver
 {
-	LedDriver sensors;
+	ShiftReg sensors;
 
 public:
 	SensorDriver();

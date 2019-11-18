@@ -1,15 +1,16 @@
-#include "System.h"
-#include "LedDriver.h"
-#include "Adc.h"
+#include "SensorMeasure.h"
+#include "ShiftReg.h"
 #include "StddevEval.h"
+
 #include "Display.h"
 #include "SensorDriver.h"
+#include "System.h"
 
 int main(void)
 {
 	System::Init();
 
-	Adc* adc = Adc::GetInstance(Set4);
+	SensorMeasure* adc = SensorMeasure::GetInstance();
 	SensorDriver sensors;
 	StddevEval eval;
 	Display d;

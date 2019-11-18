@@ -1,4 +1,5 @@
-#include "Adc.h"
+#include "../inc/SensorMeasure.h"
+
 #include "stm32f0xx_hal.h"
 #include <string.h>
 
@@ -7,31 +8,29 @@
 #define S2_Pin (1 << 12)
 #define E_Pin  (1 <<  0) /* Low active */
 
-ADC_HandleTypeDef Adc::handle;
+ADC_HandleTypeDef SensorMeasure::handle;
 
-Adc::Adc(SensorSets sets)
+SensorMeasure::SensorMeasure()
 {
-	this->sets = sets;
-
 	InitAdcGpio();
 	InitAdc();
 	InitMux();
 }
 
-Adc* Adc::GetInstance(SensorSets sets)
+SensorMeasure* SensorMeasure::GetInstance()
 {
-	static Adc instance(sets);
+	static SensorMeasure instance;
 
 	return &instance;
 }
 
-void Adc::Measure(AdcInput input)
+void SensorMeasure::Measure(AdcInput input)
 {
 	SetMux(input);
 
 	HAL_ADC_Start(&handle);
 
-	for (int i = 0; i < (sets == Set4 ? 4 : 3); i++)
+	for (int i = 0; i < (SENSOR_SIZE / 8); i++)
 	{
 		HAL_ADC_PollForConversion(&handle, HAL_MAX_DELAY);
 		AdcMeasType meas = HAL_ADC_GetValue(&handle);
@@ -42,15 +41,15 @@ void Adc::Measure(AdcInput input)
 	HAL_ADC_Stop(&handle);
 }
 
-void Adc::GetMeasurements(AdcMeasType* dest)
+void SensorMeasure::GetMeasurements(AdcMeasType* dest)
 {
-	size_t start = (sets == Set4) ?  0 :  8;
-	size_t size  = ((sets == Set4) ? 32 : 24)*sizeof(AdcMeasType);
+	size_t start = 0; // TODO multisize
+	size_t size  = SENSOR_SIZE*sizeof(AdcMeasType);
 
 	memcpy(dest, &measurements[start], size);
 }
 
-void Adc::InitMux()
+void SensorMeasure::InitMux()
 {
 	GPIO_InitTypeDef GPIO_InitStruct = {0};
 
@@ -69,7 +68,7 @@ void Adc::InitMux()
 	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 }
 
-void Adc::InitAdcGpio()
+void SensorMeasure::InitAdcGpio()
 {
 	GPIO_InitTypeDef GPIO_InitStruct;
 
@@ -79,13 +78,17 @@ void Adc::InitAdcGpio()
 	PA2     ------> ADC_IN2
 	PA3     ------> ADC_IN3
 	*/
-	GPIO_InitStruct.Pin = (sets == Set4 ? GPIO_PIN_0 : 0)|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3;
+	GPIO_InitStruct.Pin = GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3;
+	if (SENSOR_SIZE == 32)
+	{
+		GPIO_InitStruct.Pin |= GPIO_PIN_0;
+	}
 	GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
 	GPIO_InitStruct.Pull = GPIO_NOPULL;
 	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 }
 
-void Adc::InitAdc()
+void SensorMeasure::InitAdc()
 {
 	/* ADC1 clock enable */
 	__HAL_RCC_ADC1_CLK_ENABLE();
@@ -115,7 +118,7 @@ void Adc::InitAdc()
 	sConfig.SamplingTime = ADC_SAMPLETIME_55CYCLES_5;
 	// ADC_SAMPLETIME_41CYCLES_5 is the smallest ok value
 
-	if (sets == Set4)
+	if (SENSOR_SIZE == 32)
 	{
 		sConfig.Channel = ADC_CHANNEL_0;
 		HAL_ADC_ConfigChannel(&handle, &sConfig);
@@ -138,7 +141,7 @@ void Adc::InitAdc()
 	HAL_ADC_ConfigChannel(&handle, &sConfig);*/
 }
 
-void Adc::SetMux(AdcInput input)
+void SensorMeasure::SetMux(AdcInput input)
 {
 	// Propagation delay < 60 ns
 	// T_clk ~ 20 ns; a function call lasts longer than that

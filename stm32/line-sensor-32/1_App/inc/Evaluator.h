@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Adc.h"
+#include "SensorMeasure.h"
 #include "Line.h"
 
 class Evaluator

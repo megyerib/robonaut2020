@@ -1,11 +1,12 @@
 #pragma once
 
+#include "ShiftReg.h"
 #include "Line.h"
-#include "LedDriver.h"
+
 
 class Display
 {
-	LedDriver leds;
+	ShiftReg leds;
 
 public:
 	Display();

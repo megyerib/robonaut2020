@@ -1,10 +1,12 @@
-#include "LedDriver.h"
-#include "stm32f0xx_hal.h"
-#include "Spi1.h"
+#include "../inc/ShiftReg.h"
 
-LedDriver::LedDriver(uint8_t OE_Pin, uint8_t LE_Pin)
+#include "../inc/Spi.h"
+#include "stm32f0xx_hal.h"
+
+
+ShiftReg::ShiftReg(uint8_t OE_Pin, uint8_t LE_Pin)
 {
-	spi = Spi1::GetInstance();
+	spi = Spi::GetInstance();
 
 	this->LE_Pin = 1 << LE_Pin;
 	this->OE_Pin = 1 << OE_Pin;
@@ -14,7 +16,7 @@ LedDriver::LedDriver(uint8_t OE_Pin, uint8_t LE_Pin)
 	HAL_GPIO_WritePin(GPIOB, this->LE_Pin, GPIO_PIN_RESET); // Low active  -> Reset
 }
 
-bool LedDriver::Display(void* data, size_t size)
+bool ShiftReg::Display(void* data, size_t size)
 {
 	bool ret = false;
 
@@ -34,7 +36,7 @@ bool LedDriver::Display(void* data, size_t size)
 	return ret;
 }
 
-void LedDriver::GpioInit()
+void ShiftReg::GpioInit()
 {
 	GPIO_InitTypeDef GPIO_InitStruct = {0};
 

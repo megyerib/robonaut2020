@@ -1,11 +1,12 @@
 #pragma once
 
 #include <stddef.h>
-#include "Spi1.h"
 
-class LedDriver
+#include "Spi.h"
+
+class ShiftReg
 {
-	Spi1* spi;
+	Spi* spi;
 
 	uint32_t LE_Pin;
 	uint32_t OE_Pin;
@@ -13,6 +14,6 @@ class LedDriver
 	void GpioInit();
 
 public:
-	LedDriver(uint8_t OE_Pin, uint8_t LE_Pin);
+	ShiftReg(uint8_t OE_Pin, uint8_t LE_Pin);
 	bool Display(void* data, size_t size);
 };

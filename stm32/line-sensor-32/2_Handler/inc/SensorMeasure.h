@@ -19,28 +19,20 @@ typedef enum
 }
 AdcInput;
 
-typedef enum
-{
-	Set3 = 3,
-	Set4 = 4
-}
-SensorSets;
-
 typedef uint32_t AdcMeasType;
 
-class Adc
+class SensorMeasure
 {
 public:
-	static Adc* GetInstance(SensorSets sets);
+	static SensorMeasure* GetInstance();
 	void Measure(AdcInput input);
 	void GetMeasurements(AdcMeasType* dest);
 
 private:
 	static ADC_HandleTypeDef handle;
 	AdcMeasType measurements[32];
-	SensorSets sets;
 
-	Adc(SensorSets sets);
+	SensorMeasure();
 
 	void InitMux();
 	void InitAdc();

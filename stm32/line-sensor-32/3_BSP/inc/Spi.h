@@ -8,18 +8,18 @@
 
 #define LOCAL_BUFFER_SIZE (4u)
 
-class Spi1
+class Spi
 {
 	static SPI_HandleTypeDef handle; // TODO remove static
 	uint8_t localBuffer[LOCAL_BUFFER_SIZE];
 
-	Spi1();
+	Spi();
 
 	void MspInit();
 	void Init();
 
 public:
-	static Spi1* GetInstance();
+	static Spi* GetInstance();
 	void Send(void* data, size_t size);
 	bool isReady();
 };
