@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>f4-empty</name>
+	<name>f4-test</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -30,17 +30,23 @@
 		<link>
 			<name>Driver/CMSIS</name>
 			<type>2</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Driver/CMSIS</locationURI>
+			<locationURI>copy_PARENT/Driver/CMSIS</locationURI>
 		</link>
 		<link>
 			<name>Driver/STM32F4xx_HAL</name>
 			<type>2</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Driver/STM32F4xx_HAL</locationURI>
+			<locationURI>copy_PARENT/Driver/STM32F4xx_HAL</locationURI>
 		</link>
 		<link>
 			<name>Middleware/FreeRTOS</name>
 			<type>2</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Middleware/FreeRTOS</locationURI>
+			<locationURI>copy_PARENT/Middleware/FreeRTOS</locationURI>
 		</link>
 	</linkedResources>
+	<variableList>
+		<variable>
+			<name>copy_PARENT</name>
+			<value>file:/E:/Git/robonaut2020/stm32</value>
+		</variable>
+	</variableList>
 </projectDescription>

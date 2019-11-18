@@ -1,6 +1,6 @@
 #pragma once
 
-//#include "stm32f4xx_hal.h"
+#include "stm32f4xx_hal.h"
 
 // Port: Higher 4 bits
 // Pin:  Lower  4 bits
