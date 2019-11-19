@@ -28,19 +28,19 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>Driver/CMSIS</name>
+			<name>Lib/CMSIS</name>
 			<type>2</type>
 			<locationURI>PARENT-1-PROJECT_LOC/Driver/CMSIS</locationURI>
 		</link>
 		<link>
-			<name>Driver/STM32F4xx_HAL</name>
-			<type>2</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Driver/STM32F4xx_HAL</locationURI>
-		</link>
-		<link>
-			<name>Middleware/FreeRTOS</name>
+			<name>Lib/FreeRTOS</name>
 			<type>2</type>
 			<locationURI>PARENT-1-PROJECT_LOC/Middleware/FreeRTOS</locationURI>
+		</link>
+		<link>
+			<name>Lib/STM32F4xx_HAL</name>
+			<type>2</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Driver/STM32F4xx_HAL</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>
