@@ -1,6 +1,8 @@
 #MicroXplorer Configuration settings - do not modify
+CAN1.BS1=CAN_BS1_1TQ
+CAN1.BS2=CAN_BS2_1TQ
 CAN1.CalculateTimeQuantum=355.55555555555554
-CAN1.IPParameters=CalculateTimeQuantum
+CAN1.IPParameters=CalculateTimeQuantum,BS1,BS2
 File.Version=6
 I2C1.DutyCycle=I2C_DUTYCYCLE_2
 I2C1.I2C_Mode=I2C_Fast

@@ -3,7 +3,7 @@
 
 LedTask::LedTask() : CyclicTask((char*)"LED", 500, 1, configMINIMAL_STACK_SIZE)
 {
-
+	// FreeRTOS related stuff
 }
 
 LedTask* LedTask::Create()

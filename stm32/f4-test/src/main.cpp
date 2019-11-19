@@ -4,7 +4,7 @@
 
 int main(void)
 {
-	System* system = System::Get();
+	System* system = System::GetInstance();
 
 	LedTask::Create();
 

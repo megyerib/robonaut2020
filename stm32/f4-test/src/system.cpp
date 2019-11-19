@@ -12,7 +12,7 @@ System::System()
 	HAL_InitTick(TICK_INT_PRIORITY);
 }
 
-System* System::Get()
+System* System::GetInstance()
 {
 	static System instance;
 
