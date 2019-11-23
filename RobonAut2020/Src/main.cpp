@@ -29,7 +29,10 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+void * operator new( size_t size)
+{
+    return pvPortMalloc(size);
+}
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -109,11 +112,8 @@ int main(void)
   MX_USART6_UART_Init();
   /* USER CODE BEGIN 2 */
 
-  //HAL_TIM_PWM_Start(&htim12, TIM_CHANNEL_1);
-  //HAL_TIM_PWM_Start(&htim12, TIM_CHANNEL_2);
-  HAL_TIMEx_PWMN_Start(&htim8,  TIM_CHANNEL_1);
-
   __HAL_TIM_SET_COMPARE(&htim12, TIM_CHANNEL_1, 100);
+  __HAL_TIM_SET_COMPARE(&htim12, TIM_CHANNEL_2, 100);
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in freertos.c) */

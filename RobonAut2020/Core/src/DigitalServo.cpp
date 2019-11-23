@@ -20,8 +20,8 @@ DigitalServo::DigitalServo(TIM_HandleTypeDef* Htim, U32 Channel, ServoType Type,
     config.Gradient     = ((PI/180.0f) * (90.0f - 30.0f)/(config.Deg_90 - config.Deg_30));
     config.Y_intercept  = ((PI/180.0f) * (90.0f - config.Deg_90 * config.Gradient));
 
-    timer = new Timer(Htim, Channel, 1439, 249, isChNegated);
 
+    timer = new Timer(Htim, Channel, 1439U, 249, false);
     timer->Start_PWM();
 }
 

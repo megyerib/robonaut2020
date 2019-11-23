@@ -68,3 +68,16 @@ float Servo::GetSteerAngle(void)
 
     return radian;
 }
+
+void Servo::SetCalibration(U8 min,
+                           U8 deg30,
+                           U8 deg90,
+                           U8 deg150,
+                           U8 max)
+{
+    config.Deg_min = min;
+    config.Deg_30  = deg30;
+    config.Deg_90  = deg90;
+    config.Deg_150 = deg150;
+    config.Deg_max  = max;
+}

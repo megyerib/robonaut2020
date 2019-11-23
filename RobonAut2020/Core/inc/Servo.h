@@ -47,6 +47,12 @@ public:
      void  Disable(void);
      void  SetSteerAngle(float rad);
      float GetSteerAngle(void);
+
+     void SetCalibration(U8 min,
+                         U8 rad30,
+                         U8 rad90,
+                         U8 rad150,
+                         U8 max);
 };
 
 #endif /* SERVO_H_ */

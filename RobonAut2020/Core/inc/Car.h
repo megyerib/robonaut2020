@@ -11,6 +11,7 @@
 #include "Remote.h"
 #include "Steer.h"
 #include "Distance.h"
+#include "Pd_Controller.h"
 
 enum RobotState
 {

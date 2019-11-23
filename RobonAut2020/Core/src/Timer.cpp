@@ -22,7 +22,11 @@ Timer::Timer(TIM_HandleTypeDef* Htim, U32 Channel, U16 Prescaler, U16 Period, bo
     }
 
     timCfg.Prescaler = Prescaler;
+    htim->Init.Prescaler = Prescaler;
+
+
     timCfg.Period    = Period;
+    htim->Init.Period = Period;
 
     if (htim->Instance == TIM8)
     {

@@ -13,12 +13,12 @@
 
 void Task_Qualification::Init_Task_Qualification()
 {
-    xTaskCreate(Task_Qualification::Task_Qualification_Process,
+   /* xTaskCreate(Task_Qualification::Task_Qualification_Process,
                 "TASK_QUALI",
                 512,
                 NULL,
                 5,
-                NULL);
+                NULL);*/
 }
 
 void Task_Qualification::Task_Qualification_Process(void *pvParameters)
