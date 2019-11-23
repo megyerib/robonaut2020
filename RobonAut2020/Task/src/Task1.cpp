@@ -57,7 +57,7 @@ void Task1::Task1_Process(void *pvParameters)
     vTaskDelay(80);
 
     HAL_GPIO_WritePin(FREE3_LED_GPIO_Port, FREE3_LED_Pin, GPIO_PIN_SET);
-    Dev->comms_speed_khz = 100;
+    Dev->comms_speed_khz = 400;
     Dev->I2cHandle = &hi2c1;
     Dev->comms_type = 1;
     Dev->I2cDevAddr=0x52; /* default ToF sensor I2C address*/
