@@ -22,11 +22,11 @@ enum ServoType
 
 struct ServoConfig
 {
-    U16   Deg_min;
-    U16   Deg_30;
-    U16   Deg_90;
-    U16   Deg_150;
-    U16   Deg_max;
+    U16   Rad_min;
+    U16   Rad_30deg;
+    U16   Rad_90deg;
+    U16   Rad_150deg;
+    U16   Rad_max;
     float Gradient;
     float Y_intercept;
 };

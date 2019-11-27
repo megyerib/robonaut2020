@@ -34,7 +34,7 @@ void Controller::CalculateErrorValue(float processValue)
 {
     loop.process_value = processValue;
 
-    loop.error_value = loop.process_value - loop.setpoint;
+    loop.error_value = loop.setpoint - loop.process_value;
 }
 
 float Controller::GetControlValue(void)

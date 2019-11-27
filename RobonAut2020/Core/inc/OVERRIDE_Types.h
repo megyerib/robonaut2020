@@ -16,6 +16,8 @@ typedef 	uint32_t        U32;
 typedef     uint16_t        U16;
 typedef     uint8_t         U8;
 
+typedef     int16_t         S16;
+
 #define     PI              3.14159265359f
 
 

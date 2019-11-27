@@ -21,8 +21,6 @@ TOF_L1::TOF_L1()
 
     XSDN_Port = TOF_CS1_GPIO_Port;
     XSDN_Pin  = TOF_CS1_Pin;
-    IT_Port   = 0;          // TODO assign pin
-    IT_Pin    = 0;          // TODO assign pin
 }
 
 TOF_L1::TOF_L1(U8                   const Addr,
@@ -30,9 +28,7 @@ TOF_L1::TOF_L1(U8                   const Addr,
                I2C_HandleTypeDef*   const Hi2c,
                U32                  const TB_ms,
                GPIO_TypeDef*        const XsdnPort,
-               U16                  const XsdnPin,
-               GPIO_TypeDef*        const ItPort,
-               U16                  const ItPin)
+               U16                  const XsdnPin)
 {
     Dev->I2cDevAddr      = Addr;
     Dev->I2cHandle       = Hi2c;
@@ -44,8 +40,6 @@ TOF_L1::TOF_L1(U8                   const Addr,
 
     XSDN_Port = XsdnPort;
     XSDN_Pin  = XsdnPin;
-    IT_Port   = ItPort;
-    IT_Pin    = ItPin;
 }
 
 void TOF_L1::Init()
@@ -126,7 +120,7 @@ void TOF_L1::Process()
     }
 }
 
-U32 TOF_L1::GetDistance_mm(void)
+S16 TOF_L1::GetDistance_mm(void)
 {
     return RangingData.RangeMilliMeter;
 }

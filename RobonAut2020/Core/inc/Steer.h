@@ -42,16 +42,22 @@ public:
 
     //! Steering wheel:
     //!
-    //!               0deg
-    //!        +30deg  |   -30deg
-    //!            \   |   /
-    //!             \  |  /
-    //!              \ | /
-    //!    +90________\|/________-90deg
-    //!  Left end              Right end
+    //!                 0 rad
+    //!        0.52 rad   |   -0.52 rad
+    //!               \   |   /
+    //!                \  |  /
+    //!                 \ | /
+    //!  1.57 rad________\|/________-1.57 rad
+    //!  Left end                   Right end
     void rotateWheel(float angle)
     {
-        wheel_front->SetSteerAngle(angle);
+        float offset        = PI/2.0f;
+        float scale         = 1.0f;
+        float servo_angle;
+
+        servo_angle = (angle + offset) * scale;
+
+        wheel_front->SetSteerAngle(servo_angle);
     }
 
     float getWheelAngle(void)

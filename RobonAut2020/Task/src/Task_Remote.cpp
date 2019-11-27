@@ -16,12 +16,12 @@
 
 void Task_Remote::Init_Task_Remote()
 {
-    /*xTaskCreate(Task_Remote::Task_Remote_Process,
+    xTaskCreate(Task_Remote::Task_Remote_Process,
                 "TASK_REMOTE",
                 512,
                 NULL,
                 5,
-                NULL);*/
+                NULL);
 }
 
 void Task_Remote::Task_Remote_Process(void *pvParameters)

@@ -26,8 +26,6 @@ private:
 
     GPIO_TypeDef*   XSDN_Port;
     U16             XSDN_Pin;
-    GPIO_TypeDef*   IT_Port;
-    U16             IT_Pin;
 
 public:
     TOF_L1();
@@ -36,14 +34,12 @@ public:
            I2C_HandleTypeDef*   const Hi2c,
            U32                  const TB_ms,
            GPIO_TypeDef*        const XsdnPort,
-           U16                  const XsdnPin,
-           GPIO_TypeDef*        const ItPort,
-           U16                  const ItPin);
+           U16                  const XsdnPin);
 
     void Init();
     void Process();
 
-    U32  GetDistance_mm(void);
+    S16  GetDistance_mm(void);
 
     void Calibrate_Offset_300mm(void);
 };
