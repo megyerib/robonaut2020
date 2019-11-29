@@ -10,6 +10,7 @@ class Display
 
 public:
 	Display();
+	// Line structure -> Lighting LEDs on the sensor
 	void DisplayLinePos(Line l);
 
 private:

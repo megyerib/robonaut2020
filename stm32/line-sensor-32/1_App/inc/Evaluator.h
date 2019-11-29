@@ -6,6 +6,9 @@
 class Evaluator
 {
 public:
+	// Push an iteration of measurment data to the evaluator
 	virtual void Feed(AdcMeasType meas[SENSOR_SIZE]) = 0;
+
+	// Get the actual evaluated line
 	virtual Line GetLine() = 0;
 };

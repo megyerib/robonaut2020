@@ -40,7 +40,4 @@ int main(void)
 // TODO minden 2. vagy 3. LED világít
 // TODO nem blokkoló hívások
 // TODO Időmérés (usec)
-// TODO Makrók a különböző típusú szenzorokhoz
 // TODO ütemező
-// TODO system osztály
-// TODO magic konstansok kiszedése

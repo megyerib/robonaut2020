@@ -1,4 +1,5 @@
 #include "Display.h"
+#include "SensorCfg.h"
 
 Display::Display() : leds(10, 2)
 {
