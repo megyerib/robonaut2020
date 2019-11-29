@@ -1,12 +1,9 @@
 #include "StddevEval.h"
 #include <string.h>
 #include <math.h>
+#include <SensorCfg.h>
 
 #define THRESHOLD         200
-#define SENSOR_NUM         32
-
-#define CROSS_MIN_HIGHCNT   5
-#define CROSS_MIN_LINECNT   4
 
 StddevEval::StddevEval()
 {
@@ -29,7 +26,6 @@ Line StddevEval::GetLine()
 	Line ret;
 
 	// Filtering
-	removeSystematicError();
 	magicDiff(data, filtered);
 
 	// Average, standard deviation
@@ -127,7 +123,7 @@ int16_t StddevEval::ledPosToMm(uint8_t ledPos)
     return mm;
 }
 
-int32_t StddevEval::evalWeightedMean(uint32_t arr[SENSOR_NUM], uint32_t i) // TODO itt a hiba
+int32_t StddevEval::evalWeightedMean(uint32_t arr[SENSOR_SIZE], uint32_t i)
 {
     int32_t w1, w2, w3, div, ret;
 
@@ -187,29 +183,6 @@ uint32_t StddevEval::evalIsPeak(uint32_t* arr, uint32_t i, uint32_t mean, uint32
     }
 }
 
-int StddevEval::evalIsCross(uint32_t* arr, uint32_t threshold)
-{
-	int highCount = 0;
-	int ret = 0;
-
-	for (int i = 0; i < SENSOR_NUM; i++)
-	{
-		if (arr[i] < threshold)
-		{
-			highCount = 0;
-		}
-		else
-		{
-			highCount++;
-
-			if (highCount >= CROSS_MIN_HIGHCNT)
-				ret = 1;
-		}
-	}
-
-	return ret;
-}
-
 uint32_t StddevEval::mean(uint32_t* data, uint32_t num)
 {
     uint32_t sum = 0, i;
@@ -230,15 +203,4 @@ uint32_t StddevEval::standardDeviation(uint32_t* data, uint32_t num, uint32_t av
     var = sqsum / num;
 
     return sqrt(var);
-}
-
-void StddevEval::removeSystematicError()
-{
-	const int32_t correctionData[SENSOR_SIZE] =
-	{-31, -24, -29, -21, -26, -32, -30, -11, -9, -8, -1, -2, -18, -7, 12, 16, 32, 34, 26, 36, 29, 22, 33};
-
-	for (int i = 0; i < SENSOR_SIZE; i++)
-	{
-		data[i] -= correctionData[i];
-	}
 }
