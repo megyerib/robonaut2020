@@ -17,7 +17,7 @@ void StddevEval::Feed(AdcMeasType meas[SENSOR_SIZE])
 
 Line StddevEval::GetLine()
 {
-	uint32_t filtered[32];
+	uint32_t filtered[SENSOR_SIZE];
 	uint32_t i;
 	uint32_t avg;
 	uint32_t stdDev;
@@ -29,11 +29,11 @@ Line StddevEval::GetLine()
 	magicDiff(data, filtered);
 
 	// Average, standard deviation
-	avg = mean(filtered, 32);
-	stdDev = standardDeviation(filtered, 32, avg);
+	avg = mean(filtered, SENSOR_SIZE);
+	stdDev = standardDeviation(filtered, SENSOR_SIZE, avg);
 
 	// Sensor line
-	for (i = 0; i < 32; i++)
+	for (i = 0; i < SENSOR_SIZE; i++)
 	{
 		if (evalIsPeak(filtered, i, avg, stdDev))
 		{
@@ -50,10 +50,6 @@ Line StddevEval::GetLine()
 	ret.cnt = lineCnt > MAXLINES ? MAXLINES : lineCnt;
 
 	// TODO Cross
-	/*if (evalIsCross(filtered, avg + stdDev) || lineCnt > CROSS_MIN_LINECNT)
-	{
-		ret.cross = 1;
-	}*/
 	ret.cross = 0;
 
 	// Return
@@ -65,21 +61,23 @@ void StddevEval::magicDiff(uint32_t* src, uint32_t* dst)
 {
     int i;
 
-    dst[0] = max4_pos(
+    i = 0;
+    dst[i] = max4_pos(
         0,
         0,
-        src[0] - src[1],
-        src[0] - src[2]
+        src[i] - src[i+1],
+        src[i] - src[i+2]
     );
 
-    dst[1] = max4_pos(
+    i = 1;
+    dst[i] = max4_pos(
         0,
-        src[1] - src[1],
-        src[1] - src[2],
-        src[1] - src[3]
+        src[i] - src[i-1],
+        src[i] - src[i+1],
+        src[i] - src[i+2]
     );
 
-    for (i = 2; i < 30; i++)
+    for (i = 2; i < (SENSOR_SIZE - 2); i++)
     {
         dst[i] = max4_pos(
             src[i] - src[i-2],
@@ -89,16 +87,18 @@ void StddevEval::magicDiff(uint32_t* src, uint32_t* dst)
         );
     }
 
-    dst[30] = max4_pos(
-        src[30] - src[28],
-        src[30] - src[29],
-        src[30] - src[31],
+    i = SENSOR_SIZE - 2;
+    dst[i] = max4_pos(
+        src[i] - src[i-2],
+        src[i] - src[i-1],
+        src[i] - src[i+1],
         0
     );
 
-    dst[31] = max4_pos(
-        src[31] - src[29],
-        src[31] - src[30],
+    i = SENSOR_SIZE -1;
+    dst[i] = max4_pos(
+        src[i] - src[i-2],
+        src[i] - src[i-1],
         0,
         0
     );
@@ -135,13 +135,13 @@ int32_t StddevEval::evalWeightedMean(uint32_t arr[SENSOR_SIZE], uint32_t i)
 
        div = arr[0] + arr[1];
     }
-    else if (i == 31)
+    else if (i == (SENSOR_SIZE - 1))
     {
-        w1 = arr[30] * ledPosToMm(30);
-        w2 = arr[31] * ledPosToMm(31);
+        w1 = arr[SENSOR_SIZE - 2] * ledPosToMm(SENSOR_SIZE - 2);
+        w2 = arr[SENSOR_SIZE - 1] * ledPosToMm(SENSOR_SIZE - 1);
         w3 = 0;
 
-        div = arr[30] + arr[31];
+        div = arr[SENSOR_SIZE - 2] + arr[SENSOR_SIZE - 1];
     }
     else
     {
@@ -172,7 +172,7 @@ uint32_t StddevEval::evalIsPeak(uint32_t* arr, uint32_t i, uint32_t mean, uint32
     }
     else if (i == 31)
     {
-        return (arr[30] + THRESHOLD) < arr[31];
+        return (arr[SENSOR_SIZE - 2] + THRESHOLD) < arr[SENSOR_SIZE - 1];
     }
     else
     {

@@ -31,13 +31,4 @@
 
 #define IR_DIST_MM          9                               /* X distance of the IR sensors */
 #define MID_IR_POS_MM       (IR_DIST_MM*(SENSOR_SIZE-1)/2)  /* Distance from the leftmost sensor to the middle of the sensor*/
-
-#if (SENSOR_SIZE == 24)
-#define FIRST_SENSOR        8 /* Index of the first sensor to read (from 0) */
-#define LAST_SENSOR        31 /* Index of the last sensor to read (from 0) */
-#endif
-
-#if (SENSOR_SIZE == 32)
-#define FIRST_SENSOR        0 /* Index of the first sensor to read (from 0) */
-#define LAST_SENSOR        31 /* Index of the last sensor to read (from 0) */
-#endif
+#define GROUP_SIZE          8

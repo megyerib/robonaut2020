@@ -1,5 +1,4 @@
-#include "../inc/SensorMeasure.h"
-
+#include "SensorMeasure.h"
 #include "stm32f0xx_hal.h"
 #include <string.h>
 
@@ -30,9 +29,9 @@ void SensorMeasure::Measure(AdcInput input)
 
 	HAL_ADC_Start(&handle);
 
-	for (int i = 0; i < (SENSOR_SIZE / 8); i++)
+	for (int i = 0; i <= 4; i++)
 	{
-		HAL_ADC_PollForConversion(&handle, HAL_MAX_DELAY);
+		HAL_ADC_PollForConversion(&handle, 1 /* ms timeout */);
 		AdcMeasType meas = HAL_ADC_GetValue(&handle);
 
 		measurements[31-(i*8+input)] = meas; // TODO constants
@@ -43,10 +42,9 @@ void SensorMeasure::Measure(AdcInput input)
 
 void SensorMeasure::GetMeasurements(AdcMeasType* dest)
 {
-	size_t start = 0; // TODO multisize
-	size_t size  = SENSOR_SIZE*sizeof(AdcMeasType);
+	size_t size  = SENSOR_SIZE * sizeof(AdcMeasType);
 
-	memcpy(dest, &measurements[start], size);
+	memcpy(dest, measurements, size);
 }
 
 void SensorMeasure::InitMux()
@@ -73,18 +71,16 @@ void SensorMeasure::InitAdcGpio()
 	GPIO_InitTypeDef GPIO_InitStruct;
 
 	/**ADC GPIO Configuration
-   (PA0     ------> ADC_IN0) - disabled for small sensor
+    PA0     ------> ADC_IN0
 	PA1     ------> ADC_IN1
 	PA2     ------> ADC_IN2
 	PA3     ------> ADC_IN3
 	*/
-	GPIO_InitStruct.Pin = GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3;
-	if (SENSOR_SIZE == 32)
-	{
-		GPIO_InitStruct.Pin |= GPIO_PIN_0;
-	}
+
+	GPIO_InitStruct.Pin  = GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3;
 	GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
 	GPIO_InitStruct.Pull = GPIO_NOPULL;
+
 	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 }
 
@@ -115,30 +111,22 @@ void SensorMeasure::InitAdc()
 	HAL_ADC_Init(&handle);
 
 	sConfig.Rank = ADC_RANK_CHANNEL_NUMBER;
-	sConfig.SamplingTime = ADC_SAMPLETIME_55CYCLES_5;
+	sConfig.SamplingTime = ADC_SAMPLETIME_239CYCLES_5;
 	// ADC_SAMPLETIME_41CYCLES_5 is the smallest ok value
 
-	if (SENSOR_SIZE == 32)
+	const uint32_t AdcChannels[4] =
 	{
-		sConfig.Channel = ADC_CHANNEL_0;
+		ADC_CHANNEL_0,
+		ADC_CHANNEL_1,
+		ADC_CHANNEL_2,
+		ADC_CHANNEL_3
+	};
+
+	for (int i = 0; i <= 4; i++)
+	{
+		sConfig.Channel = AdcChannels[i];
 		HAL_ADC_ConfigChannel(&handle, &sConfig);
 	}
-
-	sConfig.Channel = ADC_CHANNEL_1;
-	HAL_ADC_ConfigChannel(&handle, &sConfig);
-
-	sConfig.Channel = ADC_CHANNEL_2;
-	HAL_ADC_ConfigChannel(&handle, &sConfig);
-
-	sConfig.Channel = ADC_CHANNEL_3;
-	HAL_ADC_ConfigChannel(&handle, &sConfig);
-
-	// TODO are they needed?
-	/*sConfig.Channel = ADC_CHANNEL_TEMPSENSOR;
-	HAL_ADC_ConfigChannel(&handle, &sConfig);
-
-	sConfig.Channel = ADC_CHANNEL_VREFINT;
-	HAL_ADC_ConfigChannel(&handle, &sConfig);*/
 }
 
 void SensorMeasure::SetMux(AdcInput input)

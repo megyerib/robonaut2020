@@ -6,6 +6,9 @@
 #include "SensorDriver.h"
 #include "System.h"
 
+#include "SensorCfg.h"
+#include "SensorSettings.h"
+
 int main(void)
 {
 	System::Init();
@@ -15,17 +18,18 @@ int main(void)
 	StddevEval eval;
 	Display d;
 
-	AdcMeasType measurements[32];
+	AdcMeasType measurements[SENSOR_SIZE];
 	Line l;
 
 	while (1)
 	{
-		for (int i = 0; i < 4; i++)
+		for (int i = 0; i < IR_GROUP_SIZE; i++)
 		{
-			sensors.SetSensors(4, i);
-			HAL_Delay(1);
-			adc->Measure((AdcInput) i);
-			adc->Measure((AdcInput)(i+4));
+			sensors.SetSensors(IR_GROUP_SIZE, i);
+			HAL_Delay(1); // TODO us delay
+
+			adc->Measure((AdcInput)(i+0));
+			adc->Measure((AdcInput)(i+IR_GROUP_SIZE));
 		}
 
 		adc->GetMeasurements(measurements);
@@ -41,3 +45,4 @@ int main(void)
 // TODO nem blokkoló hívások
 // TODO Időmérés (usec)
 // TODO ütemező
+// TODO Sensor settings, cfg
