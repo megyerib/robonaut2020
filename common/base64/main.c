@@ -2,35 +2,72 @@
 #include "base64.h"
 #include <string.h>
 
+#define STR_MAX_LEN 30
+
 typedef struct
 {
-    char decoded[30];
-    size_t decoded_len;
-
-    char encoded[30];
-    size_t encoded_len;
+    char decoded[STR_MAX_LEN];
+    char encoded[STR_MAX_LEN];
 }
 TEST_CASE;
 
-// TODO write tests
+static TEST_CASE TestCases[] =
+{
+    {"",             ""},
+    {"A",            "QQ"},
+    {"AS",           "QVM"},
+    {"ASD",          "QVNE"},
+    {"ASDL",         "QVNETA"},
+    {"ASDLO",        "QVNETE8"},
+    {"ASDLOL",       "QVNETE9M"},
+    {"Hello World!", "SGVsbG8gV29ybGQh"}
+};
 
 int main()
 {
-    char str[] = "Hello World!";
+    printf("ENCODING --------------\n"); // ---------------------------------------------------
 
-    char encoded[30];
-    size_t encoded_len = 0;
+    for (size_t i = 0; i < (sizeof(TestCases)/sizeof(TEST_CASE)); i++)
+    {
+        char* decoded = TestCases[i].decoded;
+        char encoded[30] = {0};
+        size_t encoded_len = 0;
 
-    base64_encode((uint8_t*)str, (uint8_t*)encoded, strlen(str), &encoded_len);
+        base64_encode((uint8_t*)decoded, (uint8_t*)encoded, strlen(decoded), &encoded_len);
 
-    printf("%s\nLen: %d\n", (char*)encoded, (int)encoded_len);
+        if (strncmp(encoded, TestCases[i].encoded, STR_MAX_LEN) == 0 &&
+            encoded_len == strlen(encoded) &&
+            encoded_len == strlen(TestCases[i].encoded))
+        {
+            printf("Test %d passed\n", (int)i);
+        }
+        else
+        {
+            printf("Test %d FAILED !\n", (int)i);
+        }
+    }
 
-    char decoded[30];
-    size_t decoded_len = 0;
+    printf("DECODING --------------\n"); // ---------------------------------------------------
 
-    base64_decode((uint8_t*)encoded, (uint8_t*)decoded, encoded_len, &decoded_len);
+    for (size_t i = 0; i < (sizeof(TestCases)/sizeof(TEST_CASE)); i++)
+    {
+        char* encoded = TestCases[i].encoded;
+        char decoded[30] = {0};
+        size_t decoded_len = 0;
 
-    printf("%s\nLen: %d\n", (char*)decoded, (int)decoded_len);
+        base64_decode((uint8_t*)encoded, (uint8_t*)decoded, strlen(encoded), &decoded_len);
+
+        if (strncmp(decoded, TestCases[i].decoded, STR_MAX_LEN) == 0 &&
+            decoded_len == strlen(decoded) &&
+            decoded_len == strlen(TestCases[i].decoded))
+        {
+            printf("Test %d passed\n", (int)i);
+        }
+        else
+        {
+            printf("Test %d FAILED !\n", (int)i);
+        }
+    }
 
     return 0;
 }

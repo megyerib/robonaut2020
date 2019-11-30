@@ -24,7 +24,6 @@ bool ShiftReg::Display(void* data, size_t size)
 	{
 		spi->Send(data, size);
 
-		// TODO non-blocking!
 		while(!spi->isReady());
 
 		HAL_GPIO_WritePin(GPIOB, LE_Pin, GPIO_PIN_SET);

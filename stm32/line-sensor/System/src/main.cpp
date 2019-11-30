@@ -8,6 +8,7 @@
 
 #include "SensorCfg.h"
 #include "SensorSettings.h"
+#include "Comm.h"
 
 int main(void)
 {
@@ -17,6 +18,7 @@ int main(void)
 	SensorDriver sensors;
 	StddevEval eval;
 	Display d;
+	Comm* comm = Comm::GetInstance();
 
 	AdcMeasType measurements[SENSOR_SIZE];
 	Line l;
@@ -37,6 +39,8 @@ int main(void)
 		eval.Feed(measurements);
 		l = eval.GetLine();
 		d.DisplayLinePos(l);
+
+		comm->SendLine(&l);
 	}
 }
 
@@ -46,3 +50,4 @@ int main(void)
 // TODO Időmérés (usec)
 // TODO ütemező
 // TODO Sensor settings, cfg
+// TODO NVIC prioritások

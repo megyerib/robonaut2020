@@ -34,7 +34,7 @@ void SensorMeasure::Measure(AdcInput input)
 		HAL_ADC_PollForConversion(&handle, 1 /* ms timeout */);
 		AdcMeasType meas = HAL_ADC_GetValue(&handle);
 
-		measurements[31-(i*8+input)] = meas; // TODO constants
+		measurements[31-(i*8+input)] = meas;
 	}
 
 	HAL_ADC_Stop(&handle);

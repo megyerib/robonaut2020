@@ -10,7 +10,7 @@
 
 class Spi
 {
-	static SPI_HandleTypeDef handle; // TODO remove static
+	static SPI_HandleTypeDef handle;
 	uint8_t localBuffer[LOCAL_BUFFER_SIZE];
 
 	Spi();

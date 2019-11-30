@@ -1,9 +1,11 @@
 #include "Comm.h"
 #include "base64.h"
 
+#define OUTPUT_DATA_SIZE 30
+
 Comm::Comm()
 {
-
+	uart = Uart::GetInstance();
 }
 
 Comm* Comm::GetInstance()
@@ -13,7 +15,15 @@ Comm* Comm::GetInstance()
 	return &instance;
 }
 
-void Comm::SendLine(Line l)
+void Comm::SendLine(Line* l)
 {
+	uint8_t buf[OUTPUT_DATA_SIZE];
+	size_t buflen = 0;
 
+	base64_encode((uint8_t*)l, buf, sizeof(Line), &buflen);
+
+	buf[buflen] = '\n';
+	buflen++;
+
+	uart->Send(buf, buflen);
 }

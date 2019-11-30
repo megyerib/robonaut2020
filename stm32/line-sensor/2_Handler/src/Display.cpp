@@ -3,8 +3,7 @@
 
 Display::Display() : leds(10, 2)
 {
-	uint32_t buf = 0;
-	leds.Display(&buf, 4); // TODO maybe make a 'clear' function
+	Clear();
 }
 
 void Display::DisplayLinePos(Line l)
@@ -21,9 +20,16 @@ void Display::DisplayLinePos(Line l)
 	leds.Display(&ledval, GROUP_CNT);
 }
 
-uint8_t Display::mmToLedPos(int16_t mm) // TODO typedef for this?
+uint8_t Display::mmToLedPos(int16_t mm)
 {
     uint8_t ledPos = (MID_IR_POS_MM - mm) / IR_DIST_MM;
 
     return ledPos;
+}
+
+void Display::Clear()
+{
+	uint32_t buf = 0;
+
+	leds.Display((uint8_t*)&buf, GROUP_CNT);
 }
