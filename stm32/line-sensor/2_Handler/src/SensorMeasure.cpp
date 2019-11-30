@@ -122,7 +122,7 @@ void SensorMeasure::InitAdc()
 		ADC_CHANNEL_3
 	};
 
-	for (int i = 0; i <= 4; i++)
+	for (int i = 0; i < 4; i++)
 	{
 		sConfig.Channel = AdcChannels[i];
 		HAL_ADC_ConfigChannel(&handle, &sConfig);

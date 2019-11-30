@@ -16,6 +16,7 @@ build-*
 
 Debug/
 Release/
+Release*/
 
 .metadata
 bin/
