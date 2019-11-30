@@ -18,7 +18,7 @@ void Display::DisplayLinePos(Line l)
 		ledval |= 0b11 << ledpos;
 	}
 
-	leds.Display(&ledval, 4);
+	leds.Display(&ledval, GROUP_CNT);
 }
 
 uint8_t Display::mmToLedPos(int16_t mm) // TODO typedef for this?

@@ -29,6 +29,14 @@
 
 // CONFIGURATION -------------------------------------------------------------------------------------------------------
 
+#if (SENSOR_SIZE == 24)
+#define GROUP_CNT           3
+#endif
+
+#if (SENSOR_SIZE == 32)
+#define GROUP_CNT           4
+#endif
+
 #define IR_DIST_MM          9                               /* X distance of the IR sensors */
 #define MID_IR_POS_MM       (IR_DIST_MM*(SENSOR_SIZE-1)/2)  /* Distance from the leftmost sensor to the middle of the sensor*/
 #define GROUP_SIZE          8

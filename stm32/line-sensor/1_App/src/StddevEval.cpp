@@ -59,49 +59,24 @@ Line StddevEval::GetLine()
 // A 4 legközelebbi szomszédtól vett legnagyobb különbség, ha pozitív, egyébként 0.
 void StddevEval::magicDiff(uint32_t* src, uint32_t* dst)
 {
-    int i;
+    uint32_t padded[SENSOR_SIZE + 4] = {0}; // Two padding values with value 0 on each side
 
-    i = 0;
-    dst[i] = max4_pos(
-        0,
-        0,
-        src[i] - src[i+1],
-        src[i] - src[i+2]
-    );
+    memcpy(&padded[2], src, SENSOR_SIZE * sizeof(uint32_t));
 
-    i = 1;
-    dst[i] = max4_pos(
-        0,
-        src[i] - src[i-1],
-        src[i] - src[i+1],
-        src[i] - src[i+2]
-    );
+    // padded | 0 | 1 | 2 | 3 | 4 | 5 | ...
+    //          *   *   *   *   *
+    //                  *
+    // dst            | 0 | 1 | 2 | 3 | ...
 
-    for (i = 2; i < (SENSOR_SIZE - 2); i++)
-    {
-        dst[i] = max4_pos(
-            src[i] - src[i-2],
-            src[i] - src[i-1],
-            src[i] - src[i+1],
-            src[i] - src[i+2]
-        );
-    }
-
-    i = SENSOR_SIZE - 2;
-    dst[i] = max4_pos(
-        src[i] - src[i-2],
-        src[i] - src[i-1],
-        src[i] - src[i+1],
-        0
-    );
-
-    i = SENSOR_SIZE -1;
-    dst[i] = max4_pos(
-        src[i] - src[i-2],
-        src[i] - src[i-1],
-        0,
-        0
-    );
+    for (int i = 0; i < SENSOR_SIZE; i++)
+	{
+		dst[i] = max4_pos(
+			padded[i+2] - padded[i],
+			padded[i+2] - padded[i+1],
+			padded[i+2] - padded[i+3],
+			padded[i+2] - padded[i+4]
+		);
+	}
 }
 
 // A 4 érték közül a legnagyobbal tér vissza, ha negatív, akkor 0-val.
@@ -127,36 +102,26 @@ int32_t StddevEval::evalWeightedMean(uint32_t arr[SENSOR_SIZE], uint32_t i)
 {
     int32_t w1, w2, w3, div, ret;
 
-    if (i == 0)
-    {
-       w1 = 0;
-       w2 = arr[0] * ledPosToMm(0);
-       w3 = arr[1] * ledPosToMm(1);
+    uint32_t padded[SENSOR_SIZE + 2] = {0};
+    memcpy(&padded[1], arr, SENSOR_SIZE * sizeof(uint32_t));
 
-       div = arr[0] + arr[1];
-    }
-    else if (i == (SENSOR_SIZE - 1))
-    {
-        w1 = arr[SENSOR_SIZE - 2] * ledPosToMm(SENSOR_SIZE - 2);
-        w2 = arr[SENSOR_SIZE - 1] * ledPosToMm(SENSOR_SIZE - 1);
-        w3 = 0;
+    // padded | 0 | 1 | 2 | 3 | ...
+	//          *   *   *
+	//              *
+	// arr        | 0 | 1 | 2 | ...
 
-        div = arr[SENSOR_SIZE - 2] + arr[SENSOR_SIZE - 1];
-    }
-    else
-    {
-        w1 = arr[i-1] * ledPosToMm(i-1);
-        w2 = arr[i  ] * ledPosToMm(i  );
-        w3 = arr[i+1] * ledPosToMm(i+1);
+	w1 = padded[i+0] * ledPosToMm(i-1);
+	w2 = padded[i+1] * ledPosToMm(i+0);
+	w3 = padded[i+2] * ledPosToMm(i+1);
 
-        div = arr[i-1] + arr[i] + arr[i+1];
-    }
+	div = padded[i+0] + padded[i+1] + padded[i+2];
 
     ret = (w1 + w2 + w3) / div;
 
     return ret;
 }
 
+// Evaluates if there is a peak on the point specified by 'i'
 uint32_t StddevEval::evalIsPeak(uint32_t* arr, uint32_t i, uint32_t mean, uint32_t stdDev)
 {
     // Threshold
