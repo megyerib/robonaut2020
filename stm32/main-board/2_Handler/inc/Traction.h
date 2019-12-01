@@ -22,6 +22,8 @@ public:
 
 private:
 	MotorUart* uart;
+	float targetSpeed;
+	TractionMode mode;
 
 	Traction();
 	void SetDutyCycle(float d /* % [-100;+100] */);

@@ -10,6 +10,8 @@ int main(void)
 	TrackTask    :: Init();
 	TractionTask :: Init();
 
+	TestTask     :: Init();
+
 	system->OsStart();
 
 	while (1);

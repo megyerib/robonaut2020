@@ -1,17 +1,16 @@
 #pragma once
 
-#include <stdint.h>
 #include "stm32f4xx_hal.h"
 
-class Time
+class EncoderHw
 {
 public:
-	static Time* GetInstance();
-	uint32_t GetTime(); /* us */
+	static EncoderHw* GetInstance();
+	uint32_t GetCounterValue();
 
 private:
 	TIM_HandleTypeDef handle;
 
-	Time();
+	EncoderHw();
 	void InitTimer();
 };

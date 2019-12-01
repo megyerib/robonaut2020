@@ -14,12 +14,12 @@ Traction* Traction::GetInstance()
 
 void Traction::SetSpeed(float speed /* m/s */)
 {
-
+	targetSpeed = speed;
 }
 
 void Traction::SetMode(TractionMode mode)
 {
-
+	this->mode = mode;
 }
 
 void Traction::SetDutyCycle(float d /* % [-100;+100] */)
