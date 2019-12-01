@@ -1,13 +1,13 @@
 #pragma once
 
+#include <MotorUart.h>
 #include "CyclicTask.h"
-#include "ExtUart3.h"
 
 class TestTask : public CyclicTask
 {
 	TestTask();
 
-	ExtUart3* uart;
+	MotorUart* uart;
 
 	void TaskInit() override;
 	void TaskFunction() override;

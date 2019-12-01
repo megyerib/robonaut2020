@@ -4,7 +4,7 @@
 
 #define BUFFER_MAX_SIZE  30
 
-class ExtUart3 : public Stm32Uart
+class LsUart5 : public Stm32Uart
 {
 	uint8_t txBuffer[BUFFER_MAX_SIZE];
 	size_t txBufSize = 0;
@@ -15,14 +15,14 @@ class ExtUart3 : public Stm32Uart
 	uint8_t rxCpltBuffer[BUFFER_MAX_SIZE];
 	size_t  rxCpltBufSize = 0;
 
-	ExtUart3();
+	LsUart5();
 
 	void TxCompleteCallback() override;
 	void RxCompleteCallback() override;
 	void Init();
 
 public:
-	static ExtUart3* GetInstance();
+	static LsUart5* GetInstance();
 
 	void GetMessage(uint8_t* dst, size_t* len);
 

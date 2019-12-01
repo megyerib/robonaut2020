@@ -1,21 +1,21 @@
-#include <ExtUart3.h>
+#include <LsUart5.h>
 #include <cstring>
 
-ExtUart3::ExtUart3() : Stm32Uart(Uart3)
+LsUart5::LsUart5() : Stm32Uart(Uart5)
 {
 	Init();
 
 	HAL_UART_Receive_IT(&handle, &rxBuffer[rxBufSize], 1);
 }
 
-ExtUart3* ExtUart3::GetInstance()
+LsUart5* LsUart5::GetInstance()
 {
-	static ExtUart3 instance;
+	static LsUart5 instance;
 
 	return &instance;
 }
 
-void ExtUart3::Send(uint8_t* buffer, size_t size)
+void LsUart5::Send(uint8_t* buffer, size_t size)
 {
 	if (size > BUFFER_MAX_SIZE)
 	{
@@ -28,12 +28,12 @@ void ExtUart3::Send(uint8_t* buffer, size_t size)
 	HAL_UART_Transmit_IT(&handle, txBuffer, txBufSize);
 }
 
-void ExtUart3::TxCompleteCallback()
+void LsUart5::TxCompleteCallback()
 {
 
 }
 
-void ExtUart3::RxCompleteCallback()
+void LsUart5::RxCompleteCallback()
 {
 	if (rxBuffer[rxBufSize] != '\n')
 	{
@@ -54,7 +54,7 @@ void ExtUart3::RxCompleteCallback()
 	HAL_UART_Receive_IT(&handle, &rxBuffer[rxBufSize], 1);
 }
 
-void ExtUart3::GetMessage(uint8_t* dst, size_t* len)
+void LsUart5::GetMessage(uint8_t* dst, size_t* len)
 {
 	__disable_irq();
 
@@ -65,35 +65,43 @@ void ExtUart3::GetMessage(uint8_t* dst, size_t* len)
 	__enable_irq();
 }
 
-void ExtUart3::Init()
+void LsUart5::Init()
 {
 	GPIO_InitTypeDef GPIO_InitStruct = {0};
 
 	// GPIO --------------------------------------------------------------------
 
 	__HAL_RCC_GPIOC_CLK_ENABLE();
-	/**USART3 GPIO Configuration
-	PC10     ------> USART3_TX
-	PC11     ------> USART3_RX
+	__HAL_RCC_GPIOD_CLK_ENABLE();
+	/**UART5 GPIO Configuration
+	PC12     ------> UART5_TX
+	PD2      ------> UART5_RX
 	*/
-	GPIO_InitStruct.Pin       = GPIO_PIN_10|GPIO_PIN_11;
+	GPIO_InitStruct.Pin       = GPIO_PIN_12;
 	GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;
 	GPIO_InitStruct.Pull      = GPIO_PULLUP;
 	GPIO_InitStruct.Speed     = GPIO_SPEED_FREQ_VERY_HIGH;
-	GPIO_InitStruct.Alternate = GPIO_AF7_USART3;
+	GPIO_InitStruct.Alternate = GPIO_AF8_UART5;
 	HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+	GPIO_InitStruct.Pin       = GPIO_PIN_2;
+	GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;
+	GPIO_InitStruct.Pull      = GPIO_PULLUP;
+	GPIO_InitStruct.Speed     = GPIO_SPEED_FREQ_VERY_HIGH;
+	GPIO_InitStruct.Alternate = GPIO_AF8_UART5;
+	HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
 	// USART peripheral --------------------------------------------------------
 
-	__HAL_RCC_USART3_CLK_ENABLE();
+	__HAL_RCC_UART5_CLK_ENABLE();
 
-	handle.Instance          = USART3;
-	handle.Init.BaudRate     = 115200;
-	handle.Init.WordLength   = UART_WORDLENGTH_8B;
-	handle.Init.StopBits     = UART_STOPBITS_1;
-	handle.Init.Parity       = UART_PARITY_NONE;
-	handle.Init.Mode         = UART_MODE_TX_RX;
-	handle.Init.HwFlowCtl    = UART_HWCONTROL_NONE;
+	handle.Instance = UART5;
+	handle.Init.BaudRate = 115200;
+	handle.Init.WordLength = UART_WORDLENGTH_8B;
+	handle.Init.StopBits = UART_STOPBITS_1;
+	handle.Init.Parity = UART_PARITY_NONE;
+	handle.Init.Mode = UART_MODE_TX_RX;
+	handle.Init.HwFlowCtl = UART_HWCONTROL_NONE;
 	handle.Init.OverSampling = UART_OVERSAMPLING_16;
 
 	if (HAL_UART_Init(&handle) != HAL_OK)
@@ -103,6 +111,6 @@ void ExtUart3::Init()
 
 	// Interrupt enable --------------------------------------------------------
 
-	HAL_NVIC_SetPriority(USART3_IRQn, 0, 0);
-	HAL_NVIC_EnableIRQ(USART3_IRQn);
+	HAL_NVIC_SetPriority(UART5_IRQn, 0, 0);
+	HAL_NVIC_EnableIRQ(UART5_IRQn);
 }

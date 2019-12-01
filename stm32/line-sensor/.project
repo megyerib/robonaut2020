@@ -30,14 +30,24 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>4_Driver/CMSIS</name>
+			<name>Lib/CMSIS</name>
 			<type>2</type>
 			<locationURI>copy_PARENT/Driver/CMSIS</locationURI>
 		</link>
 		<link>
-			<name>4_Driver/STM32F0xx_HAL</name>
+			<name>Lib/STM32F0xx_HAL</name>
 			<type>2</type>
 			<locationURI>copy_PARENT/Driver/STM32F0xx_HAL</locationURI>
+		</link>
+		<link>
+			<name>Lib/inc</name>
+			<type>2</type>
+			<locationURI>PARENT-2-PROJECT_LOC/common/inc</locationURI>
+		</link>
+		<link>
+			<name>Lib/src</name>
+			<type>2</type>
+			<locationURI>PARENT-2-PROJECT_LOC/common/src</locationURI>
 		</link>
 	</linkedResources>
 	<variableList>
