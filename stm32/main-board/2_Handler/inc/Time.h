@@ -7,4 +7,7 @@ class Time
 public:
 	static Time* GetInstance();
 	uint32_t GetTime(); /* us */
+
+private:
+	Time();
 };

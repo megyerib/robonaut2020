@@ -39,7 +39,7 @@ void StarterUart::Init()
 	__HAL_RCC_GPIOA_CLK_ENABLE();
 
 	/**USART1 GPIO Configuration
-	PA9     ------> USART1_TX
+	PA9      ------> USART1_TX
 	PA10     ------> USART1_RX
 	*/
 	GPIO_InitStruct.Pin       = GPIO_PIN_9|GPIO_PIN_10;

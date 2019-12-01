@@ -1,7 +1,14 @@
 #pragma once
 
+#include "LsUart3.h"
+#include "LsUart5.h"
+#include "Line.h"
+
+#define LINE_SAMPLING_CYCLE    5 /* ms */
+
 typedef enum
 {
+	None,
 	Single,
 	Acceleration,
 	Braking
@@ -23,4 +30,18 @@ public:
 	TrackType GetTrackType();
 	float GetFrontLine(); /* m */
 	float GetRearLine(); /* m */
+	void Cycle(); // For the OS task
+
+private:
+	LsUart3* uartFront;
+	LsUart5* uartRear;
+
+	Line frontLine = {0};
+	Line rearLine = {0};
+
+	TrackDetector();
+	void GetFrontLineData();
+	void GetRearLineData();
 };
+
+// TODO OS task

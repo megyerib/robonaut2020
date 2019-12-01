@@ -4,7 +4,7 @@ typedef enum
 {
 	DualLineFollow,
 	SingleLineFollow,
-	Free,
+	Free,             // Angles are set manually
 	Reverse
 	// ...
 }
@@ -17,4 +17,8 @@ public:
 	void SetMode(SteeringMode mode);
 	void SetLine(float front /* m */, float rear /* m */); // For LineFollow modes
 	void SetAngle(float front /* rad */, float rear /* rad */); // For Free mode
+	void Process();
+
+private:
+	Steering();
 };
