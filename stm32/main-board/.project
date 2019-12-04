@@ -30,17 +30,22 @@
 		<link>
 			<name>Lib/CMSIS</name>
 			<type>2</type>
-			<locationURI>copy_PARENT/Driver/CMSIS</locationURI>
+			<location>C:/_Repos/robonaut2020/stm32/Driver/CMSIS</location>
+		</link>
+		<link>
+			<name>Lib/Cots</name>
+			<type>2</type>
+			<location>C:/_Repos/robonaut2020/stm32/Cots</location>
 		</link>
 		<link>
 			<name>Lib/FreeRTOS</name>
 			<type>2</type>
-			<locationURI>copy_PARENT/Middleware/FreeRTOS</locationURI>
+			<location>C:/_Repos/robonaut2020/stm32/Middleware/FreeRTOS</location>
 		</link>
 		<link>
 			<name>Lib/STM32F4xx_HAL</name>
 			<type>2</type>
-			<locationURI>copy_PARENT/Driver/STM32F4xx_HAL</locationURI>
+			<location>C:/_Repos/robonaut2020/stm32/Driver/STM32F4xx_HAL</location>
 		</link>
 		<link>
 			<name>Lib/inc</name>

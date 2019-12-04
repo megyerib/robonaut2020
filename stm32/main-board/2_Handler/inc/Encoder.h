@@ -1,7 +1,7 @@
 #pragma once
 
+#include "Timepiece.h"
 #include "EncoderHw.h"
-#include "Time.h"
 
 #define ENCODER_SAMPLING_PERIOD    5 /* ms */
 // The accurate timing values will be read from the us timer.
@@ -25,7 +25,7 @@ public:
 
 private:
 	EncoderHw* enc;
-	Time* usTimer;
+	Timepiece* usTimer;
 
 	EncMeasPoint mPoints[ENCODER_MEASURE_POINTS];
 	size_t mPointIndex = 0;

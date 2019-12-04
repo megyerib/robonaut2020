@@ -6,7 +6,7 @@
 Encoder::Encoder()
 {
 	enc      = EncoderHw::GetInstance();
-	usTimer  = Time::GetInstance();
+	usTimer  = Timepiece::GetInstance();
 }
 
 Encoder* Encoder::GetInstance()

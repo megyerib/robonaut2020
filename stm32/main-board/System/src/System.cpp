@@ -1,10 +1,10 @@
+#include "Timepiece.h"
 #include "System.h"
 #include "stm32f4xx_hal.h"
 #include "stm32f4xx_hal_pwr.h"
 #include "stm32f4xx_hal_pwr_ex.h"
 #include "FreeRTOS.h"
 #include "task.h"
-#include "Time.h"
 
 System::System()
 {
@@ -14,7 +14,7 @@ System::System()
 
 	HAL_InitTick(TICK_INT_PRIORITY);
 
-	Time::GetInstance(); // Init system timer
+	Timepiece::GetInstance(); // Init system timer
 }
 
 System* System::GetInstance()
