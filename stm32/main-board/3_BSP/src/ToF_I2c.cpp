@@ -21,10 +21,6 @@ void ToF_I2c::Init()
 {
     handle = &tof_handle;
 
-    ConfigureHandle();
-
-    ConfigureGpio();
-
     // I2C1 clock enable
     __HAL_RCC_I2C1_CLK_ENABLE();
 
@@ -33,6 +29,10 @@ void ToF_I2c::Init()
     HAL_NVIC_EnableIRQ(I2C1_EV_IRQn);
     HAL_NVIC_SetPriority(I2C1_ER_IRQn, 5, 0);
     HAL_NVIC_EnableIRQ(I2C1_ER_IRQn);
+
+    ConfigureHandle();
+
+    ConfigureGpio();
 }
 
 void ToF_I2c::ConfigureHandle()

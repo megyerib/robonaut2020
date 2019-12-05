@@ -94,45 +94,37 @@ void TOF_L1::Init()
 
 void TOF_L1::Process()
 {
-    uint16_t wordData = 0x00;
-    uint8_t pdata[10];
-    pdata[0] = 0x01;
-    pdata[1] = 0x10;
-    Dev->I2cDevAddr = 0x52;
-    status = VL53L1_RdWord(Dev, 0x0110, &wordData);
-    HAL_I2C_Master_Transmit(dev.I2cHandle, 0x52, pdata, 2, 2000);
-//    status = VL53L1_StartMeasurement(Dev);
-//    status = VL53L1_WaitMeasurementDataReady(Dev);
-//    if(status == VL53L1_ERROR_NONE)
-//    {
-//        // DEB
-//        HAL_GPIO_WritePin(FREE2_GPIO_Port, FREE2_Pin, GPIO_PIN_SET);
-//
-//        status = VL53L1_GetRangingMeasurementData(Dev, &RangingData);
-//        if (status == VL53L1_ERROR_NONE)
-//        {
-//            uint16_t milimeter = RangingData.RangeMilliMeter;
-//            if (milimeter > 300)
-//            {
-//                HAL_GPIO_WritePin(FREE1_GPIO_Port, FREE1_Pin, GPIO_PIN_SET);
-//            }
-//            else
-//            {
-//                HAL_GPIO_WritePin(FREE1_GPIO_Port, FREE1_Pin, GPIO_PIN_RESET);
-//            }
-//        }
-//        else
-//        {
-//            HAL_GPIO_WritePin(FREE1_GPIO_Port, FREE1_Pin, GPIO_PIN_RESET);
-//        }
-//        status = VL53L1_ClearInterruptAndStartMeasurement(Dev);
-//    }
-//    else
-//    {
-//        // DEB
-//        HAL_GPIO_WritePin(FREE2_GPIO_Port, FREE2_Pin, GPIO_PIN_RESET);
-//    }
-    HAL_GPIO_WritePin(FREE3_LED_GPIO_Port, FREE3_LED_Pin, GPIO_PIN_SET);
+    status = VL53L1_StartMeasurement(Dev);
+    status = VL53L1_WaitMeasurementDataReady(Dev);
+    if(status == VL53L1_ERROR_NONE)
+    {
+        // DEB
+        HAL_GPIO_WritePin(FREE2_GPIO_Port, FREE2_Pin, GPIO_PIN_SET);
+
+        status = VL53L1_GetRangingMeasurementData(Dev, &RangingData);
+        if (status == VL53L1_ERROR_NONE)
+        {
+            uint16_t milimeter = RangingData.RangeMilliMeter;
+            if (milimeter > 300)
+            {
+                HAL_GPIO_WritePin(FREE1_GPIO_Port, FREE1_Pin, GPIO_PIN_SET);
+            }
+            else
+            {
+                HAL_GPIO_WritePin(FREE1_GPIO_Port, FREE1_Pin, GPIO_PIN_RESET);
+            }
+        }
+        else
+        {
+            HAL_GPIO_WritePin(FREE1_GPIO_Port, FREE1_Pin, GPIO_PIN_RESET);
+        }
+        status = VL53L1_ClearInterruptAndStartMeasurement(Dev);
+    }
+    else
+    {
+        // DEB
+        HAL_GPIO_WritePin(FREE2_GPIO_Port, FREE2_Pin, GPIO_PIN_RESET);
+    }
 }
 
 uint16_t TOF_L1::GetDistance_mm(void)
