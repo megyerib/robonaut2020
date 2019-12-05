@@ -1,5 +1,6 @@
 #include <LsUart3.h>
 #include <cstring>
+#include "NvicPrio.h"
 
 LsUart3::LsUart3() : Stm32Uart(Uart3)
 {
@@ -103,6 +104,6 @@ void LsUart3::Init()
 
 	// Interrupt enable --------------------------------------------------------
 
-	HAL_NVIC_SetPriority(USART3_IRQn, 0, 0);
+	HAL_NVIC_SetPriority(USART3_IRQn, UART3_NVIC_PRIO, 0);
 	HAL_NVIC_EnableIRQ(USART3_IRQn);
 }

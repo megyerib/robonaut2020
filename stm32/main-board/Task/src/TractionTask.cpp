@@ -1,6 +1,7 @@
 #include "TractionTask.h"
+#include "TaskPrio.h"
 
-TractionTask::TractionTask() : CyclicTask((char*)"Traction", TRACTION_CONTROL_CYCLE, 1, configMINIMAL_STACK_SIZE)
+TractionTask::TractionTask() : CyclicTask((char*)"Traction", TRACTION_CONTROL_CYCLE, TRACTION_TASK_PRIO, configMINIMAL_STACK_SIZE)
 {
 
 }

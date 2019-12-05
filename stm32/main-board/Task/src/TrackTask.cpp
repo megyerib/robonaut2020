@@ -1,6 +1,7 @@
 #include "TrackTask.h"
+#include "TaskPrio.h"
 
-TrackTask::TrackTask() : CyclicTask((char*)"Track", LINE_SAMPLING_CYCLE, 1, configMINIMAL_STACK_SIZE)
+TrackTask::TrackTask() : CyclicTask((char*)"Track", LINE_SAMPLING_CYCLE, TRACK_TASK_PRIO, configMINIMAL_STACK_SIZE)
 {
 
 }
@@ -18,5 +19,5 @@ void TrackTask::TaskInit()
 
 void TrackTask::TaskFunction()
 {
-	detector->Cycle();
+	detector->Process();
 }

@@ -1,5 +1,6 @@
 #include <LsUart5.h>
 #include <cstring>
+#include "NvicPrio.h"
 
 LsUart5::LsUart5() : Stm32Uart(Uart5)
 {
@@ -111,6 +112,6 @@ void LsUart5::Init()
 
 	// Interrupt enable --------------------------------------------------------
 
-	HAL_NVIC_SetPriority(UART5_IRQn, 0, 0);
+	HAL_NVIC_SetPriority(UART5_IRQn, UART5_NVIC_PRIO, 0);
 	HAL_NVIC_EnableIRQ(UART5_IRQn);
 }

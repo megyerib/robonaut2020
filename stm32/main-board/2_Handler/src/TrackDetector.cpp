@@ -79,7 +79,7 @@ void TrackDetector::GetRearLineData()
 	}
 }
 
-void TrackDetector::Cycle()
+void TrackDetector::Process()
 {
 	GetFrontLineData();
 	GetRearLineData();

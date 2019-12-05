@@ -1,15 +1,14 @@
 #include "RemoteHw.h"
-
-#define CHANNEL_NUM  4
+#include "NvicPrio.h"
 
 RemoteHw* RemoteHw::instances[TimerNum] = {nullptr};
 
-const uint32_t timerChannels[CHANNEL_NUM] =
+const uint32_t timerChannels[RemChNum] =
 {
 	TIM_CHANNEL_1,
 	TIM_CHANNEL_2,
-	TIM_CHANNEL_3,
-	TIM_CHANNEL_4
+	//TIM_CHANNEL_3,
+	//TIM_CHANNEL_4
 };
 
 RemoteHw::RemoteHw()
@@ -18,7 +17,7 @@ RemoteHw::RemoteHw()
 
 	instances[Timer3] = this;
 
-	for (int i = 0; i < CHANNEL_NUM; i++)
+	for (int i = 0; i < RemChNum; i++)
 	{
 		HAL_TIM_IC_Start_IT(&handle, timerChannels[i]);
 	}
@@ -30,7 +29,7 @@ RemoteHw* RemoteHw::GetInstance()
 	return &instance;
 }
 
-uint16_t RemoteHw::GetPulseWidth(RemoteChannel ch)
+uint16_t RemoteHw::GetPulseWidth(RemoteHwChannel ch)
 {
 	return lastPulse[ch];
 }
@@ -122,7 +121,7 @@ void RemoteHw::TimerInit()
 
 	// NVIC --------------------------------------------------------------------
 
-	HAL_NVIC_SetPriority(TIM3_IRQn, 0, 0);
+	HAL_NVIC_SetPriority(TIM3_IRQn, REMOTE_NVIC_PRIO, 0);
 	HAL_NVIC_EnableIRQ(TIM3_IRQn);
 }
 
@@ -148,7 +147,7 @@ void RemoteHw::InputCaptureCallback(TIM_HandleTypeDef *htim)
 
 void RemoteHw::HandleInputCapture()
 {
-	for (int i = 0; i < CHANNEL_NUM; i++)
+	for (int i = 0; i < RemChNum; i++)
 	{
 		uint16_t capture = __HAL_TIM_GET_COMPARE(&handle, timerChannels[i]);
 

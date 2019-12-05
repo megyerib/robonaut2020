@@ -1,5 +1,6 @@
 #include <StarterUart.h>
 #include <cstring>
+#include "NvicPrio.h"
 
 StarterUart::StarterUart() : Stm32Uart(Uart1)
 {
@@ -69,6 +70,6 @@ void StarterUart::Init()
 
 	// Interrupt enable --------------------------------------------------------
 
-	HAL_NVIC_SetPriority(USART1_IRQn, 0, 0);
+	HAL_NVIC_SetPriority(USART1_IRQn, STARTER_UART_NVIC_PRIO, 0);
 	HAL_NVIC_EnableIRQ(USART1_IRQn);
 }

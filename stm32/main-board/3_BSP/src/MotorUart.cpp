@@ -1,5 +1,6 @@
 #include <MotorUart.h>
 #include <cstring>
+#include "NvicPrio.h"
 
 MotorUart::MotorUart() : Stm32Uart(Uart4)
 {
@@ -77,6 +78,6 @@ void MotorUart::Init()
 
 	// Interrupt enable --------------------------------------------------------
 
-	HAL_NVIC_SetPriority(UART4_IRQn, 0, 0);
+	HAL_NVIC_SetPriority(UART4_IRQn, MOTOR_UART_NVIC_PRIO, 0);
 	HAL_NVIC_EnableIRQ(UART4_IRQn);
 }
