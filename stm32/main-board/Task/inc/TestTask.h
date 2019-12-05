@@ -1,5 +1,6 @@
 #pragma once
 
+#include "RemoteHw.h"
 #include "CyclicTask.h"
 
 class TestTask : public CyclicTask
@@ -8,6 +9,8 @@ class TestTask : public CyclicTask
 
 	void TaskInit() override;
 	void TaskFunction() override;
+
+	RemoteHw* remote;
 
 public:
 	static TestTask* Init();
