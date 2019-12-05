@@ -1,8 +1,8 @@
-#include <Servo.h>
 #include "stm32f4xx_hal_gpio.h"
+#include "Servo.h"
 #include "Timer.h"
+#include "Defines.h"
 
-#define PI           3.14159265358979323846
 
 #define SERVO_FRONT_Pin         GPIO_PIN_14
 #define SERVO_FRONT_GPIO_Port   GPIOB
