@@ -1,8 +1,8 @@
 #include "TestTask.h"
-#include "EncoderHw.h"
+#include "RemoteHw.h"
+#include "TaskPrio.h"
 
-
-TestTask::TestTask() : CyclicTask((char*)"TEST", 20, 1, 512)
+TestTask::TestTask() : CyclicTask((char*)"TEST", 500, TEST_TASK_PRIO, 256)
 {
 
 }
@@ -16,34 +16,16 @@ TestTask* TestTask::Init()
 
 void TestTask::TaskInit()
 {
-    tof = new TOF_L1();
-    servo_sensor = new Servo(eTIM8, TIM_CHANNEL_1);
 
-    tof->Init();
-    servo_sensor->Enable();
-
-    Pd_ctlr = Pd_Controller(0.5f, 0.1f);
-    Pd_ctlr.SetSetpoint(0.52f);
 }
 
 void TestTask::TaskFunction()
 {
-	EncoderHw* enc = EncoderHw::GetInstance();
+	static RemoteHw* remote = RemoteHw::GetInstance();
 
-	uint32_t encval = enc->GetCounterValue();
+	uint16_t ch1 = remote->GetPulseWidth(RemCh1);
+	uint16_t ch2 = remote->GetPulseWidth(RemCh2);
 
-	tof->Process();
-
-// Servo Test
-//    servo_sensor->SetSteerAngle(2.62f);
-//    vTaskDelay(1000);
-//    servo_sensor->SetSteerAngle(1.57f);
-//    vTaskDelay(1000);
-//    servo_sensor->SetSteerAngle(0.52f);
-//    vTaskDelay(2000);
-
-// PD Test
-    Pd_ctlr.Process(servo_sensor->GetSteerAngle());
-    servo_sensor->SetSteerAngle(servo_sensor->GetSteerAngle() + Pd_ctlr.GetControlValue());
-
+	(void) ch1;
+	(void) ch2;
 }

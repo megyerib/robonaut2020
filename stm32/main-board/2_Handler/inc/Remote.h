@@ -1,13 +1,14 @@
 #pragma once
 
 #include <stdint.h>
+#include "RemoteHw.h"
 
 typedef enum
 {
-	CH1,
-	CH2,
-	CH3,
-	CH4
+	Steering = 0,
+	Throttle,
+
+	CH_Num
 }
 RemoteChannel;
 
@@ -25,7 +26,18 @@ public:
 	static Remote* GetInstance();
 	float GetValue(RemoteChannel ch); /* [-1; +1] */
 
-	void Calibrate(RemoteChannel ch);
+	void CalibrationStart(RemoteChannel ch);
+	bool IsCalibrationInProgress(RemoteChannel ch);
 	void GetCalibrationValues(RemoteChannel ch, RemoteCal& cal);
 	void SetCalibrationValues(RemoteChannel ch, RemoteCal& cal);
+
+	void CalibrationProcess();
+
+private:
+	RemoteCal calData[CH_Num]  = {0};
+	bool calInProgress[CH_Num] = {false};
+	bool calStarted[CH_Num] = {false};
+	RemoteHw* remoteHw;
+
+	Remote();
 };

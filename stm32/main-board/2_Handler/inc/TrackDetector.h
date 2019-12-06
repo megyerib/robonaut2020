@@ -30,7 +30,7 @@ public:
 	TrackType GetTrackType();
 	float GetFrontLine(); /* m */
 	float GetRearLine(); /* m */
-	void Cycle(); // For the OS task
+	void Process(); // For the OS task
 
 private:
 	LsUart3* uartFront;

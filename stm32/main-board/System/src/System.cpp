@@ -86,3 +86,13 @@ extern "C" void SysTick_Handler(void)
 		xPortSysTickHandler();
 	}
 }
+
+/*extern "C" void SVC_Handler(void)
+{
+	vPortSVCHandler();
+}
+
+extern "C" void PendSV_Handler(void)
+{
+	xPortPendSVHandler();
+}*/
