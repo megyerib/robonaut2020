@@ -2,12 +2,15 @@
 
 #include "Servo.h"
 
+#define STEERING_CYCLE_TIME    10 /* ms */
+
 typedef enum
 {
-	DualLineFollow,
+	Off,
+	//DualLineFollow,
 	SingleLineFollow,
 	Free,             // Angles are set manually
-	Reverse
+	//Reverse
 	// ...
 } SteeringMode;
 
@@ -17,8 +20,9 @@ public:
 	static Steering* GetInstance();
 	void SetMode(SteeringMode mode);
 	void SetLine(float front_line /* m */, float rear_line /* m */); // For LineFollow modes
-	void SetAngle(float front_angle /* rad */, float rear_angle /* rad */); // For Free mode
+	void SetAngleManual(float front_angle /* rad */, float rear_angle /* rad */); // For Free mode
 	void Process();
+	void EnableSteering(bool enable);
 
 private:
 	SteeringMode mode;
@@ -29,4 +33,9 @@ private:
 	float rear_angle;
 
 	Steering();
+
+	void SetFrontAngle(float angle /* rad */);
+	void SetRearAngle(float angle /* rad */);
+
+	void InitEnablePin();
 };

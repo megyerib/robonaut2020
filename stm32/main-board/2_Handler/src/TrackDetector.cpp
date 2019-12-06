@@ -27,8 +27,21 @@ TrackType TrackDetector::GetTrackType()
 
 float TrackDetector::GetFrontLine()
 {
-	// TODO
-	return 0;
+	static float line = 0;
+
+	if (frontLine.cnt > 0)
+	{
+		int16_t sum = 0;
+
+		for (int i = 0; i < frontLine.cnt; i++)
+		{
+			sum += frontLine.lines[i];
+		}
+
+		line = sum / frontLine.cnt / 1000.0;
+	}
+
+	return line;
 }
 
 float TrackDetector::GetRearLine()

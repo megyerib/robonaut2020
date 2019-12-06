@@ -7,10 +7,7 @@ int main(void)
 	System* system = System::GetInstance();
 
 	// Module & task initializations
-	TrackTask    :: Init();
-	TractionTask :: Init();
-
-	TestTask     :: Init();
+	RemoteCalibTask::Init();
 
 	system->OsStart();
 

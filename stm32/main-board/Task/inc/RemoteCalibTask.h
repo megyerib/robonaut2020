@@ -2,14 +2,14 @@
 
 #include "CyclicTask.h"
 
-class TestTask : public CyclicTask
+class RemoteCalibTask : public CyclicTask
 {
 private:
-	TestTask();
+	RemoteCalibTask();
 
 	void TaskInit() override;
 	void TaskFunction() override;
 
 public:
-	static TestTask* Init();
+	static RemoteCalibTask* Init();
 };

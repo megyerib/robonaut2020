@@ -3,12 +3,12 @@
 
 RemoteHw* RemoteHw::instances[TimerNum] = {nullptr};
 
-const uint32_t timerChannels[RemChNum] =
+const uint32_t timerChannels[4] =
 {
 	TIM_CHANNEL_1,
 	TIM_CHANNEL_2,
-	//TIM_CHANNEL_3,
-	//TIM_CHANNEL_4
+	TIM_CHANNEL_3,
+	TIM_CHANNEL_4
 };
 
 RemoteHw::RemoteHw()
@@ -99,24 +99,9 @@ void RemoteHw::TimerInit()
 	sConfigIC.ICPrescaler = TIM_ICPSC_DIV1;
 	sConfigIC.ICFilter = 0;
 
-	if (HAL_TIM_IC_ConfigChannel(&handle, &sConfigIC, TIM_CHANNEL_1) != HAL_OK)
+	for (int i = 0; i < RemChNum; i++)
 	{
-		//Error_Handler();
-	}
-
-	if (HAL_TIM_IC_ConfigChannel(&handle, &sConfigIC, TIM_CHANNEL_2) != HAL_OK)
-	{
-		//Error_Handler();
-	}
-
-	if (HAL_TIM_IC_ConfigChannel(&handle, &sConfigIC, TIM_CHANNEL_3) != HAL_OK)
-	{
-		//Error_Handler();
-	}
-
-	if (HAL_TIM_IC_ConfigChannel(&handle, &sConfigIC, TIM_CHANNEL_4) != HAL_OK)
-	{
-		//Error_Handler();
+		HAL_TIM_IC_ConfigChannel(&handle, &sConfigIC, timerChannels[i]);
 	}
 
 	// NVIC --------------------------------------------------------------------

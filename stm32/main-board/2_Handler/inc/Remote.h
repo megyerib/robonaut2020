@@ -5,8 +5,8 @@
 
 typedef enum
 {
-	Steering = 0,
-	Throttle,
+	SteeringCh = 0,
+	ThrottleCh,
 
 	CH_Num
 }
@@ -26,7 +26,7 @@ public:
 	static Remote* GetInstance();
 	float GetValue(RemoteChannel ch); /* [-1; +1] */
 
-	void CalibrationStart(RemoteChannel ch);
+	bool CalibrationStart(RemoteChannel ch);
 	bool IsCalibrationInProgress(RemoteChannel ch);
 	void GetCalibrationValues(RemoteChannel ch, RemoteCal& cal);
 	void SetCalibrationValues(RemoteChannel ch, RemoteCal& cal);

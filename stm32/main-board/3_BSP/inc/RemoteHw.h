@@ -14,7 +14,7 @@ typedef enum
 {
 	RemCh1 = 0,
 	RemCh2,
-	//RemCh3,
+	RemCh3,
 	//RemCh4,
 
 	RemChNum

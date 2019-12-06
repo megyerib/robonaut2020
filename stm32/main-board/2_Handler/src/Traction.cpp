@@ -36,5 +36,6 @@ void Traction::SetDutyCycle(float d /* % [-100;+100] */)
 
 void Traction::Process()
 {
-	SetDutyCycle(20.5); // TODO
+	// TODO
+	SetDutyCycle(targetSpeed);
 }

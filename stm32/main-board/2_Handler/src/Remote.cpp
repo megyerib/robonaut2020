@@ -5,8 +5,8 @@
 
 const RemoteHwChannel chTable[CH_Num] =
 {
-	[Steering] = RemCh1,
-	[Throttle] = RemCh2
+	[SteeringCh] = RemCh1,
+	[ThrottleCh] = RemCh2
 };
 
 Remote::Remote()
@@ -26,25 +26,33 @@ float Remote::GetValue(RemoteChannel ch)
 	return 0;
 }
 
-void Remote::CalibrationStart(RemoteChannel ch)
+bool Remote::CalibrationStart(RemoteChannel ch)
 {
-	calInProgress[ch] = true;
+	if (remoteHw->GetPulseWidth(chTable[ch]) > 0)
+	{
+		calInProgress[ch] = true;
+		calStarted[ch] = true;
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 bool Remote::IsCalibrationInProgress(RemoteChannel ch)
 {
 	return calInProgress[ch];
-	return calStarted[ch];
 }
 
 void Remote::GetCalibrationValues(RemoteChannel ch, RemoteCal& cal)
 {
-
+	cal = calData[ch];
 }
 
 void Remote::SetCalibrationValues(RemoteChannel ch, RemoteCal& cal)
 {
-
+	calData[ch] = cal;
 }
 
 void Remote::CalibrationProcess()
@@ -59,9 +67,7 @@ void Remote::CalibrationProcess()
 
 			if (calStarted[ch])
 			{
-				tmpData[ch] = {0, 0, 0};
-
-				tmpData[ch].mid = pulse;
+				tmpData[ch] = {pulse, pulse, pulse};
 
 				calStarted[ch] = false;
 			}
@@ -77,7 +83,7 @@ void Remote::CalibrationProcess()
 					tmpData[ch].min = pulse;
 				}
 
-				if (tmpData[ch].min > 0 && tmpData[ch].max > 0 && ABS(tmpData[ch].mid - pulse) < CALIB_THRESHOLD)
+				if (tmpData[ch].min < tmpData[ch].mid && tmpData[ch].max > tmpData[ch].mid && ABS(tmpData[ch].mid - pulse) < CALIB_THRESHOLD)
 				{
 					calData[ch] = tmpData[ch];
 					calInProgress[ch] = false;
