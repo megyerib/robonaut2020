@@ -22,11 +22,11 @@ void Traction::SetMode(TractionMode mode)
 	this->mode = mode;
 }
 
-void Traction::SetDutyCycle(float d /* % [-100;+100] */)
+void Traction::SetDutyCycle(float d /* % [-1;+1] */)
 {
 	uint8_t buf[10];
 
-	int message = d * 1000;
+	int message = d * 100000;
 	int size;
 
 	size = sprintf((char*)buf, "%d\r\n", message);

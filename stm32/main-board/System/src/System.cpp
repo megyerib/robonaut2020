@@ -55,7 +55,7 @@ void System::Clock_Config()
 	  }
 	  /** Activate the Over-Drive mode
 	  */
-	  /*if (HAL_PWREx_EnableOverDrive() != HAL_OK) TODO
+	  /*if (HAL_PWREx_EnableOverDrive() != HAL_OK)
 	  {
 	    //Error_Handler();
 	  }*/

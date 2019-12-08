@@ -10,7 +10,7 @@ static Steering* steening;
 static Traction* motor;
 static TrackDetector* track;
 
-TestTask::TestTask() : CyclicTask((char*)"TEST", 500, TEST_TASK_PRIO, 256)
+TestTask::TestTask() : CyclicTask((char*)"TEST", 500, MAIN_TASK_PRIO, 256)
 {
 
 }

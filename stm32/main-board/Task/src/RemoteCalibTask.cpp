@@ -3,7 +3,7 @@
 #include "TaskPrio.h"
 #include "Steering.h"
 
-RemoteCalibTask::RemoteCalibTask() : CyclicTask((char*)"Remote calibration", 50, TEST_TASK_PRIO, configMINIMAL_STACK_SIZE)
+RemoteCalibTask::RemoteCalibTask() : CyclicTask((char*)"Remote calibration", 50, MAIN_TASK_PRIO, configMINIMAL_STACK_SIZE)
 {
 
 }

@@ -1,6 +1,6 @@
 #pragma once
 #include "FreeRTOSConfig.h"
-// TODO
+
 // HAL_NVIC_SetPriority(IRQn_Type IRQn, uint32_t PreemptPriority, uint32_t SubPriority)
 // lower value -> higher priority
 

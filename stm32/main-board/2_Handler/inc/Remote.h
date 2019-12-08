@@ -12,6 +12,15 @@ typedef enum
 }
 RemoteChannel;
 
+// State of the mode switching button (CH3)
+// Default: Mode1
+typedef enum
+{
+	RemMode1,
+	RemMode2
+}
+RemoteMode;
+
 typedef struct
 {
 	uint32_t min;
@@ -25,6 +34,7 @@ class Remote
 public:
 	static Remote* GetInstance();
 	float GetValue(RemoteChannel ch); /* [-1; +1] */
+	RemoteMode GetMode();
 
 	bool CalibrationStart(RemoteChannel ch);
 	bool IsCalibrationInProgress(RemoteChannel ch);

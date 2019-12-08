@@ -6,4 +6,5 @@
 #define STEERING_TASK_PRIO      4
 #define TRACK_TASK_PRIO         3
 #define TRACTION_TASK_PRIO      2
-#define TEST_TASK_PRIO          1
+
+#define MAIN_TASK_PRIO          1

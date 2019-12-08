@@ -1,6 +1,7 @@
 #include "Remote.h"
 
-#define CALIB_THRESHOLD 50
+#define MODE_THRESHOLD  1500 /* us */
+#define CALIB_THRESHOLD 50 /* us */
 #define ABS(x) (((x) < 0) ? -(x) : (x))
 
 const RemoteHwChannel chTable[CH_Num] =
@@ -12,6 +13,14 @@ const RemoteHwChannel chTable[CH_Num] =
 Remote::Remote()
 {
 	remoteHw = RemoteHw::GetInstance();
+
+	calData[SteeringCh].min = 995;
+	calData[SteeringCh].mid = 1509;
+	calData[SteeringCh].max = 2110;
+
+	calData[ThrottleCh].min = 1001;
+	calData[ThrottleCh].mid = 1503;
+	calData[ThrottleCh].max = 2080;
 }
 
 Remote* Remote::GetInstance()
@@ -22,8 +31,56 @@ Remote* Remote::GetInstance()
 
 float Remote::GetValue(RemoteChannel ch)
 {
-	// TODO
-	return 0;
+	float ret = 0;
+	uint16_t pulse = remoteHw->GetPulseWidth(chTable[ch]);
+	RemoteCal& cal = calData[ch];
+
+	if (pulse > cal.mid)
+	{
+		if ((cal.max - cal.mid) != 0)
+		{
+			int16_t diff       = pulse - cal.mid;
+			int16_t full_scale = cal.max - cal.mid;
+
+			ret = (float)diff/full_scale;
+		}
+
+		if (ret > 1.0)
+		{
+			ret = 1.0;
+		}
+	}
+	else
+	{
+		if ((cal.mid - cal.min) != 0)
+		{
+			int16_t diff       = pulse - cal.mid;
+			int16_t full_scale = cal.mid - cal.min;
+
+			ret = (float)diff/full_scale;
+		}
+
+		if (ret < -1.0)
+		{
+			ret = -1.0;
+		}
+	}
+
+	return ret;
+}
+
+RemoteMode Remote::GetMode()
+{
+	uint16_t pulse = remoteHw->GetPulseWidth(RemCh3);
+
+	if (pulse < MODE_THRESHOLD)
+	{
+		return RemMode1;
+	}
+	else
+	{
+		return RemMode2;
+	}
 }
 
 bool Remote::CalibrationStart(RemoteChannel ch)

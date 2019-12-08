@@ -8,6 +8,7 @@
 #include "SteeringTask.h"
 
 // Application tasks
+#include "Q1Task.h"
 
 // Test/calibration tasks
 #include "TestTask.h"
