@@ -35,6 +35,11 @@ float Remote::GetValue(RemoteChannel ch)
 	uint16_t pulse = remoteHw->GetPulseWidth(chTable[ch]);
 	RemoteCal& cal = calData[ch];
 
+	if (pulse == 0)
+	{
+		return 0; // First measurment
+	}
+
 	if (pulse > cal.mid)
 	{
 		if ((cal.max - cal.mid) != 0)

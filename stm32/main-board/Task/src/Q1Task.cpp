@@ -1,11 +1,10 @@
 #include "Q1Task.h"
 #include "TaskPrio.h"
 
-#include "Remote.h"
-
 #define CYCLE_TIME 20 /* Remote reading only */
 
-static Remote* remote;
+#define RC_THROTTLE_THRESHOLD    (0.1f)
+#define RC_THROTTLE_FUN_FACTOR   (0.4f)
 
 Q1Task::Q1Task() : CyclicTask((char*)"Q1", CYCLE_TIME, MAIN_TASK_PRIO, configMINIMAL_STACK_SIZE)
 {
@@ -20,16 +19,41 @@ Q1Task* Q1Task::Init()
 
 void Q1Task::TaskInit()
 {
-	remote = Remote::GetInstance();
+	remote   = Remote::GetInstance();
+	motor    = Traction::GetInstance();
+
+	steering = Steering::GetInstance();
+	steering->SetMode(Free);
+	steering->EnableSteering(true);
 }
 
 void Q1Task::TaskFunction()
 {
-	float throttle = remote->GetValue(ThrottleCh);
-	float steering = remote->GetValue(SteeringCh);
-	RemoteMode mode = remote->GetMode();
+	float      throttle   = remote->GetValue(ThrottleCh);
+	float      steerAngle = remote->GetValue(SteeringCh);
+	RemoteMode mode       = remote->GetMode();
 
-	(void) throttle;
-	(void) steering;
-	(void) mode;
+	if (mode == RemMode1)
+	{
+		// TODO Normal task
+	}
+
+	if (mode == RemMode2)
+	{
+		RcRun(throttle, steerAngle);
+	}
+}
+
+void Q1Task::RcRun(float throttle, float steerAngle)
+{
+	if (throttle > RC_THROTTLE_THRESHOLD || throttle < -RC_THROTTLE_THRESHOLD)
+	{
+		motor->SetDutyCycle(throttle * RC_THROTTLE_FUN_FACTOR); // Don't use the full scale
+	}
+	else
+	{
+		motor->SetDutyCycle(0);
+	}
+
+	steering->SetAngleManual(-steerAngle, steerAngle);
 }

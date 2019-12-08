@@ -7,11 +7,16 @@ int main(void)
 	System* system = System::GetInstance();
 
 	// Module & task initializations
-	TrackTask    :: Init();
-	TractionTask :: Init();
-	SteeringTask :: Init();
 
-	Q1Task       :: Init();
+		// Service tasks
+		TrackTask    :: Init();
+		TractionTask :: Init();
+		SteeringTask :: Init();
+		EncoderTask  :: Init();
+
+		// Application tasks
+		Q1Task       :: Init();
+	  //TestTask     :: Init();
 
 	system->OsStart();
 

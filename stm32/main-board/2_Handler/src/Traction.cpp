@@ -4,6 +4,9 @@
 Traction::Traction()
 {
 	uart = MotorUart::GetInstance();
+	encoder = Encoder::GetInstance();
+
+	targetDutyCycle = 0;
 }
 
 Traction* Traction::GetInstance()
@@ -14,7 +17,7 @@ Traction* Traction::GetInstance()
 
 void Traction::SetSpeed(float speed /* m/s */)
 {
-	targetSpeed = speed;
+	//targetSpeed = speed; // TODO
 }
 
 void Traction::SetMode(TractionMode mode)
@@ -23,6 +26,11 @@ void Traction::SetMode(TractionMode mode)
 }
 
 void Traction::SetDutyCycle(float d /* % [-1;+1] */)
+{
+	targetDutyCycle = d;
+}
+
+void Traction::SendDutyCycle(float d /* % [-1;+1] */)
 {
 	uint8_t buf[10];
 
@@ -37,5 +45,5 @@ void Traction::SetDutyCycle(float d /* % [-1;+1] */)
 void Traction::Process()
 {
 	// TODO
-	SetDutyCycle(targetSpeed);
+	SendDutyCycle(targetDutyCycle);
 }

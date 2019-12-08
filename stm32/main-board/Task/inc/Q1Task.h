@@ -2,13 +2,24 @@
 
 #include "CyclicTask.h"
 
+#include "Remote.h"
+#include "Traction.h"
+#include "Steering.h"
+
 class Q1Task : public CyclicTask
 {
+public:
+	static Q1Task* Init();
+
+private:
 	Q1Task();
+
+	Remote* remote;
+	Traction* motor;
+	Steering* steering;
 
 	void TaskInit() override;
 	void TaskFunction() override;
 
-public:
-	static Q1Task* Init();
+	void RcRun(float throttle, float steerAngle);
 };

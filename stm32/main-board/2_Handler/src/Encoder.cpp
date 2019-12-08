@@ -30,10 +30,17 @@ float Encoder::GetSpeed()
 	uint32_t tim_cur  = mPoints[mPointIndex].timVal;
 	__enable_irq();
 
-	float d_s = (enc_cur - enc_prev) / INC_PER_M; // m
-	float d_t = (tim_cur - tim_prev) * 1000000;   // s
+	float d_s = (enc_cur - enc_prev) / INC_PER_M;  // m
+	float d_t = (tim_cur - tim_prev) / 1000000.0;  // s
 
-	return d_s/d_t;
+	if (d_t == 0)
+	{
+		return 0; // Div by 0
+	}
+	else
+	{
+		return d_s/d_t;
+	}
 }
 
 void Encoder::Process()

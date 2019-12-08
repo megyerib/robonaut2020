@@ -50,19 +50,19 @@ void EncoderHw::InitTimer()
 
 	handle.Instance               = TIM2;
 	handle.Init.Prescaler         = 0;
-	handle.Init.CounterMode       = TIM_COUNTERMODE_UP;
+	handle.Init.CounterMode       = TIM_COUNTERMODE_DOWN;
 	handle.Init.Period            = 0xFFFFFFFF;
 	handle.Init.ClockDivision     = TIM_CLOCKDIVISION_DIV1;
 	handle.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
 
 	sConfig.EncoderMode           = TIM_ENCODERMODE_TI12;
-
+	// TODO négyszeres kiértékelés!!
 	sConfig.IC1Polarity           = TIM_ICPOLARITY_RISING;
 	sConfig.IC1Selection          = TIM_ICSELECTION_DIRECTTI;
 	sConfig.IC1Prescaler          = TIM_ICPSC_DIV1;
 	sConfig.IC1Filter             = 0;
 
-	sConfig.IC2Polarity           = TIM_ICPOLARITY_RISING;
+	sConfig.IC2Polarity           = TIM_ICPOLARITY_FALLING;
 	sConfig.IC2Selection          = TIM_ICSELECTION_DIRECTTI;
 	sConfig.IC2Prescaler          = TIM_ICPSC_DIV1;
 	sConfig.IC2Filter             = 0;
