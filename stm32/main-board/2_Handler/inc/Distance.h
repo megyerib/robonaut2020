@@ -1,21 +1,31 @@
 #pragma once
 
+#include "ToF_4m_L1.h"
+#include "Servo.h"
+
 #define DISTANCE_SAMPLING_CYCLE   100 /* ms */
 
 typedef enum
 {
-	ToF1,
-	ToF2,
-	ToF3
+	ToF_Front,
+	//ToF2,
+	//ToF3
 }
 DistanceSensor;
 
 class Distance
 {
+private:
+    Servo*   srv_front;
+
+    TOF_L1*  tof_front;
+    //TOF_L1*  tof_right;
+    //TOF_L1*  tof_x;
+
 public:
 	static Distance* GetInstance();
 	float GetDistance(DistanceSensor sensor); /* m */
-	float SetFrontServo(float angle /* rad */);
+	void SetFrontServo(float angle /* rad */);
 	void Process();
 
 private:
