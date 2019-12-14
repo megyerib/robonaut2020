@@ -54,50 +54,14 @@ TOF_L1::TOF_L1(uint8_t             const Addr,
 
 void TOF_L1::Init()
 {
-    uint16_t newAddr = Dev->I2cDevAddr;
-    uint16_t wordData = 0x00;
+    Restart();
 
-    // Shutdown sensor.
-    HAL_GPIO_WritePin(XSDN_Port, XSDN_Pin, GPIO_PIN_RESET);
-    vTaskDelay(80);
-
-    // Start the sensor.
-    HAL_GPIO_WritePin(XSDN_Port, XSDN_Pin, GPIO_PIN_SET);
-
-    // In case
-    status = VL53L1_RdWord(Dev, 0x010F, &wordData);
-    if ((status != VL53L1_ERROR_NONE) || (wordData != 0xEACC))
+    if (isAddressForgotten() == true)
     {
-        // default sensor I2C address.
-        Dev->I2cDevAddr = 0x52;
-
-        // Test if the device is available on the I2C network.
-        status = VL53L1_RdWord(Dev, 0x010F, &wordData);
-        if ((status == VL53L1_ERROR_NONE) && (wordData == 0xEACC))
-        {
-            // Set new address.
-            status = VL53L1_SetDeviceAddress(Dev, newAddr);
-            Dev->I2cDevAddr = newAddr;
-        }
+        ChangeAddress();
     }
 
-    // Test I2C interface.
-    status = VL53L1_RdWord(Dev, 0x0110, &wordData);
-    if ((status == VL53L1_ERROR_NONE) && (wordData == 0xCC10))
-    {
-        status = VL53L1_WaitDeviceBooted(Dev);
-        status = VL53L1_DataInit(Dev);
-        status = VL53L1_StaticInit(Dev);
-        status = VL53L1_SetDistanceMode(Dev, VL53L1_DISTANCEMODE_LONG);
-        status = VL53L1_SetMeasurementTimingBudgetMicroSeconds(Dev, timingBudget_ms * 100);
-        status = VL53L1_SetInterMeasurementPeriodMilliSeconds(Dev, timingBudget_ms);
-        status = VL53L1_StartMeasurement(Dev);
-    }
-    else
-    {
-        // Reference register value is wrong.
-        status = VL53L1_ERROR_CONTROL_INTERFACE;
-    }
+    ConfigureDevice();
 }
 
 void TOF_L1::Process()
@@ -166,10 +130,9 @@ void TOF_L1::InitXsdnGpio()
 bool TOF_L1::isAddressForgotten()
 {
     bool isForgotten = true;
-    uint16_t wordData = 0x00;
 
-    status = VL53L1_RdWord(Dev, 0x010F, &wordData);
-    if ((status == VL53L1_ERROR_NONE) && (wordData == 0xEACC))
+    // Try to reach the device with the desired custom I2C Address.
+    if (isDeviceConnected() == true)
     {
         isForgotten = false;
     }
@@ -194,4 +157,50 @@ void TOF_L1::Restart()
     Startup();
 }
 
-VL53L1_Error ChangeAddress(uint8_t newAddr);
+void TOF_L1::ChangeAddress()
+{
+    uint16_t newAddr = Dev->I2cDevAddr;
+
+    // Reach the device with the default sensor I2C address.
+    Dev->I2cDevAddr = 0x52;
+
+    if (isDeviceConnected() == true)
+    {
+        status = VL53L1_SetDeviceAddress(Dev, newAddr);
+        Dev->I2cDevAddr = newAddr;
+    }
+}
+
+bool TOF_L1::isDeviceConnected()
+{
+    bool deviceIsconnected = false;
+    uint16_t wordData = 0x00;
+
+    // Test I2C interface.
+    status = VL53L1_RdWord(Dev, 0x010F, &wordData);
+    if ((status == VL53L1_ERROR_NONE) && (wordData == 0xEACC))
+    {
+        deviceIsconnected = true;
+    }
+
+    return deviceIsconnected;
+}
+
+void TOF_L1::ConfigureDevice()
+{
+    if (isDeviceConnected() == true)
+    {
+        status = VL53L1_WaitDeviceBooted(Dev);
+        status = VL53L1_DataInit(Dev);
+        status = VL53L1_StaticInit(Dev);
+        status = VL53L1_SetDistanceMode(Dev, VL53L1_DISTANCEMODE_LONG);
+        status = VL53L1_SetMeasurementTimingBudgetMicroSeconds(Dev, timingBudget_ms * 100);
+        status = VL53L1_SetInterMeasurementPeriodMilliSeconds(Dev, timingBudget_ms);
+        status = VL53L1_StartMeasurement(Dev);
+    }
+    else
+    {
+        status = VL53L1_ERROR_CONTROL_INTERFACE;
+    }
+}
+

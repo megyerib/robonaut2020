@@ -49,4 +49,7 @@ private:
     void Shutdown();
     void Startup();
     void Restart();
+    void ChangeAddress();
+    bool isDeviceConnected();
+    void ConfigureDevice();
 };
