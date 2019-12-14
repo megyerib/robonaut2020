@@ -59,9 +59,12 @@ Line StddevEval::GetLine()
 // A 4 legközelebbi szomszédtól vett legnagyobb különbség, ha pozitív, egyébként 0.
 void StddevEval::magicDiff(uint32_t* src, uint32_t* dst)
 {
-    uint32_t padded[SENSOR_SIZE + 4] = {0}; // Two padding values with value 0 on each side
+	uint32_t padded[SENSOR_SIZE + 4]; // Two padding values with value 0 on each side
 
     memcpy(&padded[2], src, SENSOR_SIZE * sizeof(uint32_t));
+
+    padded[0] = padded[1] = padded[2];
+    padded[SENSOR_SIZE + 3] = padded[SENSOR_SIZE + 2] = padded[SENSOR_SIZE + 1];
 
     // padded | 0 | 1 | 2 | 3 | 4 | 5 | ...
     //          *   *   *   *   *
