@@ -16,7 +16,7 @@ int main(void)
 
 		// Application tasks
 		Q1Task       :: Init();
-	  //TestTask     :: Init();
+	    TestTask     :: Init();
 
 	system->OsStart();
 

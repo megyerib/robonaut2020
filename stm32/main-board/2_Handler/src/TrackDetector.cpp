@@ -25,6 +25,7 @@ TrackType TrackDetector::GetTrackType()
 	return None;
 }
 
+// TODO thread safety!!!
 float TrackDetector::GetFrontLine()
 {
 	static float line = 0;
