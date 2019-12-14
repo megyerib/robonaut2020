@@ -19,6 +19,7 @@ Q1Task* Q1Task::Init()
 
 void Q1Task::TaskInit()
 {
+    car      = Car::GetInstance();
 	remote   = Remote::GetInstance();
 	motor    = Traction::GetInstance();
 
@@ -35,7 +36,7 @@ void Q1Task::TaskFunction()
 
 	if (mode == RemMode1)
 	{
-		// TODO Normal task
+		car->StateMachine();
 	}
 
 	if (mode == RemMode2)

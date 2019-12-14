@@ -2,6 +2,7 @@
 
 #include "CyclicTask.h"
 
+#include "Car.h"
 #include "Remote.h"
 #include "Traction.h"
 #include "Steering.h"
@@ -14,7 +15,8 @@ public:
 private:
 	Q1Task();
 
-	Remote* remote;
+	Car*      car;
+	Remote*   remote;
 	Traction* motor;
 	Steering* steering;
 
