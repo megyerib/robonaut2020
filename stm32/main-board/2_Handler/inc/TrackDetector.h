@@ -17,7 +17,7 @@ TrackType;
 
 typedef enum
 {
-	Maze,
+	//Maze,
 	Speedrun
 }
 TrackMode;
@@ -39,9 +39,17 @@ private:
 	Line frontLine = {0};
 	Line rearLine = {0};
 
+	float frontLinePos = 0;
+	uint16_t frontLineCnt = 0;
+
+	TrackType type = None;
+
 	TrackDetector();
 	void GetFrontLineData();
 	void GetRearLineData();
+	void EvalFrontLine();
+	void EvalRearLine();
+	void EvalTrackType();
 };
 
 // TODO OS task

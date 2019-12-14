@@ -14,3 +14,4 @@
 // Test/calibration tasks
 #include "TestTask.h"
 #include "RemoteCalibTask.h"
+#include "ServoCalibTask.h"

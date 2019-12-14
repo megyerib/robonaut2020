@@ -1,7 +1,7 @@
 #include "RemoteCalibTask.h"
 #include "Remote.h"
 #include "TaskPrio.h"
-#include "Steering.h"
+#include "Steering.h" /* For disabling servo */
 
 RemoteCalibTask::RemoteCalibTask() : CyclicTask((char*)"Remote calibration", 50, MAIN_TASK_PRIO, configMINIMAL_STACK_SIZE)
 {
