@@ -15,10 +15,8 @@ int main(void)
 		EncoderTask  :: Init();
 
 		// Application tasks
-		//Q1Task       :: Init();
-	    //TestTask     :: Init();
-		//ServoCalibTask :: Init();
-
+		Q1Task       :: Init();
+	    TestTask     :: Init();
 
 	system->OsStart();
 

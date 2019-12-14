@@ -6,11 +6,14 @@
 
 #include "RemoteHw.h"
 
+#include "Distance.h"
+
 static Steering* steening;
 static Traction* motor;
 static TrackDetector* track;
+static Distance* dist;
 
-TestTask::TestTask() : CyclicTask((char*)"TEST", 500, MAIN_TASK_PRIO, 256)
+TestTask::TestTask() : CyclicTask((char*)"TEST", 200, MAIN_TASK_PRIO, 256)
 {
 
 }
@@ -33,6 +36,8 @@ void TestTask::TaskInit()
 	motor->SetSpeed(0.0);
 
 	track = TrackDetector::GetInstance();
+
+	dist = Distance::GetInstance();
 }
 
 void TestTask::TaskFunction()
@@ -46,4 +51,6 @@ void TestTask::TaskFunction()
 	(void) ch1;
 	(void) ch2;
 	(void) ch3;
+
+	dist->Process();
 }

@@ -18,11 +18,13 @@ Servo::Servo(TimerInstance TIM, uint32_t Channel)
         case eTIM8:
         {
             type = ANALOG;
+            htim = &htim8;
             break;
         }
         case eTIM12:
         {
             type = DIGITAL;
+            htim = &htim12;
             break;
         }
         default:
@@ -31,8 +33,6 @@ Servo::Servo(TimerInstance TIM, uint32_t Channel)
             break;
         }
     }
-
-    htim = &htim8;
 
     // TODO check input
     channel = Channel;

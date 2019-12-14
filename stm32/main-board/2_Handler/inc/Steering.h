@@ -1,18 +1,29 @@
 #pragma once
 
 #include "Servo.h"
+#include "Pd_Controller.h"
 
 #define STEERING_CYCLE_TIME    10 /* ms */
 
 typedef enum
 {
 	Off,
-	//DualLineFollow,
-	SingleLineFollow,
+	DualLineFollow,
+	SingleLineFollow_Fast,
+	SingleLineFollow_Slow,
 	Free,             // Angles are set manually
 	//Reverse
 	// ...
 } SteeringMode;
+
+typedef struct
+{
+    Servo*          servo;
+    Pd_Controller*  controller;
+    float           angle;
+    float           line;
+} Wheel;
+
 
 class Steering
 {
@@ -26,11 +37,9 @@ public:
 
 private:
 	SteeringMode mode;
-	Servo*       srv_front;
-	Servo*       srv_rear;
 
-	float front_angle;
-	float rear_angle;
+	Wheel front;
+	Wheel rear;
 
 	Steering();
 

@@ -28,6 +28,7 @@ TrackType TrackDetector::GetTrackType()
 	return type;
 }
 
+// TODO thread safety!!!
 float TrackDetector::GetFrontLine()
 {
 	return frontLinePos;
