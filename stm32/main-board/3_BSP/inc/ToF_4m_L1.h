@@ -6,6 +6,13 @@
 
 #include "Tof_I2c.h"
 
+#define TOF_FRONT_XSDN_Pin  GPIO_PIN_15
+#define TOF_FRONT_XSDN_Port GPIOC
+#define TOF_XSDN2_Pin       GPIO_PIN_13
+#define TOF_XSDN2_Port      GPIOC
+#define TOF_XSDN3_Pin       GPIO_PIN_14
+#define TOF_XSDN3_Port      GPIOC
+
 class TOF_L1
 {
 private:
@@ -25,7 +32,6 @@ public:
     TOF_L1();
     TOF_L1(uint8_t              const Addr,
            uint16_t             const Speed,
-           I2C_HandleTypeDef*   const Hi2c,
            uint32_t             const TB_ms,
            GPIO_TypeDef*        const XsdnPort,
            uint16_t             const XsdnPin);
@@ -36,4 +42,11 @@ public:
     uint16_t GetDistance_mm(void);
 
     void Calibrate_Offset_300mm(void);
+
+private:
+    void InitXsdnGpio();
+    bool isAddressForgotten();
+    void Shutdown();
+    void Startup();
+    void Restart();
 };
