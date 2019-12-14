@@ -8,7 +8,21 @@ Distance* Distance::GetInstance()
 
 float Distance::GetDistance(DistanceSensor sensor)
 {
-    return (float)(tof_front->GetDistance_mm()) / 1000.0f;
+    float distance = 0.0f;
+
+    switch (sensor)
+    {
+        case ToF_Front:
+        {
+            distance = (float)(tof_front->GetDistance_mm()) / 1000.0f;
+            break;
+        }
+        default:
+        {
+            break;
+        }
+    }
+    return distance;
 }
 
 void Distance::SetFrontServo(float angle)
