@@ -1,16 +1,29 @@
 #include "Steering.h"
 #include "Defines.h"
 
+#define SINGLE_SLOW_P   (0.5f)
+#define SINGLE_SLOW_D   (0.1f)
+#define SINGLE_FAST_P   (0.5f)
+#define SINGLE_FAST_D   (0.1f)
+
 Steering::Steering()
 {
 	InitEnablePin();
 	EnableSteering(false);
 
-	srv_front = new Servo(eTIM12, TIM_CHANNEL_2);
-    srv_rear  = new Servo(eTIM12, TIM_CHANNEL_1);
+	front.servo      = new Servo(eTIM12, TIM_CHANNEL_2);
+	front.controller = new Pd_Controller(0.5f, 0.1f);
+	front.line       = 0.0f;
+	front.angle      = 0.0f;
+	front.servo->Enable();
 
-    srv_front->Enable();
-    srv_rear->Enable();
+	rear.servo       = new Servo(eTIM12, TIM_CHANNEL_1);
+	rear.controller  = new Pd_Controller(0.5f, 0.1f);
+	rear.line        = 0.0f;
+	rear.angle       = 0.0f;
+	rear.servo->Enable();
+
+	mode = SteeringMode::Off;
 }
 
 Steering* Steering::GetInstance()
@@ -22,11 +35,33 @@ Steering* Steering::GetInstance()
 void Steering::SetMode(SteeringMode mode)
 {
     this->mode = mode;
+
+    switch (mode)
+    {
+        case SingleLineFollow_Slow:
+        {
+            front.controller->Set_P_Term(SINGLE_SLOW_P);
+            front.controller->Set_D_Term(SINGLE_SLOW_D);
+            break;
+        }
+        case SingleLineFollow_Fast:
+        {
+            front.controller->Set_P_Term(SINGLE_FAST_P);
+            front.controller->Set_D_Term(SINGLE_FAST_D);
+            break;
+        }
+        default:
+        {
+
+            break;
+        }
+    }
 }
 
 void Steering::SetLine(float front_line, float rear_line)
 {
-
+    front.line = front_line;
+    rear.line  = rear_line;
 }
 
 //! Steering wheel:
@@ -40,8 +75,8 @@ void Steering::SetLine(float front_line, float rear_line)
 //!  Left end                   Right end
 void Steering::SetAngleManual(float front_angle, float rear_angle)
 {
-	this->front_angle = front_angle;
-	this->rear_angle  = rear_angle;
+	SetFrontAngle(front_angle);
+	SetRearAngle(rear_angle);
 }
 
 void Steering::Process()
@@ -50,18 +85,33 @@ void Steering::Process()
     {
 		case Off:
 		{
-			// Disable servos
+		    // TODO servo enable pins.
+			front.servo->Disable();
+			rear.servo->Disable();
 			break;
 		}
-    	case SingleLineFollow:
+    	case SingleLineFollow_Slow:
+    	case SingleLineFollow_Fast:
         {
+            front.controller->Process(front.line);
 
+            SetFrontAngle(front.controller->GetControlValue());
+            SetRearAngle(0.0f);
             break;
         }
+    	case DualLineFollow:
+    	{
+    	    front.controller->Process(front.line);
+    	    rear.controller->Process(rear.line);
+
+    	    SetFrontAngle(front.controller->GetControlValue());
+    	    SetRearAngle(rear.controller->GetControlValue());
+    	    break;
+    	}
         case Free:
         {
-        	SetFrontAngle(front_angle);
-        	SetRearAngle(rear_angle);
+        	SetFrontAngle(front.angle);
+        	SetRearAngle(rear.angle);
 
             break;
         }
@@ -74,7 +124,7 @@ void Steering::SetFrontAngle(float angle /* rad */)
 	float scale         = 1.0f;
 	float servo_angle   = (angle + offset) * scale;
 
-	srv_front->SetSteerAngle(servo_angle);
+	front.servo->SetSteerAngle(servo_angle);
 }
 
 void Steering::SetRearAngle(float angle /* rad */)
@@ -83,7 +133,7 @@ void Steering::SetRearAngle(float angle /* rad */)
 	float scale         = 1.0f;
 	float servo_angle   = (angle + offset) * scale;
 
-	srv_rear->SetSteerAngle(servo_angle);
+	rear.servo->SetSteerAngle(servo_angle);
 }
 
 void Steering::EnableSteering(bool enable)
