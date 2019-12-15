@@ -1,7 +1,7 @@
 #include "DistanceTask.h"
 #include "TaskPrio.h"
 
-DistanceTask::DistanceTask() : CyclicTask((char*)"Distance", DISTANCE_SAMPLING_CYCLE, DISTANCE_TASK_PRIO, configMINIMAL_STACK_SIZE)
+DistanceTask::DistanceTask() : CyclicTask((char*)"Distance", DISTANCE_SAMPLING_CYCLE, DISTANCE_TASK_PRIO, 256)
 {
 
 }

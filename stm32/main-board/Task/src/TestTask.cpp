@@ -13,7 +13,7 @@ static Traction* motor;
 static TrackDetector* track;
 static Distance*    distance;
 
-TestTask::TestTask() : CyclicTask((char*)"TEST", 200, MAIN_TASK_PRIO, 256)
+TestTask::TestTask() : CyclicTask((char*)"TEST", 200, MAIN_TASK_PRIO, 512)
 {
 
 }

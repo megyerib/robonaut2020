@@ -54,7 +54,7 @@ TOF_L1::TOF_L1(uint8_t             const Addr,
 
 void TOF_L1::Init()
 {
-    vTaskDelay(2000);
+    vTaskDelay(200);
     Restart();
 
     if (isAddressForgotten() == true)
@@ -98,7 +98,7 @@ void TOF_L1::Process()
     {
         // DEB
         HAL_GPIO_WritePin(FREE3_LED_GPIO_Port, FREE3_LED_Pin, GPIO_PIN_RESET);
-        //Init();
+        Init();
     }
 }
 

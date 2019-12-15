@@ -6,7 +6,7 @@
 #define RC_THROTTLE_THRESHOLD    (0.1f)
 #define RC_THROTTLE_FUN_FACTOR   (0.4f)
 
-Q1Task::Q1Task() : CyclicTask((char*)"Q1", CYCLE_TIME, MAIN_TASK_PRIO, configMINIMAL_STACK_SIZE)
+Q1Task::Q1Task() : CyclicTask((char*)"Q1", CYCLE_TIME, MAIN_TASK_PRIO, 256)
 {
 
 }
@@ -34,18 +34,10 @@ void Q1Task::TaskFunction()
 	float      steerAngle = remote->GetValue(SteeringCh);
 	RemoteMode mode       = remote->GetMode();
 
-	float current_get;
-	float current_set = 0.0f;
-
 	if (mode == RemMode1)
 	{
 	    car->SetSteeringMode(SteeringMode::SingleLineFollow_Slow);
 		car->StateMachine();
-
-	    //steering->SetMode(Free);
-	    //steering->SetAngleManual(current_set, 0.0f);
-
-	    //current_get = steering->GetFrontAngle();
 
 	}
 

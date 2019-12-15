@@ -137,11 +137,11 @@ void Car::FollowStateMachine()
     // Speed.
     if (distance->GetDistance(ToF_Front) > 0.3f)
     {
-        motor->SetDutyCycle(0.0f);
+        motor->SetDutyCycle(0.1f);
     }
     else if (distance->GetDistance(ToF_Front) < 0.25f)
     {
-        motor->SetDutyCycle(0.0f);
+        motor->SetDutyCycle(-0.1f);
     }
     else
     {
