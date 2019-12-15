@@ -38,7 +38,7 @@ void ToF_I2c::Init()
 void ToF_I2c::ConfigureHandle()
 {
     handle->Instance                 = I2C1;
-    handle->Init.ClockSpeed          = 400000;
+    handle->Init.ClockSpeed          = 50000;
     handle->Init.DutyCycle           = I2C_DUTYCYCLE_2;
     handle->Init.OwnAddress1         = 0;
     handle->Init.AddressingMode      = I2C_ADDRESSINGMODE_7BIT;
@@ -69,7 +69,7 @@ void ToF_I2c::ConfigureGpio()
     GPIO_InitStruct.Alternate   = GPIO_AF4_I2C1;
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-    // Init Debug GPIOSs
+    // Init Debug GPIOSs (Free123)
     GPIO_InitStruct = {0};
     GPIO_InitStruct.Pin         = GPIO_PIN_5|GPIO_PIN_4|GPIO_PIN_3;
     GPIO_InitStruct.Mode        = GPIO_MODE_OUTPUT_PP;

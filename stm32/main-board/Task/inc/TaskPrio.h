@@ -9,4 +9,4 @@
 #define ENCODER_TASK_PRIO       3
 #define DISTANCE_TASK_PRIO      2
 
-#define MAIN_TASK_PRIO          1
+#define MAIN_TASK_PRIO          7

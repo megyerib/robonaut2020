@@ -1,4 +1,5 @@
 #include "Distance.h"
+#include "Defines.h"
 
 Distance* Distance::GetInstance()
 {
@@ -27,8 +28,10 @@ float Distance::GetDistance(DistanceSensor sensor)
 
 void Distance::SetFrontServo(float angle)
 {
-    // TODO convert to +-90deg
-    srv_front->SetSteerAngle(angle);
+    float offset = PI / 2.0f;
+    float servo_angle = angle + offset;
+
+    srv_front->SetSteerAngle(servo_angle);
 }
 
 void Distance::Process()
@@ -42,7 +45,7 @@ Distance::Distance()
     srv_front->Enable();
 
     tof_front = new TOF_L1(0x20,
-                           400,
+                           50,
                            200,
                            TOF_FRONT_XSDN_Port,
                            TOF_FRONT_XSDN_Pin);

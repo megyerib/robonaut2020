@@ -11,6 +11,7 @@
 #include "Timepiece.h"
 #include "Trace.h"
 #include "WaitDistance.h"
+#include "WaitTime.h"
 
 typedef enum
 {
@@ -35,9 +36,12 @@ private:
     Timepiece*      clock;
     Trace*          trace;
     WaitDistance*   delayDistance;
+    //WaitTime*       delayTime;
 
     QualiState      state;
     QualiState      recover;
+
+    Pd_Controller*  dist_ctrl;
 
     void WaitState();
 

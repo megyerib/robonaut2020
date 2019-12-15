@@ -12,8 +12,9 @@ static Steering* steering;
 static Traction* motor;
 static TrackDetector* track;
 static Distance*    distance;
+static float srv_angle;
 
-TestTask::TestTask() : CyclicTask((char*)"TEST", 200, MAIN_TASK_PRIO, 512)
+TestTask::TestTask() : CyclicTask((char*)"TEST", 20, MAIN_TASK_PRIO, 256)
 {
 
 }
@@ -39,6 +40,7 @@ void TestTask::TaskInit()
 	track = TrackDetector::GetInstance();
 
 	distance = Distance::GetInstance();
+	srv_angle = 0.0f;
 }
 
 void TestTask::TaskFunction()
@@ -52,6 +54,12 @@ void TestTask::TaskFunction()
 	(void) ch1;
 	(void) ch2;
 	(void) ch3;
+
+
+	track->Process();
+
+	steering->SetLine(track->GetFrontLine(), 0);
+	distance->SetFrontServo(steering->GetFrontAngle());
 
 	distance->Process();
 }

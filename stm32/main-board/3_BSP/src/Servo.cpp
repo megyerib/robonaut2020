@@ -351,11 +351,11 @@ void Servo::LoadCfg()
     }
     else if (type == ANALOG)
     {
-        config.Rad_min      = 25;
+        config.Rad_min      = 49;   // TODO
         config.Rad_30deg    = 49;
         config.Rad_90deg    = 85;
         config.Rad_150deg   = 121;
-        config.Rad_max      = 145;
+        config.Rad_max      = 121;  // TODO
 
         timCfg.Period       = 1249;
         timCfg.Prescaler    = 2879;

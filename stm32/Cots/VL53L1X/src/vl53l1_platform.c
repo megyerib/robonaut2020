@@ -293,7 +293,7 @@ VL53L1_Error VL53L1_GetTickCount(
 	VL53L1_Error status  = VL53L1_ERROR_NONE;
 
 	//*ptick_count_ms = timeGetTime();
-	*ptick_count_ms = 0;
+	*ptick_count_ms = HAL_GetTick();
 
 #ifdef VL53L1_LOG_ENABLE
 	trace_print(

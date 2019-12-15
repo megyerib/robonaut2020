@@ -3,8 +3,8 @@
 
 #define SINGLE_SLOW_P   (15.0f)
 #define SINGLE_SLOW_D   (3.0f)
-#define SINGLE_FAST_P   (7.0f)
-#define SINGLE_FAST_D   (1.4f)
+#define SINGLE_FAST_P   (15.0f)
+#define SINGLE_FAST_D   (3.0f)
 
 Steering::Steering()
 {

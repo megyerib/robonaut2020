@@ -2,9 +2,6 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
-
-#define TOF_CS1_Pin         GPIO_PIN_15
-#define TOF_CS1_GPIO_Port   GPIOC
 #define FREE3_LED_Pin       GPIO_PIN_3
 #define FREE3_LED_GPIO_Port GPIOB
 #define FREE2_Pin           GPIO_PIN_4
@@ -26,8 +23,8 @@ TOF_L1::TOF_L1()
     status              = VL53L1_ERROR_NONE;
     timingBudget_ms     = 200;
 
-    XSDN_Port           = TOF_CS1_GPIO_Port;
-    XSDN_Pin            = TOF_CS1_Pin;
+    XSDN_Port           = TOF_FRONT_XSDN_Port;
+    XSDN_Pin            = TOF_FRONT_XSDN_Pin;
 }
 
 TOF_L1::TOF_L1(uint8_t             const Addr,
@@ -39,6 +36,9 @@ TOF_L1::TOF_L1(uint8_t             const Addr,
     i2c = ToF_I2c::GetInstance();
 
     InitXsdnGpio();
+
+    // TODO: For the I2C bus
+    HAL_GPIO_WritePin(GPIOC, TOF_XSDN3_Pin, GPIO_PIN_SET);
 
     Dev->I2cDevAddr      = Addr;
     Dev->I2cHandle       = i2c->GetHandle();
