@@ -142,13 +142,23 @@ void RemoteHw::HandleInputCapture()
 
 			if (period < lastPeriod[i])
 			{
-				lastPulse[i] = period;
+				lastPulse[i] = period; // Output value
+
+				if (lastPulse[i] >= VALID_LOW && lastPulse[i] <= VALID_HIGH)
+				{
+					valid[i] = true; // To avoid erroneous first values
+				}
 			}
 
 			lastPeriod[i]  = period;
 			lastCapture[i] = capture;
 		}
 	}
+}
+
+bool RemoteHw::IsValid(RemoteHwChannel ch)
+{
+	return valid[ch];
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
