@@ -135,11 +135,11 @@ void Car::CheckDeadmanSwitch()
 void Car::FollowStateMachine()
 {
     // Speed.
-    if (distance->GetDistance(ToF_Front) > 0.3f)
+    if (distance->GetDistance(ToF_Front) > 0.6f)
     {
-        motor->SetDutyCycle(0.1f);
+        motor->SetDutyCycle(0.15f);
     }
-    else if (distance->GetDistance(ToF_Front) < 0.25f)
+    else if (distance->GetDistance(ToF_Front) < 0.4f)
     {
         motor->SetDutyCycle(-0.1f);
     }
