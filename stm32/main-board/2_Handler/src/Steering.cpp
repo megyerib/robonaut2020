@@ -1,10 +1,10 @@
 #include "Steering.h"
 #include "Defines.h"
 
-#define SINGLE_SLOW_P   (0.5f)
-#define SINGLE_SLOW_D   (0.1f)
-#define SINGLE_FAST_P   (0.5f)
-#define SINGLE_FAST_D   (0.1f)
+#define SINGLE_SLOW_P   (7.0f)
+#define SINGLE_SLOW_D   (1.4f)
+#define SINGLE_FAST_P   (7.0f)
+#define SINGLE_FAST_D   (1.4f)
 
 Steering::Steering()
 {

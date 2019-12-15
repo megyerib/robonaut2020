@@ -39,8 +39,8 @@ void Q1Task::TaskFunction()
 
 	if (mode == RemMode1)
 	{
-	    //steering->SetMode(SingleLineFollow_Slow);
-		//car->StateMachine();
+	    car->SetSteeringMode(SteeringMode::SingleLineFollow_Slow);
+		car->StateMachine();
 
 	    //steering->SetMode(Free);
 	    //steering->SetAngleManual(current_set, 0.0f);

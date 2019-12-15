@@ -96,6 +96,11 @@ void Car::StateMachine()
     }
 }
 
+void Car::SetSteeringMode(SteeringMode mode)
+{
+    wheels->SetMode(mode);
+}
+
 Car::Car()
 {
     radio         = Starter::GetInstance();
@@ -132,7 +137,7 @@ void Car::FollowStateMachine()
     // Speed.
     if (distance->GetDistance(ToF_Front) > 0.3f)
     {
-     //   motor->SetDutyCycle(0.2f);
+        motor->SetDutyCycle(0.0f);
     }
     else if (distance->GetDistance(ToF_Front) < 0.25f)
     {

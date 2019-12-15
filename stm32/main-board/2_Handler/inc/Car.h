@@ -44,6 +44,7 @@ private:
 public:
     static Car* GetInstance();
     void StateMachine();
+    void SetSteeringMode(SteeringMode mode);
 
 private:
     Car();

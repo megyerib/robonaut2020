@@ -7,6 +7,7 @@
 #include "TractionTask.h"
 #include "SteeringTask.h"
 #include "EncoderTask.h"
+#include "DistanceTask.h"
 
 // Application tasks
 #include "Q1Task.h"
