@@ -17,16 +17,17 @@ void Car::StateMachine()
             //if (radio->GetState() == StarterState::Go)
             {
                 state = QualiState::Follow;
+                wheels->SetMode(SingleLineFollow_Slow);
             }
             break;
         }
         case Straight:
         {
             // Speed
-            motor->SetDutyCycle(0.3f);
+            motor->SetDutyCycle(0.2f);
 
             // Direction
-            wheels->SetLine(lineSensor->GetFrontLine(), lineSensor->GetRearLine());
+            wheels->SetLine(lineSensor->GetFrontLine(), 0);
 
             // Transition
             if (lineSensor->GetTrackType() == TrackType::Braking)
@@ -52,10 +53,10 @@ void Car::StateMachine()
         case Turn:
         {
             // Speed
-            motor->SetDutyCycle(0.15f);
+            motor->SetDutyCycle(0.1f);
 
             // Direction
-            wheels->SetLine(lineSensor->GetFrontLine(), lineSensor->GetRearLine());
+            wheels->SetLine(lineSensor->GetFrontLine(), 0);
 
             // Transition
             if (lineSensor->GetTrackType() == TrackType::Acceleration)
@@ -115,14 +116,15 @@ Car::Car()
 
 void Car::CheckDeadmanSwitch()
 {
-    if (remote->GetValue(RemoteChannel::ThrottleCh) < 0.4f)
+    // TODO !!!!!
+    //if (remote->GetValue(RemoteChannel::ThrottleCh) < 0.4f)
     {
         state = QualiState::Stop;
     }
-    else
-    {
+    //else
+    //{
         state = recover;
-    }
+    //}
 }
 
 void Car::FollowStateMachine()
@@ -130,7 +132,7 @@ void Car::FollowStateMachine()
     // Speed.
     if (distance->GetDistance(ToF_Front) > 0.3f)
     {
-        motor->SetDutyCycle(0.2f);
+     //   motor->SetDutyCycle(0.2f);
     }
     else if (distance->GetDistance(ToF_Front) < 0.25f)
     {
@@ -142,6 +144,6 @@ void Car::FollowStateMachine()
     }
 
     // Direction.
-    wheels->SetLine(lineSensor->GetFrontLine(), lineSensor->GetRearLine());
+    wheels->SetLine(lineSensor->GetFrontLine(), 0);
 }
 
