@@ -24,7 +24,7 @@ void Q1Task::TaskInit()
 	motor    = Traction::GetInstance();
 
 	steering = Steering::GetInstance();
-	steering->SetMode(Free);
+
 	steering->EnableSteering(true);
 }
 
@@ -34,13 +34,24 @@ void Q1Task::TaskFunction()
 	float      steerAngle = remote->GetValue(SteeringCh);
 	RemoteMode mode       = remote->GetMode();
 
+	float current_get;
+	float current_set = 0.0f;
+
 	if (mode == RemMode1)
 	{
-		car->StateMachine();
+	    //steering->SetMode(SingleLineFollow_Slow);
+		//car->StateMachine();
+
+	    //steering->SetMode(Free);
+	    //steering->SetAngleManual(current_set, 0.0f);
+
+	    //current_get = steering->GetFrontAngle();
+
 	}
 
 	if (mode == RemMode2)
 	{
+	    steering->SetMode(Free);
 		RcRun(throttle, steerAngle);
 	}
 }
