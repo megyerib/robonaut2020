@@ -1,8 +1,8 @@
 #include "Steering.h"
 #include "Defines.h"
 
-#define SINGLE_SLOW_P   (10.0f)
-#define SINGLE_SLOW_D   (2.0f)
+#define SINGLE_SLOW_P   (15.0f)
+#define SINGLE_SLOW_D   (3.0f)
 #define SINGLE_FAST_P   (7.0f)
 #define SINGLE_FAST_D   (1.4f)
 
@@ -38,12 +38,14 @@ void Steering::SetMode(SteeringMode mode)
 
     switch (mode)
     {
+        case DualLineFollow_Slow:
         case SingleLineFollow_Slow:
         {
             front.controller->Set_P_Term(SINGLE_SLOW_P);
             front.controller->Set_D_Term(SINGLE_SLOW_D);
             break;
         }
+        case DualLineFollow_Fast:
         case SingleLineFollow_Fast:
         {
             front.controller->Set_P_Term(SINGLE_FAST_P);
@@ -102,13 +104,14 @@ void Steering::Process()
             SetRearAngle(0.0f);
             break;
         }
-    	case DualLineFollow:
+    	case DualLineFollow_Slow:
+    	case DualLineFollow_Fast:
     	{
     	    front.controller->Process(front.line);
-    	    rear.controller->Process(rear.line);
+    	    //rear.controller->Process(rear.line);
 
     	    SetFrontAngle(front.controller->GetControlValue());
-    	    SetRearAngle(rear.controller->GetControlValue());
+    	    SetRearAngle(-front.controller->GetControlValue());
     	    break;
     	}
         case Free:

@@ -53,7 +53,7 @@ void Car::StateMachine()
         case Turn:
         {
             // Speed
-            motor->SetDutyCycle(0.1f);
+            motor->SetDutyCycle(0.15f);
 
             // Direction
             wheels->SetLine(lineSensor->GetFrontLine(), 0);
@@ -121,7 +121,6 @@ Car::Car()
 
 void Car::CheckDeadmanSwitch()
 {
-    // TODO !!!!!
     if (remote->GetValue(RemoteChannel::ThrottleCh) < 0.4f)
     {
         state = QualiState::Stop;

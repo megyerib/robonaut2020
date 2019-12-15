@@ -8,7 +8,8 @@
 typedef enum
 {
 	Off,
-	DualLineFollow,
+	DualLineFollow_Slow,
+	DualLineFollow_Fast,
 	SingleLineFollow_Fast,
 	SingleLineFollow_Slow,
 	Free,             // Angles are set manually

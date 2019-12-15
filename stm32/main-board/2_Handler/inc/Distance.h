@@ -3,7 +3,7 @@
 #include "ToF_4m_L1.h"
 #include "Servo.h"
 
-#define DISTANCE_SAMPLING_CYCLE   100 /* ms */
+#define DISTANCE_SAMPLING_CYCLE   50 /* ms */
 
 typedef enum
 {
