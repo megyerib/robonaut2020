@@ -122,14 +122,14 @@ Car::Car()
 void Car::CheckDeadmanSwitch()
 {
     // TODO !!!!!
-    //if (remote->GetValue(RemoteChannel::ThrottleCh) < 0.4f)
+    if (remote->GetValue(RemoteChannel::ThrottleCh) < 0.4f)
     {
         state = QualiState::Stop;
     }
-    //else
-    //{
+    else
+    {
         state = recover;
-    //}
+    }
 }
 
 void Car::FollowStateMachine()

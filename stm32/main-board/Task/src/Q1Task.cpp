@@ -38,7 +38,6 @@ void Q1Task::TaskFunction()
 	{
 	    car->SetSteeringMode(SteeringMode::SingleLineFollow_Slow);
 		car->StateMachine();
-
 	}
 
 	if (mode == RemMode2)
