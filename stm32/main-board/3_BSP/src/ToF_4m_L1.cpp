@@ -54,6 +54,7 @@ TOF_L1::TOF_L1(uint8_t             const Addr,
 
 void TOF_L1::Init()
 {
+    vTaskDelay(2000);
     Restart();
 
     if (isAddressForgotten() == true)
@@ -61,6 +62,7 @@ void TOF_L1::Init()
         ChangeAddress();
     }
 
+    vTaskDelay(80);
     ConfigureDevice();
 }
 
@@ -71,7 +73,7 @@ void TOF_L1::Process()
     if(status == VL53L1_ERROR_NONE)
     {
         // DEB
-        HAL_GPIO_WritePin(FREE2_GPIO_Port, FREE2_Pin, GPIO_PIN_SET);
+        HAL_GPIO_WritePin(FREE3_LED_GPIO_Port, FREE3_LED_Pin, GPIO_PIN_SET);
 
         status = VL53L1_GetRangingMeasurementData(Dev, &RangingData);
         if (status == VL53L1_ERROR_NONE)
@@ -79,23 +81,24 @@ void TOF_L1::Process()
             uint16_t milimeter = RangingData.RangeMilliMeter;
             if (milimeter > 300)
             {
-                HAL_GPIO_WritePin(FREE1_GPIO_Port, FREE1_Pin, GPIO_PIN_SET);
+                //HAL_GPIO_WritePin(FREE1_GPIO_Port, FREE1_Pin, GPIO_PIN_SET);
             }
             else
             {
-                HAL_GPIO_WritePin(FREE1_GPIO_Port, FREE1_Pin, GPIO_PIN_RESET);
+                //HAL_GPIO_WritePin(FREE1_GPIO_Port, FREE1_Pin, GPIO_PIN_RESET);
             }
         }
         else
         {
-            HAL_GPIO_WritePin(FREE1_GPIO_Port, FREE1_Pin, GPIO_PIN_RESET);
+            //HAL_GPIO_WritePin(FREE1_GPIO_Port, FREE1_Pin, GPIO_PIN_RESET);
         }
         status = VL53L1_ClearInterruptAndStartMeasurement(Dev);
     }
     else
     {
         // DEB
-        HAL_GPIO_WritePin(FREE2_GPIO_Port, FREE2_Pin, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(FREE3_LED_GPIO_Port, FREE3_LED_Pin, GPIO_PIN_RESET);
+        //Init();
     }
 }
 
@@ -130,12 +133,27 @@ void TOF_L1::InitXsdnGpio()
 bool TOF_L1::isAddressForgotten()
 {
     bool isForgotten = true;
+//    uint16_t newAddr = Dev->I2cDevAddr;
 
     // Try to reach the device with the desired custom I2C Address.
     if (isDeviceConnected() == true)
     {
         isForgotten = false;
     }
+//    else
+//    {
+//        // Try to reach at the default I2C Address.
+//        Dev->I2cDevAddr = 0x52;
+//        if (isDeviceConnected() == true)
+//        {
+//            isForgotten = false;
+//        }
+//        else
+//        {
+//            // Not found on the default address
+//        }
+//        Dev->I2cDevAddr = newAddr;
+//    }
 
     return isForgotten;
 }
@@ -153,7 +171,7 @@ void TOF_L1::Startup()
 void TOF_L1::Restart()
 {
     Shutdown();
-    vTaskDelay(80);
+    vTaskDelay(200);
     Startup();
 }
 

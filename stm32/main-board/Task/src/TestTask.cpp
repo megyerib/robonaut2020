@@ -8,10 +8,10 @@
 
 #include "Distance.h"
 
-static Steering* steening;
+static Steering* steering;
 static Traction* motor;
 static TrackDetector* track;
-static Distance* dist;
+static Distance*    distance;
 
 TestTask::TestTask() : CyclicTask((char*)"TEST", 200, MAIN_TASK_PRIO, 256)
 {
@@ -27,17 +27,18 @@ TestTask* TestTask::Init()
 
 void TestTask::TaskInit()
 {
-	steening = Steering::GetInstance();
-	steening->EnableSteering(true);
-	steening->SetMode(Free);
-	steening->SetAngleManual(0, 0);
+	steering = Steering::GetInstance();
+	steering->EnableSteering(true);
+	steering->SetMode(Free);
+	steering->SetAngleManual(0, 0);
+	steering->SetMode(SingleLineFollow_Slow);
 
 	motor = Traction::GetInstance();
 	motor->SetSpeed(0.0);
 
 	track = TrackDetector::GetInstance();
 
-	dist = Distance::GetInstance();
+	distance = Distance::GetInstance();
 }
 
 void TestTask::TaskFunction()
@@ -52,5 +53,5 @@ void TestTask::TaskFunction()
 	(void) ch2;
 	(void) ch3;
 
-	dist->Process();
+	distance->Process();
 }
