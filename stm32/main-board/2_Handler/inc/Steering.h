@@ -32,6 +32,7 @@ public:
 	void SetMode(SteeringMode mode);
 	void SetLine(float front_line /* m */, float rear_line /* m */); // For LineFollow modes
 	void SetAngleManual(float front_angle /* rad */, float rear_angle /* rad */); // For Free mode
+	float GetFrontAngle();
 	void Process();
 	void EnableSteering(bool enable);
 

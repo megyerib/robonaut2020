@@ -75,8 +75,11 @@ void Steering::SetLine(float front_line, float rear_line)
 //!  Left end                   Right end
 void Steering::SetAngleManual(float front_angle, float rear_angle)
 {
-	SetFrontAngle(front_angle);
-	SetRearAngle(rear_angle);
+	//SetFrontAngle(front_angle);
+	//SetRearAngle(rear_angle);
+
+	front.angle = front_angle;
+	rear.angle = rear_angle;
 }
 
 void Steering::Process()
@@ -134,6 +137,16 @@ void Steering::SetRearAngle(float angle /* rad */)
 	float servo_angle   = (angle + offset) * scale;
 
 	rear.servo->SetSteerAngle(servo_angle);
+}
+
+float Steering::GetFrontAngle()
+{
+    float angle;
+    float offset        = PI/2.0f;
+
+    angle = front.servo->GetSteerAngle() - offset;
+
+    return angle;
 }
 
 void Steering::EnableSteering(bool enable)
