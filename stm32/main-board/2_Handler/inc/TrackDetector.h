@@ -42,7 +42,7 @@ private:
 	float frontLinePos = 0;
 	uint16_t frontLineCnt = 0;
 
-	TrackType type = None;
+	TrackType trackType = None;
 
 	TrackDetector();
 	void GetFrontLineData();

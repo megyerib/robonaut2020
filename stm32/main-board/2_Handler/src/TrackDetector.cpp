@@ -2,7 +2,7 @@
 #include <cstddef>
 #include "base64.h"
 #include <cstdlib>
-#include "WaitTime.h"
+#include "WaitDistance.h"
 
 #define LINE_CNT_FILTER_SIZE   4
 
@@ -25,7 +25,7 @@ void TrackDetector::SetMode(TrackMode mode)
 
 TrackType TrackDetector::GetTrackType()
 {
-	return type;
+	return trackType;
 }
 
 // TODO thread safety!!!
@@ -101,44 +101,55 @@ void TrackDetector::EvalFrontLine()
 
 void TrackDetector::EvalTrackType()
 {
-	static enum {single, triple} state = single;
-	static WaitTime wait;
+	static enum {slow, accel, fast, brake} state = slow;
+	static WaitDistance wait;
 	static int typeIndex;
 
 	switch (state)
 	{
-		case single:
+		case slow:
 		{
 			if (frontLineCnt == 3)
 			{
-				wait.Wait_s(2);
-				state = triple;
+				wait.Wait_m(1.1);
+				state = accel;
+				trackType = TrackType::Acceleration;
 				typeIndex++;
 			}
 			break;
 		}
-		case triple:
+		case accel:
 		{
 			if (frontLineCnt == 1 && wait.IsExpired())
 			{
-				state = single;
+				state = fast;
+				trackType = TrackType::Single;
+				typeIndex++;
+			}
+			break;
+		}
+		case fast:
+		{
+			if (frontLineCnt == 3)
+			{
+				wait.Wait_m(3.2);
+				state = brake;
+				trackType = TrackType::Braking;
+				typeIndex++;
+			}
+			break;
+		}
+		case brake:
+		{
+			if (frontLineCnt == 1 && wait.IsExpired())
+			{
+				state = slow;
+				trackType = TrackType::Single;
 				typeIndex++;
 			}
 			break;
 		}
 	}
-
-	// Get track type
-	const TrackType SpeedrunTypes[4] =
-	{
-		Single,
-		Acceleration,
-		Single,
-		Braking
-	};
-
-	typeIndex %= 4;
-	type = SpeedrunTypes[typeIndex];
 }
 
 void TrackDetector::Process()
