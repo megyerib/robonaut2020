@@ -5,8 +5,8 @@
 #define CAR_WAIT_BEFORE_BRAKING     (1.0f)   /* m */
 #define CAR_WAIT_BEFORE_ACCEL       (0.05f)  /* m */
 
-#define CAR_DIST_CTRL_P             (0.8f)
-#define CAR_DIST_CTRL_D             (0.16f)
+#define CAR_DIST_CTRL_P             (0.1f)
+#define CAR_DIST_CTRL_D             (0.02f)
 
 Car* Car::GetInstance()
 {
@@ -41,7 +41,7 @@ void Car::StateMachine()
             if (lineSensor->GetTrackType() == TrackType::Braking)
             {
                 recover = state = QualiState::Decelerate;
-                //delayDistance->Wait_m(CAR_WAIT_BEFORE_BRAKING);
+                delayDistance->Wait_m(CAR_WAIT_BEFORE_BRAKING);
                 //delayTime->Wait_ms(1000);
             }
             break;
@@ -49,7 +49,7 @@ void Car::StateMachine()
         case Decelerate:
         {
             // Wait distance
-            //if (delayDistance->IsExpired() == true)
+            if (delayDistance->IsExpired() == true)
             //if (delayTime->IsExpired() == true)
             {
                 // Adjust controllers
@@ -72,7 +72,7 @@ void Car::StateMachine()
             if (lineSensor->GetTrackType() == TrackType::Acceleration)
             {
                 recover = state = QualiState::Accelerate;
-                //delayDistance->Wait_m(CAR_WAIT_BEFORE_ACCEL);
+                delayDistance->Wait_m(CAR_WAIT_BEFORE_ACCEL);
                 //delayTime->Wait_ms(500);
             }
             break;
@@ -80,7 +80,7 @@ void Car::StateMachine()
         case Accelerate:
         {
             // Wait distance
-            //if (delayDistance->IsExpired() == true)
+            if (delayDistance->IsExpired() == true)
             //if (delayTime->IsExpired() == true)
             {
                 // Adjust controllers
@@ -115,6 +115,7 @@ void Car::SetSteeringMode(SteeringMode mode)
 
 Car::Car()
 {
+    encoder       = Encoder::GetInstance();
     radio         = Starter::GetInstance();
     remote        = Remote::GetInstance();
     wheels        = Steering::GetInstance();
@@ -128,11 +129,13 @@ Car::Car()
 
     wheels->SetMode(SingleLineFollow_Slow);
 
-    state   = Turn; // Wait
-    recover = Turn;
+    state   = Follow; // Wait
+    recover = Follow;
 
     dist_ctrl = new Pd_Controller(CAR_DIST_CTRL_P, CAR_DIST_CTRL_D);
     dist_ctrl->SetSetpoint(0.6);
+
+    prescaler = 0;
 }
 
 void Car::CheckDeadmanSwitch()
@@ -149,32 +152,53 @@ void Car::CheckDeadmanSwitch()
 
 void Car::FollowStateMachine()
 {
-    // Speed.
-    if (distance->GetDistance(ToF_Front) > 0.6f)
+    float dst = distance->GetDistance(ToF_Front);
+
+    if (dst < 4.0f && dst > 0.0f)
     {
-        motor->SetDutyCycle(0.15f);
-    }
-    else if (distance->GetDistance(ToF_Front) < 0.4f)
-    {
-        motor->SetDutyCycle(-0.1f);
-    }
-    else
-    {
-        motor->SetDutyCycle(0.0f);
+        // Speed.
+        if (dst > 0.6f)
+        {
+            motor->SetDutyCycle(0.15f);
+        }
+        else if (dst < 0.4f)
+        {
+            if (encoder->GetSpeed() > 0)
+            {
+                motor->SetDutyCycle(-0.1f);
+            }
+            else
+            {
+                motor->SetDutyCycle(0.0f);
+            }
+        }
+        else
+        {
+            float d = (dst - 0.4) / 0.2 * 0.15f;
+
+            motor->SetDutyCycle(d);
+        }
     }
 
-    dist_ctrl->Process(distance->GetDistance(ToF_Front));
-    float speed = dist_ctrl->GetControlValue();
-    if (speed > 0.25f)
-    {
-        speed = 0.25f;
-    }
-    else if (speed < -0.1f)
-    {
-        speed = -0.1f;
-    }
-    else {}
-    //motor->SetDutyCycle(speed);
+//    if (prescaler == 2)
+//    {
+//        dist_ctrl->Process(distance->GetDistance(ToF_Front));
+//        float speed = dist_ctrl->GetControlValue();
+//        if (speed > 0.20f)
+//        {
+//            speed = 0.20f;
+//        }
+//        else if (speed < -0.1f)
+//        {
+//            speed = -0.1f;
+//        }
+//        else {}
+//        motor->SetDutyCycle(speed);
+//
+//        prescaler = 0;
+//    }
+//    prescaler++;
+
 
     // Direction.
     wheels->SetLine(lineSensor->GetFrontLine(), 0);

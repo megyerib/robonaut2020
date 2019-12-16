@@ -2,7 +2,7 @@
 #include <cstddef>
 #include "base64.h"
 #include <cstdlib>
-#include "WaitTime.h"
+#include "WaitDistance.h"
 
 #define LINE_CNT_FILTER_SIZE   4
 
@@ -102,7 +102,7 @@ void TrackDetector::EvalFrontLine()
 void TrackDetector::EvalTrackType()
 {
 	static enum {slow, accel, fast, brake} state = slow;
-	static WaitTime wait;
+	static WaitDistance wait;
 	static int typeIndex;
 
 	switch (state)
@@ -111,7 +111,7 @@ void TrackDetector::EvalTrackType()
 		{
 			if (frontLineCnt == 3)
 			{
-				wait.Wait_s(2);
+				wait.Wait_m(1.1);
 				state = accel;
 				trackType = TrackType::Acceleration;
 				typeIndex++;
@@ -132,7 +132,7 @@ void TrackDetector::EvalTrackType()
 		{
 			if (frontLineCnt == 3)
 			{
-				wait.Wait_s(3);
+				wait.Wait_m(3.1);
 				state = brake;
 				trackType = TrackType::Braking;
 				typeIndex++;

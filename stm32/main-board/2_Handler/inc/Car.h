@@ -3,6 +3,7 @@
 #include "Starter.h"
 #include "Remote.h"
 
+#include "Encoder.h"
 #include "Steering.h"
 #include "Traction.h"
 #include "TrackDetector.h"
@@ -27,6 +28,7 @@ typedef enum
 class Car
 {
 private:
+    Encoder*        encoder;
     Starter*        radio;
     Remote*         remote;
     Steering*       wheels;
@@ -54,4 +56,6 @@ private:
     Car();
     void CheckDeadmanSwitch();
     void FollowStateMachine();
+
+    int prescaler;
 };
