@@ -28,7 +28,9 @@ float Distance::GetDistance(DistanceSensor sensor)
 
 void Distance::SetFrontServo(float angle)
 {
-    float offset = PI / 2.0f;
+	angle *= 0.8f; // Magic value measured during calibration
+
+	float offset = PI / 2.0f - 0.0389f;
     float servo_angle = angle + offset;
 
     srv_front->SetSteerAngle(servo_angle);

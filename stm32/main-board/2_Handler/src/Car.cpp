@@ -202,6 +202,6 @@ void Car::FollowStateMachine()
 
     // Direction.
     wheels->SetLine(lineSensor->GetFrontLine(), 0);
-    distance->SetFrontServo(wheels->GetFrontAngle());
+    distance->SetFrontServo(wheels->GetFrontAngle()/2);
 }
 

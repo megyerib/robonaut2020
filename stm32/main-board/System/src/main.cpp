@@ -17,8 +17,10 @@ int main(void)
 
 		// Application tasks
 		Q1Task       :: Init();
+
 	    //TestTask     :: Init();
 		//ServoCalibTask :: Init();
+		//SensorServoCalibTask :: Init();
 
 
 	system->OsStart();
