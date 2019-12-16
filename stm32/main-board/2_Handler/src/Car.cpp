@@ -1,9 +1,12 @@
 #include "Car.h"
 
-#define CAR_SPEED_STRAIGHT          (0.15f)   /* % */
-#define CAR_SPEED_TURN              (0.10f)  /* % */
-#define CAR_WAIT_BEFORE_BRAKING     (1.0f)   /* m */
-#define CAR_WAIT_BEFORE_ACCEL       (0.05f)  /* m */
+#define CAR_SPEED_STRAIGHT          (0.22f)   /* % */
+#define CAR_SPEED_DECEL             (0.19)    /* % */
+#define CAR_SPEED_TURN              (0.16f)   /* % */
+#define CAR_SPEED_ACCEL             (0.19f)   /* % */
+
+#define CAR_WAIT_BEFORE_BRAKING     (1.0f)    /* m */
+#define CAR_WAIT_BEFORE_ACCEL       (0.3f)   /* m */
 
 #define CAR_DIST_CTRL_P             (0.1f)
 #define CAR_DIST_CTRL_D             (0.02f)
@@ -35,12 +38,14 @@ void Car::StateMachine()
             motor->SetDutyCycle(CAR_SPEED_STRAIGHT);
 
             // Direction
-            wheels->SetLine(lineSensor->GetFrontLine(), 0);
+            //wheels->SetLine(lineSensor->GetFrontLine(), 0);
 
             // Transition
             if (lineSensor->GetTrackType() == TrackType::Braking)
             {
                 recover = state = QualiState::Decelerate;
+                motor->SetDutyCycle(CAR_SPEED_STRAIGHT - 0.02f);
+                wheels->SetMode(SingleLine_Race_Decel);
                 delayDistance->Wait_m(CAR_WAIT_BEFORE_BRAKING);
                 //delayTime->Wait_ms(1000);
             }
@@ -53,7 +58,7 @@ void Car::StateMachine()
             //if (delayTime->IsExpired() == true)
             {
                 // Adjust controllers
-                wheels->SetMode(SingleLineFollow_Slow);
+                wheels->SetMode(SingleLine_Race_Turn);
 
                 // Transition
                 recover = state = QualiState::Turn;
@@ -66,12 +71,14 @@ void Car::StateMachine()
             motor->SetDutyCycle(CAR_SPEED_TURN);
 
             // Direction
-            wheels->SetLine(lineSensor->GetFrontLine(), 0);
+            //wheels->SetLine(lineSensor->GetFrontLine(), 0);
 
             // Transition
             if (lineSensor->GetTrackType() == TrackType::Acceleration)
             {
                 recover = state = QualiState::Accelerate;
+                motor->SetDutyCycle(CAR_SPEED_STRAIGHT - 0.02f);
+                wheels->SetMode(SingleLine_Race_Accel);
                 delayDistance->Wait_m(CAR_WAIT_BEFORE_ACCEL);
                 //delayTime->Wait_ms(500);
             }
@@ -84,7 +91,7 @@ void Car::StateMachine()
             //if (delayTime->IsExpired() == true)
             {
                 // Adjust controllers
-                wheels->SetMode(SingleLineFollow_Fast);
+                wheels->SetMode(DualLine_Race_Straight);
 
                 // Transition
                 recover = state = QualiState::Straight;
@@ -99,6 +106,7 @@ void Car::StateMachine()
         case Stop:
         {
             motor->SetDutyCycle(0.0f);
+            //wheels->SetLine(lineSensor->GetFrontLine(), 0);
             break;
         }
         default:
@@ -106,6 +114,8 @@ void Car::StateMachine()
             break;
         }
     }
+
+    wheels->SetLine(lineSensor->GetFrontLine(), 0);
 }
 
 void Car::SetSteeringMode(SteeringMode mode)
@@ -129,8 +139,8 @@ Car::Car()
 
     wheels->SetMode(SingleLineFollow_Slow);
 
-    state   = Follow; // Wait
-    recover = Follow;
+    state   = Turn; // Wait
+    recover = Turn;
 
     dist_ctrl = new Pd_Controller(CAR_DIST_CTRL_P, CAR_DIST_CTRL_D);
     dist_ctrl->SetSetpoint(0.6);

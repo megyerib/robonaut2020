@@ -342,7 +342,7 @@ void Servo::LoadCfg()
     {
         config.Rad_min      = 62;
         config.Rad_30deg    = 76;
-        config.Rad_90deg    = 90;
+        config.Rad_90deg    = 88;
         config.Rad_150deg   = 114;
         config.Rad_max      = 118;
 

@@ -12,6 +12,14 @@ typedef enum
 	DualLineFollow_Fast,
 	SingleLineFollow_Fast,
 	SingleLineFollow_Slow,
+
+	DualLine_Race_Straight,
+
+	SingleLine_Race_Straight,
+	SingleLine_Race_Decel,
+	SingleLine_Race_Turn,
+	SingleLine_Race_Accel,
+
 	Free,             // Angles are set manually
 	//Reverse
 	// ...
