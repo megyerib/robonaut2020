@@ -39,9 +39,15 @@ void SensorMeasure::Measure(AdcInput input)
 
 void SensorMeasure::GetMeasurements(AdcMeasType* dest)
 {
+#if (SENSOR_REV == 1)
+	for (int i = 0; i < SENSOR_SIZE; i++)
+	{
+		dest[i] = measurements[SENSOR_SIZE - 1 - i];
+	}
+#elif (SENSOR_REV == 2)
 	size_t size  = SENSOR_SIZE * sizeof(AdcMeasType);
-
 	memcpy(dest, measurements, size);
+#endif
 }
 
 void SensorMeasure::InitMux()
@@ -101,7 +107,13 @@ void SensorMeasure::InitAdc()
 	handle.Init.ClockPrescaler        = ADC_CLOCK_ASYNC_DIV1;
 	handle.Init.Resolution            = ADC_RESOLUTION_12B;
 	handle.Init.DataAlign             = ADC_DATAALIGN_RIGHT;
+
+#if (SENSOR_REV == 1)
+	handle.Init.ScanConvMode          = ADC_SCAN_DIRECTION_BACKWARD;
+#elif (SENSOR_REV == 2)
 	handle.Init.ScanConvMode          = ADC_SCAN_DIRECTION_FORWARD;
+#endif
+
 	handle.Init.EOCSelection          = ADC_EOC_SINGLE_CONV;
 	handle.Init.LowPowerAutoWait      = DISABLE;
 	handle.Init.LowPowerAutoPowerOff  = DISABLE;

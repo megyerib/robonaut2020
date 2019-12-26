@@ -18,6 +18,8 @@
 // SPI rev2: --> | 31                                                          0 |        Sensors
 //           --> | 31                                                          0 |        LEDs
 
+// ADCs measuring order is reversed also the order of the measuring set is reverse
+
 #if (SENSOR_REV == 1)
 
 #define MUX_E    PB2
@@ -38,7 +40,7 @@
 #define TCRT_LE  PB11
 #define MUX_S2   PB12
 #define MUX_S1   PB13
-#define MUX_S0   B14
+#define MUX_S0   PB14
 
 #endif
 

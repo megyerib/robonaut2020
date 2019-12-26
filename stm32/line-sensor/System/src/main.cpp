@@ -1,13 +1,13 @@
+#include <TestLoop.h>
 #include "System.h"
 #include "LineDetectorLoop.h"
-#include "SpiTestLoop.h"
 
 int main(void)
 {
 	System::Init();
 
 	LineDetectorLoop::Run();
-	//SpiTestLoop::Run();
+	//TestLoop::RunLineTest();
 }
 
 // TODO Időmérés (usec)
