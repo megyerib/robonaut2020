@@ -1,4 +1,5 @@
 #pragma once
+#include "Stm32Gpio.h"
 
 // SENSOR CONFIGURATION CHECKER
 //
@@ -8,6 +9,38 @@
 //               1 : 2019
 //               2 : 2020
 // SENSOR_SIZE : Number of TCRT5000 sensors (24 or 32)
+
+// REVISION DIFFERENCES ------------------------------------------------------------------------------------------------
+
+// SPI rev1: --> | 15                          0 | 31                         16 | --+    Sensors
+//               |  8         15 |  0          7 | 24         31 | 16         23 | <-+    LEDs
+//
+// SPI rev2: --> | 31                                                          0 |        Sensors
+//           --> | 31                                                          0 |        LEDs
+
+#if (SENSOR_REV == 1)
+
+#define MUX_E    PB2
+#define TCRT_OE  PA8
+#define LED_LE   PA12
+#define LED_OE   PA15
+#define TCRT_LE  PA11
+#define MUX_S2   PA4
+#define MUX_S1   PB0
+#define MUX_S0   PB1
+
+#else
+
+#define MUX_E    PB0
+#define TCRT_OE  PB1
+#define LED_LE   PB2
+#define LED_OE   PB10
+#define TCRT_LE  PB11
+#define MUX_S2   PB12
+#define MUX_S1   PB13
+#define MUX_S0   B14
+
+#endif
 
 // CONFIGURATION VALIDITY CHECK ----------------------------------------------------------------------------------------
 

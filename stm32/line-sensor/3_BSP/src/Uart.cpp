@@ -58,17 +58,20 @@ void Uart::Init()
 	/* USART1 clock enable */
 	__HAL_RCC_USART1_CLK_ENABLE();
 
-	handle.Instance = USART1;
-	handle.Init.BaudRate = 115200;
-	handle.Init.WordLength = UART_WORDLENGTH_8B;
-	handle.Init.StopBits = UART_STOPBITS_1;
-	handle.Init.Parity = UART_PARITY_NONE;
-	handle.Init.Mode = UART_MODE_TX_RX;
-	handle.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-	handle.Init.OverSampling = UART_OVERSAMPLING_16;
-	handle.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
+	handle.Instance                    = USART1;
+	handle.Init.BaudRate               = 115200;
+	handle.Init.WordLength             = UART_WORDLENGTH_8B;
+	handle.Init.StopBits               = UART_STOPBITS_1;
+	handle.Init.Parity                 = UART_PARITY_NONE;
+	handle.Init.Mode                   = UART_MODE_TX_RX;
+	handle.Init.HwFlowCtl              = UART_HWCONTROL_NONE;
+	handle.Init.OverSampling           = UART_OVERSAMPLING_16;
+	handle.Init.OneBitSampling         = UART_ONE_BIT_SAMPLE_DISABLE;
+
+#if (SENSOR_REV == 2)
 	handle.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_SWAP_INIT;
-	handle.AdvancedInit.Swap = UART_ADVFEATURE_SWAP_ENABLE; // PCB defect, sorry
+	handle.AdvancedInit.Swap           = UART_ADVFEATURE_SWAP_ENABLE;
+#endif
 
 	if (HAL_UART_Init(&handle) != HAL_OK)
 	{

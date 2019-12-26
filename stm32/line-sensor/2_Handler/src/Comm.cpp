@@ -1,5 +1,8 @@
 #include "Comm.h"
+extern "C"
+{
 #include "base64.h"
+}
 
 #define OUTPUT_DATA_SIZE 30
 

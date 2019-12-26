@@ -6,7 +6,7 @@
 	#error Define HAL_SPI_MODULE_ENABLED in stm32xxxx_hal_conf.h
 #endif
 
-#define LOCAL_BUFFER_SIZE (4u)
+#define LOCAL_BUFFER_SIZE (8u)  /* Rev1 sensor needs double size */
 
 class Spi
 {
