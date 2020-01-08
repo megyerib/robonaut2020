@@ -1,7 +1,7 @@
 [PreviousGenFiles]
-HeaderPath=C:/Users/b/Desktop/dma/Inc
+HeaderPath=E:/Git/robonaut2020/stm32/dma-c/Inc
 HeaderFiles=stm32f4xx_it.h;stm32f4xx_hal_conf.h;main.h;
-SourcePath=C:/Users/b/Desktop/dma/Src
+SourcePath=E:/Git/robonaut2020/stm32/dma-c/Src
 SourceFiles=stm32f4xx_it.c;stm32f4xx_hal_msp.c;main.c;
 
 [PreviousLibFiles]

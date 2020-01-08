@@ -10,7 +10,9 @@ void dma()
 {
 	static uint8_t msg[] = "Hello!\n";
 
-	HAL_UART_Transmit_DMA(&huart2, msg, strlen((char*)msg));
+	HAL_StatusTypeDef status = HAL_UART_Transmit_DMA(&huart2, msg, strlen((char*)msg));
+
+	(void) status;
 
 	HAL_Delay(1000);
 }
