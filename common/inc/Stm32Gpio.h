@@ -4,6 +4,10 @@
 #include "stm32f0xx_hal.h"
 #endif
 
+#ifdef STM32F446xx
+#include "stm32f4xx_hal.h"
+#endif
+
 typedef enum
 {
 	PA0 = 0,
@@ -16,6 +20,7 @@ typedef enum
 }
 GpioPin;
 
+#ifdef STM32F030xx
 GPIO_TypeDef* const GpioPorts[] =
 {
 	[0] = GPIOA,
@@ -27,6 +32,22 @@ GPIO_TypeDef* const GpioPorts[] =
 };
 
 #define GPIO_PORT_NUM 6
+#endif
+
+// TODO
+#ifdef STM32F446xx
+GPIO_TypeDef* const GpioPorts[] =
+{
+	[0] = GPIOA,
+	[1] = GPIOB,
+	[2] = GPIOC,
+	[3] = GPIOD,
+	[4] = nullptr,
+	[5] = GPIOF
+};
+
+#define GPIO_PORT_NUM 6
+#endif
 
 class Stm32Gpio
 {

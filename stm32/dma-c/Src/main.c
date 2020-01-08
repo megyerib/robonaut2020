@@ -95,7 +95,7 @@ int main(void)
   MX_DMA_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-
+  dma_uart_init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
