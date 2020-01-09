@@ -2,24 +2,28 @@
 #include <string.h>
 #include "stm32f4xx_hal.h"
 
+#define RX_BUF_SIZE    (50u)
+
 extern UART_HandleTypeDef huart2;
 extern DMA_HandleTypeDef hdma_usart2_tx;
 extern DMA_HandleTypeDef hdma_usart2_rx;
 
-static uint8_t rxBuf[50];
+static uint8_t rxBuf[RX_BUF_SIZE];
+static uint8_t txBuf[RX_BUF_SIZE] = "Hello!\n";
 
 void dma_uart_init()
 {
-	HAL_UART_Receive_DMA(&huart2, rxBuf, 50);
+	HAL_UART_Receive_DMA(&huart2, rxBuf, RX_BUF_SIZE);
 
 	huart2.Instance->CR1 |= USART_CR1_IDLEIE;
+
+	huart2.Instance->CR1 &= ~(USART_CR1_TXEIE | USART_CR1_RXNEIE); // Disable unnecessary interrupts
+	// Transfer complete interrupt is necessary
 }
 
 void dma()
 {
-	static uint8_t msg[] = "Hello!\n";
-
-	HAL_StatusTypeDef status = HAL_UART_Transmit_DMA(&huart2, msg, strlen((char*)msg));
+	HAL_StatusTypeDef status = HAL_UART_Transmit_DMA(&huart2, txBuf, strlen((char*)txBuf));
 
 	(void) status;
 
@@ -30,7 +34,8 @@ void dma_check_idle()
 {
 	static int begin = 0;
 	static int end = 0;
-	static char buf[50];
+	static char buf[RX_BUF_SIZE];
+	static char bufSize = 0;
 
 	if (huart2.Instance->SR & USART_SR_IDLE)
 	{
@@ -39,21 +44,32 @@ void dma_check_idle()
 		if (begin < end)
 		{
 			int size = end - begin;
-			strncpy(buf, &rxBuf[begin], size);
+			strncpy(buf, (char*) &rxBuf[begin], size);
+
+			bufSize = size;
 		}
 		else
 		{
-			// TODO circular copy
+			// Circular copy
+			int size1 = RX_BUF_SIZE - begin;
+			int size2 = end;
+
+			strncpy(buf, (char*) &rxBuf[begin], size1);
+			strncpy(&buf[size1], (char*) rxBuf, size2);
+
+			bufSize = size1 + size2;
 		}
 
+		memcpy(txBuf, buf, bufSize);
+		txBuf[bufSize] = (uint8_t) '\0';
+
 		begin = end;
+
+		huart2.Instance->SR &= ~USART_SR_IDLE; // Clear idle flag
+		(void) huart2.Instance->DR; // Dummy read to clear idle flag
 	}
-
-	// TODO this flag only clears when I look after it in the SFRs tab.
-	// This bug only occurs until the first successful clear. FML
-	// K, I'm out for today.
-	// https://electronics.stackexchange.com/questions/222638/clearing-usart-uart-interrupt-flags-in-an-stm32
-
-	huart2.Instance->SR &= ~USART_SR_IDLE; // Clear idle flag
-
+	else
+	{
+		(void) huart2.Instance->SR;
+	}
 }
