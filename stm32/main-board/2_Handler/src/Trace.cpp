@@ -13,10 +13,17 @@ Trace* Trace::GetInstance()
 
 void Trace::Process()
 {
-	static char rxBuf[100]; // static -> doesn't consume task
-	size_t size;
-	uart->Receive(rxBuf, &size);
+	static char rxBuf[100] = "Hello!\n"; // static -> doesn't consume task
+	static size_t bufSize = 7;
 
-	static char buf[] = "Hello!\n";
-	uart->Send(buf, 7);
+	size_t tmpSize;
+
+	uart->Receive(rxBuf, &tmpSize);
+
+	if (tmpSize > 0)
+	{
+		bufSize = tmpSize;
+	}
+
+	uart->Send(rxBuf, bufSize);
 }

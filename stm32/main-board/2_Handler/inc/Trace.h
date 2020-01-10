@@ -1,8 +1,8 @@
 #pragma once
 
+#include <TraceUart.h>
 #include <stdint.h>
 #include <stddef.h>
-#include "TraceUart.h"
 
 class Trace
 {
