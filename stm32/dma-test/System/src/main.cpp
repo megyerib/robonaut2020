@@ -5,7 +5,9 @@
 int main(void)
 {
 	System::GetInstance();
+
 	DmaUart2* uart = DmaUart2::GetInstance();
+
 	char msg[] = "Hello!\n";
 
 	while (1)

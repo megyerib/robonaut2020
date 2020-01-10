@@ -164,6 +164,8 @@ void Steering::Process()
 
             break;
         }
+        default:
+        	break;
     }
 }
 

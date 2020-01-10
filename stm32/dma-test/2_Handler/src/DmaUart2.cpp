@@ -1,6 +1,10 @@
 #include "DmaUart2.h"
 #include <cstring> /* memcpy */
 
+UART_HandleTypeDef* DmaUart2::huart2;
+DMA_HandleTypeDef* DmaUart2::hdma_usart2_tx;
+DMA_HandleTypeDef* DmaUart2::hdma_usart2_rx;
+
 DmaUart2* DmaUart2::GetInstance()
 {
 	static DmaUart2 instance;
@@ -14,8 +18,8 @@ DmaUart2::DmaUart2()
 	hdma_usart2_rx = new DMA_HandleTypeDef;
 
 	InitGpio();
-	InitDma();
 	InitUart();
+	InitDma();
 }
 
 void DmaUart2::InitDma()
@@ -42,11 +46,8 @@ void DmaUart2::InitDma()
 	hdma_usart2_tx->Init.Mode                = DMA_NORMAL;
 	hdma_usart2_tx->Init.Priority            = DMA_PRIORITY_LOW;
 	hdma_usart2_tx->Init.FIFOMode            = DMA_FIFOMODE_DISABLE;
-	if (HAL_DMA_Init(hdma_usart2_tx) != HAL_OK)
-	{
-		//Error_Handler();
-	}
 
+	HAL_DMA_Init(hdma_usart2_tx);
 	__HAL_LINKDMA(huart2,hdmatx,*hdma_usart2_tx);
 
 	/* USART2_RX Init */
@@ -60,11 +61,8 @@ void DmaUart2::InitDma()
 	hdma_usart2_rx->Init.Mode                = DMA_CIRCULAR;
 	hdma_usart2_rx->Init.Priority            = DMA_PRIORITY_LOW;
 	hdma_usart2_rx->Init.FIFOMode            = DMA_FIFOMODE_DISABLE;
-	if (HAL_DMA_Init(hdma_usart2_rx) != HAL_OK)
-	{
-		//Error_Handler();
-	}
 
+	HAL_DMA_Init(hdma_usart2_rx);
 	__HAL_LINKDMA(huart2,hdmarx,*hdma_usart2_rx);
 }
 
@@ -82,6 +80,7 @@ void DmaUart2::InitGpio()
 	GPIO_InitStruct.Pull      = GPIO_PULLUP;
 	GPIO_InitStruct.Speed     = GPIO_SPEED_FREQ_VERY_HIGH;
 	GPIO_InitStruct.Alternate = GPIO_AF7_USART2;
+
 	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 }
 
@@ -98,10 +97,10 @@ void DmaUart2::InitUart()
 	huart2->Init.HwFlowCtl = UART_HWCONTROL_NONE;
 	huart2->Init.OverSampling = UART_OVERSAMPLING_16;
 
-	if (HAL_UART_Init(huart2) != HAL_OK)
-	{
-		//Error_Handler();
-	}
+	HAL_UART_Init(huart2);
+
+	HAL_NVIC_SetPriority(USART2_IRQn, 0, 0);
+	HAL_NVIC_EnableIRQ(USART2_IRQn);
 }
 
 void DmaUart2::Send(void* data, size_t size)
@@ -111,4 +110,9 @@ void DmaUart2::Send(void* data, size_t size)
 
 	memcpy(buf, data, size);
 	HAL_UART_Transmit_DMA(huart2, (uint8_t*)data, size);
+}
+
+void USART2_IRQHandler(void)
+{
+	HAL_UART_IRQHandler(DmaUart2::huart2);
 }

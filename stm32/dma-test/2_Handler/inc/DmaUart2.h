@@ -7,11 +7,11 @@ public:
 	static DmaUart2* GetInstance();
 	void Send(void* data, size_t size);
 
-private:
-	UART_HandleTypeDef* huart2;
-	DMA_HandleTypeDef* hdma_usart2_tx;
-	DMA_HandleTypeDef* hdma_usart2_rx;
+	static UART_HandleTypeDef* huart2;
+	static DMA_HandleTypeDef* hdma_usart2_tx;
+	static DMA_HandleTypeDef* hdma_usart2_rx;
 
+private:
 	DmaUart2();
 	void InitDma();
 	void InitGpio();

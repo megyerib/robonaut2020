@@ -5,11 +5,8 @@
 
 System::System()
 {
-	HAL_NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_4);
-
+	HAL_Init();
 	Clock_Config();
-
-	HAL_InitTick(TICK_INT_PRIORITY);
 }
 
 System* System::GetInstance()

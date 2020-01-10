@@ -2,7 +2,7 @@
 #include <string.h>
 #include "stm32f4xx_hal.h"
 
-#define RX_BUF_SIZE    (50u)
+#define RX_BUF_SIZE    (1024u)
 
 extern UART_HandleTypeDef huart2;
 extern DMA_HandleTypeDef hdma_usart2_tx;
@@ -35,41 +35,45 @@ void dma_check_idle()
 	static int begin = 0;
 	static int end = 0;
 	static char buf[RX_BUF_SIZE];
-	static char bufSize = 0;
+	static int bufSize = 0;
 
 	if (huart2.Instance->SR & USART_SR_IDLE)
 	{
-		end = 50 - hdma_usart2_rx.Instance->NDTR;
+		end = RX_BUF_SIZE - hdma_usart2_rx.Instance->NDTR;
 
-		if (begin < end)
+		// The Rx line can go idle during the transmission.
+		// Waiting for line feed character.
+		if (rxBuf[(end-1)%RX_BUF_SIZE] == '\n')
 		{
-			int size = end - begin;
-			strncpy(buf, (char*) &rxBuf[begin], size);
+			if (begin <= end)
+			{
+				int size = end - begin;
+				strncpy(buf, (char*) &rxBuf[begin], size);
 
-			bufSize = size;
+				bufSize = size;
+			}
+			else
+			{
+				// Circular copy
+				int size1 = RX_BUF_SIZE - begin;
+				int size2 = end;
+
+				strncpy(buf, (char*) &rxBuf[begin], size1);
+				strncpy(&buf[size1], (char*) rxBuf, size2);
+
+				bufSize = size1 + size2;
+			}
+
+			begin = end;
+
+			// Do something with the data
+			{
+				memcpy(txBuf, buf, bufSize);
+				txBuf[bufSize] = (uint8_t) '\0';
+			}
 		}
-		else
-		{
-			// Circular copy
-			int size1 = RX_BUF_SIZE - begin;
-			int size2 = end;
-
-			strncpy(buf, (char*) &rxBuf[begin], size1);
-			strncpy(&buf[size1], (char*) rxBuf, size2);
-
-			bufSize = size1 + size2;
-		}
-
-		memcpy(txBuf, buf, bufSize);
-		txBuf[bufSize] = (uint8_t) '\0';
-
-		begin = end;
 
 		huart2.Instance->SR &= ~USART_SR_IDLE; // Clear idle flag
 		(void) huart2.Instance->DR; // Dummy read to clear idle flag
-	}
-	else
-	{
-		(void) huart2.Instance->SR;
 	}
 }

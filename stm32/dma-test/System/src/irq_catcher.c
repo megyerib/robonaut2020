@@ -9,6 +9,17 @@ void CatchUnhandledIrq()
 	while (!proceed); // Set breakpoint here
 }
 
+/*__weak void Reset_Handler(void)                 {CatchUnhandledIrq();}
+__weak void NMI_Handler(void)                   {CatchUnhandledIrq();}
+__weak void HardFault_Handler(void)             {CatchUnhandledIrq();}
+__weak void MemManage_Handler(void)             {CatchUnhandledIrq();}
+__weak void BusFault_Handler(void)              {CatchUnhandledIrq();}
+__weak void UsageFault_Handler(void)            {CatchUnhandledIrq();}
+__weak void SVC_Handler(void)                   {CatchUnhandledIrq();}
+__weak void DebugMon_Handler(void)              {CatchUnhandledIrq();}
+__weak void PendSV_Handler(void)                {CatchUnhandledIrq();}
+__weak void SysTick_Handler(void)               {CatchUnhandledIrq();}*/
+
 __weak void WWDG_IRQHandler(void)               {CatchUnhandledIrq();}
 __weak void PVD_IRQHandler(void)                {CatchUnhandledIrq();}
 __weak void TAMP_STAMP_IRQHandler(void)         {CatchUnhandledIrq();}

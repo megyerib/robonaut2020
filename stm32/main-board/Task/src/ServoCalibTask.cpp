@@ -45,4 +45,6 @@ void ServoCalibTask::TaskFunction()
 
 	steering->SetAngleManual(frontAngle, rearAngle);
 	cmp = steering->GetFrontAngle();
+
+	UNUSED(cmp);
 }

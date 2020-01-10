@@ -71,10 +71,11 @@ extern "C" void USART1_IRQHandler()
 	Stm32Uart::IrqHandler(Uart1);
 }
 
-extern "C" void USART2_IRQHandler()
+// TODO Re-enable
+/*extern "C" void USART2_IRQHandler()
 {
 	Stm32Uart::IrqHandler(Uart2);
-}
+}*/
 
 extern "C" void USART3_IRQHandler()
 {
