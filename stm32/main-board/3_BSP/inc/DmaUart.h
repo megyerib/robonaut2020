@@ -2,7 +2,7 @@
 
 #include "stm32f4xx_hal.h"
 
-typedef void(*ClkEn)();
+typedef void(*ClkEn)(void);
 
 typedef struct
 {

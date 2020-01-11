@@ -1,7 +1,7 @@
 #include "LsUartRear.h"
 
 #define RX_BUF_SIZE (100u)
-#define UART_IRQ_HANDLER    USART5_IRQHandler
+#define UART_IRQ_HANDLER    UART5_IRQHandler
 #define DMA_RX_IRQ_HANDLER  DMA1_Stream0_IRQHandler
 #define DMA_TX_IRQ_HANDLER  DMA1_Stream7_IRQHandler
 #define CLASS_NAME          LsUartRear
@@ -23,7 +23,7 @@ static DMA_UART_CFG uart_cfg =
 	.gpioRxPort    = GPIOD,
 	.gpioRxPin     = GPIO_PIN_2,
 
-	.gpioAf        = GPIO_AF7_UART5,
+	.gpioAf        = GPIO_AF8_UART5,
 
 	// DMA
 	.dmaClkEn      = [](){__HAL_RCC_DMA1_CLK_ENABLE();},

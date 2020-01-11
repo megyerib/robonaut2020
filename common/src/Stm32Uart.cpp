@@ -87,10 +87,10 @@ extern "C" void UART4_IRQHandler()
 	Stm32Uart::IrqHandler(Uart4);
 }
 
-extern "C" void UART5_IRQHandler()
+/*extern "C" void UART5_IRQHandler()
 {
 	Stm32Uart::IrqHandler(Uart5);
-}
+}*/
 
 extern "C" void USART6_IRQHandler()
 {
