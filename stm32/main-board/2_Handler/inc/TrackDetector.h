@@ -1,7 +1,6 @@
 #pragma once
 
-#include "LsUart3.h"
-#include "LsUart5.h"
+#include "SerialProcessor.h"
 #include "Line.h"
 
 #define LINE_SAMPLING_CYCLE    5 /* ms */
@@ -33,8 +32,8 @@ public:
 	void Process(); // For the OS task
 
 private:
-	LsUart3* uartFront;
-	LsUart5* uartRear;
+	SerialProcessor* frontProcessor;
+	SerialProcessor* rearProcessor;
 
 	Line frontLine = {0};
 	Line rearLine = {0};

@@ -9,8 +9,8 @@ int main(void)
 	// Module & task initializations
 
 		// Service tasks
-		/*TrackTask    :: Init();
-		TractionTask :: Init();
+		TrackTask    :: Init();
+		/*TractionTask :: Init();
 		SteeringTask :: Init();
 		EncoderTask  :: Init();
 		DistanceTask :: Init();
@@ -22,7 +22,7 @@ int main(void)
 		//ServoCalibTask :: Init();
 		//SensorServoCalibTask :: Init();
 
-		TraceTask::Init();
+		//TraceTask::Init();
 
 	system->OsStart();
 

@@ -16,7 +16,7 @@ void DmaUart::Send(void* buf, size_t size)
 	UNUSED(status);
 }
 
-void DmaUart::Receive(void* dst, size_t* size)
+void DmaUart::Receive(void* dst, size_t* size) // Todo target buffer size
 {
 	size_t end = cfg.rxBufSize - hdma_uart_rx.Instance->NDTR;
 	uint8_t* buf = (uint8_t*) dst;

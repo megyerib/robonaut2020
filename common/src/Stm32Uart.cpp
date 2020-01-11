@@ -77,10 +77,10 @@ extern "C" void USART1_IRQHandler()
 	Stm32Uart::IrqHandler(Uart2);
 }*/
 
-extern "C" void USART3_IRQHandler()
+/*extern "C" void USART3_IRQHandler()
 {
 	Stm32Uart::IrqHandler(Uart3);
-}
+}*/
 
 extern "C" void UART4_IRQHandler()
 {

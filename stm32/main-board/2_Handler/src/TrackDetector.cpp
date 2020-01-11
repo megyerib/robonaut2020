@@ -4,12 +4,18 @@
 #include <cstdlib>
 #include "WaitDistance.h"
 
+#include "LsUartFront.h"
+#include "LsUartRear.h"
+
 #define LINE_CNT_FILTER_SIZE   4
 
 TrackDetector::TrackDetector()
 {
-	uartFront = LsUart3::GetInstance();
-	uartRear  = LsUart5::GetInstance();
+	DmaUart* uartFront = (DmaUart*) LsUartFront::GetInstance();
+	DmaUart* uartRear  = (DmaUart*) LsUartRear::GetInstance();;
+
+	frontProcessor = new SerialProcessor(uartFront, 100);
+	rearProcessor  = new SerialProcessor(uartRear,  100);
 }
 
 TrackDetector* TrackDetector::GetInstance()
@@ -36,16 +42,16 @@ float TrackDetector::GetFrontLine()
 
 void TrackDetector::GetFrontLineData()
 {
-	uint8_t base64_buf[30];
+	uint8_t base64_buf[50];
 	size_t  base64_size;
 
-	uint8_t decoded_buf[30];
-	size_t  decoded_size;
+	frontProcessor->GetLastLine(base64_buf, &base64_size);
 
-	uartFront->GetMessage(base64_buf, &base64_size);
-
-	if (base64_size > 0)
+	if (base64_size == 11)
 	{
+		uint8_t decoded_buf[11];
+		size_t  decoded_size;
+
 		base64_decode(base64_buf, decoded_buf, base64_size, &decoded_size);
 
 		if (decoded_size == sizeof(Line))
@@ -55,6 +61,26 @@ void TrackDetector::GetFrontLineData()
 	}
 }
 
+void TrackDetector::GetRearLineData()
+{
+	uint8_t base64_buf[50];
+	size_t  base64_size;
+
+	rearProcessor->GetLastLine(base64_buf, &base64_size);
+
+	if (base64_size == 11)
+	{
+		uint8_t decoded_buf[11];
+		size_t  decoded_size;
+
+		base64_decode(base64_buf, decoded_buf, base64_size, &decoded_size);
+
+		if (decoded_size == sizeof(Line))
+		{
+			rearLine = *((Line*) decoded_buf);
+		}
+	}
+}
 void TrackDetector::EvalFrontLine()
 {
 	// Set filtered line count
@@ -159,6 +185,8 @@ void TrackDetector::Process()
 	EvalFrontLine();
 
 	// Rear
+	GetRearLineData();
+	// TODO EvalRearLine();
 
 	// Track type
 	EvalTrackType();
