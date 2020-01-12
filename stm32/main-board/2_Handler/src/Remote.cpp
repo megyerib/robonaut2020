@@ -12,7 +12,7 @@ const RemoteHwChannel chTable[CH_Num] =
 
 Remote::Remote()
 {
-	remoteHw = RemoteHw::GetInstance();
+	remoteHw = RemoteHwDma::GetInstance();
 
 	calData[SteeringCh].min = 995;
 	calData[SteeringCh].mid = 1509;
@@ -35,7 +35,7 @@ float Remote::GetValue(RemoteChannel ch)
 	uint16_t pulse = remoteHw->GetPulseWidth(chTable[ch]);
 	RemoteCal& cal = calData[ch];
 
-	if (!remoteHw->IsValid(chTable[ch])) // First measurment
+	if (pulse == 0) // First measurment
 	{
 		return 0;
 	}

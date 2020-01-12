@@ -61,7 +61,8 @@ CLASS_NAME::CLASS_NAME() : DmaUart(uart_cfg)
 
 // Interrupt handlers ----------------------------------------------------------
 
-extern "C" void DMA_RX_IRQ_HANDLER(void)
+// TODO set this UART to USART6
+/*extern "C" void DMA_RX_IRQ_HANDLER(void)
 {
 	CLASS_NAME::GetInstance()->HandleDmaRxIrq();
 }
@@ -74,4 +75,4 @@ extern "C" void DMA_TX_IRQ_HANDLER(void)
 extern "C" void UART_IRQ_HANDLER(void)
 {
 	CLASS_NAME::GetInstance()->HandleUartIrq();
-}
+}*/

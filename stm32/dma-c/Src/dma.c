@@ -1,79 +1,97 @@
+/**
+  ******************************************************************************
+  * File Name          : dma.c
+  * Description        : This file provides code for the configuration
+  *                      of all the requested memory to memory DMA transfers.
+  ******************************************************************************
+  * @attention
+  *
+  * <h2><center>&copy; Copyright (c) 2020 STMicroelectronics.
+  * All rights reserved.</center></h2>
+  *
+  * This software component is licensed by ST under BSD 3-Clause license,
+  * the "License"; You may not use this file except in compliance with the
+  * License. You may obtain a copy of the License at:
+  *                        opensource.org/licenses/BSD-3-Clause
+  *
+  ******************************************************************************
+  */
+
+/* Includes ------------------------------------------------------------------*/
 #include "dma.h"
-#include <string.h>
-#include "stm32f4xx_hal.h"
 
-#define RX_BUF_SIZE    (1024u)
+/* USER CODE BEGIN 0 */
 
-extern UART_HandleTypeDef huart2;
-extern DMA_HandleTypeDef hdma_usart2_tx;
-extern DMA_HandleTypeDef hdma_usart2_rx;
+/* USER CODE END 0 */
 
-static uint8_t rxBuf[RX_BUF_SIZE];
-static uint8_t txBuf[RX_BUF_SIZE] = "Hello!\n";
+/*----------------------------------------------------------------------------*/
+/* Configure DMA                                                              */
+/*----------------------------------------------------------------------------*/
 
-void dma_uart_init()
+/* USER CODE BEGIN 1 */
+
+/* USER CODE END 1 */
+
+/** 
+  * Enable DMA controller clock
+  */
+void MX_DMA_Init(void) 
 {
-	HAL_UART_Receive_DMA(&huart2, rxBuf, RX_BUF_SIZE);
 
-	huart2.Instance->CR1 |= USART_CR1_IDLEIE;
+  /* DMA controller clock enable */
+  __HAL_RCC_DMA2_CLK_ENABLE();
+  __HAL_RCC_DMA1_CLK_ENABLE();
 
-	huart2.Instance->CR1 &= ~(USART_CR1_TXEIE | USART_CR1_RXNEIE); // Disable unnecessary interrupts
-	// Transfer complete interrupt is necessary
+  /* DMA interrupt init */
+  /* DMA1_Stream0_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Stream0_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Stream0_IRQn);
+  /* DMA1_Stream1_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Stream1_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Stream1_IRQn);
+  /* DMA1_Stream2_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Stream2_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Stream2_IRQn);
+  /* DMA1_Stream3_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Stream3_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Stream3_IRQn);
+  /* DMA1_Stream4_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Stream4_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Stream4_IRQn);
+  /* DMA1_Stream5_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Stream5_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Stream5_IRQn);
+  /* DMA1_Stream6_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Stream6_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Stream6_IRQn);
+  /* DMA1_Stream7_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Stream7_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Stream7_IRQn);
+  /* DMA2_Stream1_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA2_Stream1_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA2_Stream1_IRQn);
+  /* DMA2_Stream2_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA2_Stream2_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA2_Stream2_IRQn);
+  /* DMA2_Stream6_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA2_Stream6_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA2_Stream6_IRQn);
+  /* DMA2_Stream7_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA2_Stream7_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA2_Stream7_IRQn);
+
 }
 
-void dma()
-{
-	HAL_StatusTypeDef status = HAL_UART_Transmit_DMA(&huart2, txBuf, strlen((char*)txBuf));
+/* USER CODE BEGIN 2 */
 
-	(void) status;
+/* USER CODE END 2 */
 
-	HAL_Delay(1000);
-}
+/**
+  * @}
+  */
 
-void dma_check_idle()
-{
-	static int begin = 0;
-	static int end = 0;
-	static char buf[RX_BUF_SIZE];
-	static int bufSize = 0;
+/**
+  * @}
+  */
 
-	if (huart2.Instance->SR & USART_SR_IDLE)
-	{
-		end = RX_BUF_SIZE - hdma_usart2_rx.Instance->NDTR;
-
-		// The Rx line can go idle during the transmission.
-		// Waiting for line feed character.
-		if (rxBuf[(end-1)%RX_BUF_SIZE] == '\n')
-		{
-			if (begin <= end)
-			{
-				int size = end - begin;
-				strncpy(buf, (char*) &rxBuf[begin], size);
-
-				bufSize = size;
-			}
-			else
-			{
-				// Circular copy
-				int size1 = RX_BUF_SIZE - begin;
-				int size2 = end;
-
-				strncpy(buf, (char*) &rxBuf[begin], size1);
-				strncpy(&buf[size1], (char*) rxBuf, size2);
-
-				bufSize = size1 + size2;
-			}
-
-			begin = end;
-
-			// Do something with the data
-			{
-				memcpy(txBuf, buf, bufSize);
-				txBuf[bufSize] = (uint8_t) '\0';
-			}
-		}
-
-		huart2.Instance->SR &= ~USART_SR_IDLE; // Clear idle flag
-		(void) huart2.Instance->DR; // Dummy read to clear idle flag
-	}
-}
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
