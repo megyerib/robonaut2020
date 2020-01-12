@@ -65,39 +65,6 @@ void Stm32Uart::IrqHandler(UartInstance inst)
 	}
 }
 
-#ifdef STM32F446xx
-extern "C" void USART1_IRQHandler()
-{
-	Stm32Uart::IrqHandler(Uart1);
-}
-
-// TODO Re-enable
-/*extern "C" void USART2_IRQHandler()
-{
-	Stm32Uart::IrqHandler(Uart2);
-}*/
-
-/*extern "C" void USART3_IRQHandler()
-{
-	Stm32Uart::IrqHandler(Uart3);
-}*/
-
-extern "C" void UART4_IRQHandler()
-{
-	Stm32Uart::IrqHandler(Uart4);
-}
-
-/*extern "C" void UART5_IRQHandler()
-{
-	Stm32Uart::IrqHandler(Uart5);
-}*/
-
-extern "C" void USART6_IRQHandler()
-{
-	Stm32Uart::IrqHandler(Uart3);
-}
-#endif /* STM32F446xx */
-
 #ifdef STM32F030xx
 extern "C" void USART1_IRQHandler()
 {

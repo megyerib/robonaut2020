@@ -10,19 +10,18 @@ int main(void)
 
 		// Service tasks
 		//TrackTask    :: Init();
-		/*TractionTask :: Init();
-		SteeringTask :: Init();
-		EncoderTask  :: Init();
-		DistanceTask :: Init();
+		//TractionTask :: Init();
+		//SteeringTask :: Init();
+		//EncoderTask  :: Init();
+		//DistanceTask :: Init();
+		TraceTask::Init();
 
 		// Application tasks
-		Q1Task       :: Init();*/
+		//Q1Task       :: Init();*/
 
-	    TestTask     :: Init();
+	    //TestTask     :: Init();
 		//ServoCalibTask :: Init();
 		//SensorServoCalibTask :: Init();
-
-		//TraceTask::Init();
 
 	system->OsStart();
 

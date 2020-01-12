@@ -3,8 +3,8 @@
 
 #define RX_BUF_SIZE (1u) /* No Rx */
 #define UART_IRQ_HANDLER    USART2_IRQHandler
-//#define DMA_RX_IRQ_HANDLER  DMA1_Stream5_IRQHandler
 #define DMA_TX_IRQ_HANDLER  DMA1_Stream6_IRQHandler
+//#define DMA_RX_IRQ_HANDLER  DMA1_Stream5_IRQHandler
 #define CLASS_NAME          MotorUart
 
 static uint8_t rxBuffer[RX_BUF_SIZE];
