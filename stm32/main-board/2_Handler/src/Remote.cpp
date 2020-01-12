@@ -12,7 +12,7 @@ const RemoteHwChannel chTable[CH_Num] =
 
 Remote::Remote()
 {
-	remoteHw = RemoteHwDma::GetInstance();
+	remoteHw = RemoteHw::GetInstance();
 
 	calData[SteeringCh].min = 995;
 	calData[SteeringCh].mid = 1509;

@@ -1,7 +1,7 @@
 #pragma once
 
+#include <RemoteHw.h>
 #include <stdint.h>
-#include "RemoteHwDma.h"
 
 typedef enum
 {
@@ -47,7 +47,7 @@ private:
 	RemoteCal calData[CH_Num]  = {0};
 	bool calInProgress[CH_Num] = {false};
 	bool calStarted[CH_Num] = {false};
-	RemoteHwDma* remoteHw;
+	RemoteHw* remoteHw;
 
 	Remote();
 };
