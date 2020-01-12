@@ -15,4 +15,5 @@
 #define UART5_NVIC_PRIO           4
 #define MOTOR_UART_NVIC_PRIO      5
 #define STARTER_UART_NVIC_PRIO    2
+#define DMA_NVIC_PRIO             2
 #define REMOTE_NVIC_PRIO          1

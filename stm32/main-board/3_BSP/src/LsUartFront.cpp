@@ -1,4 +1,5 @@
 #include "LsUartFront.h"
+#include "NvicPrio.h"
 
 #define RX_BUF_SIZE (100u)
 #define UART_IRQ_HANDLER    USART3_IRQHandler
@@ -10,6 +11,9 @@ static uint8_t rxBuffer[RX_BUF_SIZE];
 
 static DMA_UART_CFG uart_cfg =
 {
+	.txEnabled     = true,
+	.rxEnabled     = true,
+
 	// Rx buffer
 	.rxBuf         = rxBuffer,
 	.rxBufSize     = RX_BUF_SIZE,
@@ -31,19 +35,19 @@ static DMA_UART_CFG uart_cfg =
 	.dmaTxStream   = DMA1_Stream3,
 	.dmaTxChannel  = DMA_CHANNEL_4,
 	.dmaTxIrq      = DMA1_Stream3_IRQn,
-	.dmaTxNvicPrio = 0, // TODO
+	.dmaTxNvicPrio = DMA_NVIC_PRIO,
 
 	.dmaRxStream   = DMA1_Stream1,
 	.dmaRxChannel  = DMA_CHANNEL_4,
 	.dmaRxIrq      = DMA1_Stream1_IRQn,
-	.dmaRxNvicPrio = 0, // TODO
+	.dmaRxNvicPrio = DMA_NVIC_PRIO,
 
 	// UART
 	.uartClkEn     = [](){__HAL_RCC_USART3_CLK_ENABLE();},
 	.uartInstance  = USART3,
 	.uartBaudRate  = 115200,
 	.uartIrq       = USART3_IRQn,
-	.uartNvicPrio  = 0, // TODO
+	.uartNvicPrio  = DMA_NVIC_PRIO,
 };
 
 // No touching needed ----------------------------------------------------------

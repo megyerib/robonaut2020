@@ -18,8 +18,10 @@ void DmaUart::Send(void* buf, size_t size)
 
 void DmaUart::Receive(void* dst, size_t* size) // Todo target buffer size
 {
-	size_t end = cfg.rxBufSize - hdma_uart_rx.Instance->NDTR;
 	uint8_t* buf = (uint8_t*) dst;
+	size_t end;
+
+	end = cfg.rxBufSize - hdma_uart_rx.Instance->NDTR;
 
 	if (rxBufIndex <= end)
 	{
@@ -76,8 +78,8 @@ void DmaUart::InitUart()
 	HAL_NVIC_EnableIRQ(cfg.uartIrq);
 
 	// Disable unnecessary interrupts
-	// Transfer complete interrupt is necessary
 	huart.Instance->CR1 &= ~(USART_CR1_TXEIE | USART_CR1_RXNEIE);
+	// Transfer complete interrupt is necessary
 }
 
 void DmaUart::InitGpio()
@@ -93,11 +95,17 @@ void DmaUart::InitGpio()
 	GPIO_InitStruct.Speed     = GPIO_SPEED_FREQ_VERY_HIGH;
 	GPIO_InitStruct.Alternate = cfg.gpioAf;
 
-	HAL_GPIO_Init(cfg.gpioTxPort, &GPIO_InitStruct);
+	if (cfg.txEnabled)
+	{
+		HAL_GPIO_Init(cfg.gpioTxPort, &GPIO_InitStruct);
+	}
 
 	GPIO_InitStruct.Pin       = cfg.gpioRxPin;
 
-	HAL_GPIO_Init(cfg.gpioRxPort, &GPIO_InitStruct);
+	if (cfg.rxEnabled)
+	{
+		HAL_GPIO_Init(cfg.gpioRxPort, &GPIO_InitStruct);
+	}
 }
 
 void DmaUart::InitDma()
@@ -117,8 +125,14 @@ void DmaUart::InitDma()
 	hdma_uart_tx.Init.Priority            = DMA_PRIORITY_LOW;
 	hdma_uart_tx.Init.FIFOMode            = DMA_FIFOMODE_DISABLE;
 
-	HAL_DMA_Init(&hdma_uart_tx);
-	__HAL_LINKDMA(&huart, hdmatx, hdma_uart_tx);
+	if (cfg.txEnabled)
+	{
+		HAL_DMA_Init(&hdma_uart_tx);
+		__HAL_LINKDMA(&huart, hdmatx, hdma_uart_tx);
+
+		HAL_NVIC_SetPriority(cfg.dmaTxIrq, 0, 0);
+		HAL_NVIC_EnableIRQ(cfg.dmaTxIrq);
+	}
 
 	// USART RX Init
 
@@ -133,14 +147,12 @@ void DmaUart::InitDma()
 	hdma_uart_rx.Init.Priority            = DMA_PRIORITY_LOW;
 	hdma_uart_rx.Init.FIFOMode            = DMA_FIFOMODE_DISABLE;
 
-	HAL_DMA_Init(&hdma_uart_rx);
-	__HAL_LINKDMA(&huart, hdmarx, hdma_uart_rx);
+	if (cfg.rxEnabled)
+	{
+		HAL_DMA_Init(&hdma_uart_rx);
+		__HAL_LINKDMA(&huart, hdmarx, hdma_uart_rx);
 
-	// Interrupts
-
-	HAL_NVIC_SetPriority(cfg.dmaTxIrq, 0, 0);
-	HAL_NVIC_EnableIRQ(cfg.dmaTxIrq);
-
-	HAL_NVIC_SetPriority(cfg.dmaRxIrq, 0, 0);
-	HAL_NVIC_EnableIRQ(cfg.dmaRxIrq);
+		HAL_NVIC_SetPriority(cfg.dmaRxIrq, 0, 0);
+		HAL_NVIC_EnableIRQ(cfg.dmaRxIrq);
+	}
 }

@@ -1,83 +1,81 @@
-#include <MotorUart.h>
-#include <cstring>
+#include "MotorUart.h"
 #include "NvicPrio.h"
 
-MotorUart::MotorUart() : Stm32Uart(Uart4)
+#define RX_BUF_SIZE (1u) /* No Rx */
+#define UART_IRQ_HANDLER    USART2_IRQHandler
+//#define DMA_RX_IRQ_HANDLER  DMA1_Stream5_IRQHandler
+#define DMA_TX_IRQ_HANDLER  DMA1_Stream6_IRQHandler
+#define CLASS_NAME          MotorUart
+
+static uint8_t rxBuffer[RX_BUF_SIZE];
+
+static DMA_UART_CFG uart_cfg =
 {
-	Init();
+	.txEnabled     = true,
+	.rxEnabled     = false, // There is no free DMA stream for Rx
 
-	//HAL_UART_Receive_IT(&handle, &rxBuffer[rxBufSize], 1);
-}
+	// Rx buffer
+	.rxBuf         = rxBuffer,
+	.rxBufSize     = RX_BUF_SIZE,
 
-MotorUart* MotorUart::GetInstance()
+	// GPIO
+	.gpioTxClkEn   = [](){__HAL_RCC_GPIOA_CLK_ENABLE();},
+	.gpioTxPort    = GPIOA,
+	.gpioTxPin     = GPIO_PIN_2,
+
+	.gpioRxClkEn   = [](){__HAL_RCC_GPIOA_CLK_ENABLE();},
+	.gpioRxPort    = GPIOA,
+	.gpioRxPin     = GPIO_PIN_3,
+
+	.gpioAf        = GPIO_AF7_USART2,
+
+	// DMA
+	.dmaClkEn      = [](){__HAL_RCC_DMA1_CLK_ENABLE();},
+
+	.dmaTxStream   = DMA1_Stream6,
+	.dmaTxChannel  = DMA_CHANNEL_4,
+	.dmaTxIrq      = DMA1_Stream6_IRQn,
+	.dmaTxNvicPrio = DMA_NVIC_PRIO,
+
+	.dmaRxStream   = DMA1_Stream5,
+	.dmaRxChannel  = DMA_CHANNEL_4,
+	.dmaRxIrq      = DMA1_Stream5_IRQn,
+	.dmaRxNvicPrio = DMA_NVIC_PRIO,
+
+	// UART
+	.uartClkEn     = [](){__HAL_RCC_USART2_CLK_ENABLE();},
+	.uartInstance  = USART2,
+	.uartBaudRate  = 115200,
+	.uartIrq       = USART2_IRQn,
+	.uartNvicPrio  = DMA_NVIC_PRIO, // TODO all of these
+};
+
+// No touching needed ----------------------------------------------------------
+
+CLASS_NAME* CLASS_NAME::GetInstance()
 {
-	static MotorUart instance;
-
+	static CLASS_NAME instance;
 	return &instance;
 }
 
-void MotorUart::Send(uint8_t* buffer, size_t size)
-{
-	if (size > BUFFER_MAX_SIZE)
-	{
-		size = BUFFER_MAX_SIZE;
-	}
-
-	memcpy(txBuffer, buffer, size);
-	txBufSize = size;
-
-	HAL_UART_Transmit_IT(&handle, txBuffer, txBufSize);
-}
-
-void MotorUart::TxCompleteCallback()
+CLASS_NAME::CLASS_NAME() : DmaUart(uart_cfg)
 {
 
 }
 
-void MotorUart::RxCompleteCallback()
+// Interrupt handlers ----------------------------------------------------------
+
+/*extern "C" void DMA_RX_IRQ_HANDLER(void)
 {
-	// HAL_UART_Receive_IT(&handle, &rxBuffer[rxBufSize], 1);
+	CLASS_NAME::GetInstance()->HandleDmaRxIrq();
+}*/
+
+extern "C" void DMA_TX_IRQ_HANDLER(void)
+{
+	CLASS_NAME::GetInstance()->HandleDmaTxIrq();
 }
 
-void MotorUart::Init()
+extern "C" void UART_IRQ_HANDLER(void)
 {
-	GPIO_InitTypeDef GPIO_InitStruct = {0};
-
-	// GPIO --------------------------------------------------------------------
-
-	__HAL_RCC_GPIOA_CLK_ENABLE();
-
-	/**UART4 GPIO Configuration
-	PA0-WKUP     ------> UART4_TX
-	PA1          ------> UART4_RX
-	*/
-	GPIO_InitStruct.Pin       = GPIO_PIN_0|GPIO_PIN_1;
-	GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;
-	GPIO_InitStruct.Pull      = GPIO_PULLUP;
-	GPIO_InitStruct.Speed     = GPIO_SPEED_FREQ_VERY_HIGH;
-	GPIO_InitStruct.Alternate = GPIO_AF8_UART4;
-	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-	// USART peripheral --------------------------------------------------------
-
-	__HAL_RCC_UART4_CLK_ENABLE();
-
-	handle.Instance          = UART4;
-	handle.Init.BaudRate     = 115200;
-	handle.Init.WordLength   = UART_WORDLENGTH_8B;
-	handle.Init.StopBits     = UART_STOPBITS_1;
-	handle.Init.Parity       = UART_PARITY_NONE;
-	handle.Init.Mode         = UART_MODE_TX_RX;
-	handle.Init.HwFlowCtl    = UART_HWCONTROL_NONE;
-	handle.Init.OverSampling = UART_OVERSAMPLING_16;
-
-	if (HAL_UART_Init(&handle) != HAL_OK)
-	{
-		//Error_Handler();
-	}
-
-	// Interrupt enable --------------------------------------------------------
-
-	HAL_NVIC_SetPriority(UART4_IRQn, MOTOR_UART_NVIC_PRIO, 0);
-	HAL_NVIC_EnableIRQ(UART4_IRQn);
+	CLASS_NAME::GetInstance()->HandleUartIrq();
 }

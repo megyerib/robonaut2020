@@ -29,16 +29,24 @@ RemoteHw* RemoteHw::GetInstance()
 
 uint16_t RemoteHw::GetPulseWidth(RemoteHwChannel ch)
 {
-	uint32_t index = DATA_BUF_SIZE - hdma[ch].Instance->NDTR;
+	uint32_t index;
+	uint16_t edge[3];
+	uint16_t pulse[2];
 
-	uint16_t edge1 = data[ch][(index - 3) % DATA_BUF_SIZE];
-	uint16_t edge2 = data[ch][(index - 2) % DATA_BUF_SIZE];
-	uint16_t edge3 = data[ch][(index - 1) % DATA_BUF_SIZE];
+	__disable_irq(); // This part shall be performed fast to avoid DMA overrun
 
-	uint16_t pulse1 = edge2 - edge1;
-	uint16_t pulse2 = edge3 - edge2;
+	index = DATA_BUF_SIZE - hdma[ch].Instance->NDTR;
 
-	return (pulse1 < pulse2) ? pulse1 : pulse2;
+	edge[0] = data[ch][(index - 3) % DATA_BUF_SIZE];
+	edge[1] = data[ch][(index - 2) % DATA_BUF_SIZE];
+	edge[2] = data[ch][(index - 1) % DATA_BUF_SIZE];
+
+	__enable_irq();
+
+	pulse[0] = edge[1] - edge[0];
+	pulse[1] = edge[2] - edge[1];
+
+	return (pulse[0] < pulse[1]) ? pulse[0] : pulse[1];
 }
 
 void RemoteHw::InitGpio()

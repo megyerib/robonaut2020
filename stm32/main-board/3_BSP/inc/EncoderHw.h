@@ -9,7 +9,7 @@ public:
 	uint32_t GetCounterValue();
 
 private:
-	TIM_HandleTypeDef handle;
+	TIM_HandleTypeDef htim;
 
 	EncoderHw();
 	void InitTimer();

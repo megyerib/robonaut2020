@@ -6,6 +6,9 @@ typedef void(*ClkEn)(void);
 
 typedef struct
 {
+	bool                txEnabled;
+	bool                rxEnabled;
+
 	// Rx buffer -----------------------
 	uint8_t*            rxBuf;
 	size_t              rxBufSize;

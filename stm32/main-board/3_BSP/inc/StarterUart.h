@@ -12,7 +12,7 @@ public:
 private:
 	uint8_t latestChar = 0;
 
-	UART_HandleTypeDef handle;
+	UART_HandleTypeDef htim;
 
 	StarterUart();
 

@@ -1,9 +1,9 @@
 #include "TestTask.h"
 #include "TaskPrio.h"
 
-#include "Starter.h"
+#include "Traction.h"
 
-TestTask::TestTask() : CyclicTask((char*)"TEST", 20, MAIN_TASK_PRIO, 256)
+TestTask::TestTask() : CyclicTask((char*)"TEST", 1000, MAIN_TASK_PRIO, 256)
 {
 
 }
@@ -21,9 +21,8 @@ void TestTask::TaskInit()
 
 void TestTask::TaskFunction()
 {
-	static Starter* starter = Starter::GetInstance();
+	static Traction* traction = Traction::GetInstance();
 
-	StarterState state = starter->GetState();
-
-	(void) state;
+	traction->SetDutyCycle(0.2);
+	traction->Process();
 }

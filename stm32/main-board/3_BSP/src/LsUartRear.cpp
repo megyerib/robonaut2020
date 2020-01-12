@@ -1,4 +1,5 @@
 #include "LsUartRear.h"
+#include "NvicPrio.h"
 
 #define RX_BUF_SIZE (100u)
 #define UART_IRQ_HANDLER    UART5_IRQHandler
@@ -10,6 +11,9 @@ static uint8_t rxBuffer[RX_BUF_SIZE];
 
 static DMA_UART_CFG uart_cfg =
 {
+	.txEnabled     = true,
+	.rxEnabled     = true,
+
 	// Rx buffer
 	.rxBuf         = rxBuffer,
 	.rxBufSize     = RX_BUF_SIZE,
@@ -31,19 +35,19 @@ static DMA_UART_CFG uart_cfg =
 	.dmaTxStream   = DMA1_Stream7,
 	.dmaTxChannel  = DMA_CHANNEL_4,
 	.dmaTxIrq      = DMA1_Stream7_IRQn,
-	.dmaTxNvicPrio = 0, // TODO
+	.dmaTxNvicPrio = DMA_NVIC_PRIO,
 
 	.dmaRxStream   = DMA1_Stream0,
 	.dmaRxChannel  = DMA_CHANNEL_4,
 	.dmaRxIrq      = DMA1_Stream0_IRQn,
-	.dmaRxNvicPrio = 0, // TODO
+	.dmaRxNvicPrio = DMA_NVIC_PRIO,
 
 	// UART
 	.uartClkEn     = [](){__HAL_RCC_UART5_CLK_ENABLE();},
 	.uartInstance  = UART5,
 	.uartBaudRate  = 115200,
 	.uartIrq       = UART5_IRQn,
-	.uartNvicPrio  = 0, // TODO
+	.uartNvicPrio  = DMA_NVIC_PRIO,
 };
 
 // No touching needed ----------------------------------------------------------

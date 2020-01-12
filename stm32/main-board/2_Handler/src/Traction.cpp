@@ -32,7 +32,7 @@ void Traction::SetDutyCycle(float d /* % [-1;+1] */)
 
 void Traction::SendDutyCycle(float d /* % [-1;+1] */)
 {
-	uint8_t buf[10];
+	static uint8_t buf[10];
 
 	int message = d * 100000;
 	int size;

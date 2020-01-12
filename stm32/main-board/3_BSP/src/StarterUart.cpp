@@ -16,9 +16,9 @@ StarterUart* StarterUart::GetInstance()
 
 uint8_t StarterUart::GetLatestChar()
 {
-	if (handle.Instance->SR & USART_SR_RXNE)
+	if (htim.Instance->SR & USART_SR_RXNE)
 	{
-		latestChar = handle.Instance->DR;
+		latestChar = htim.Instance->DR;
 	}
 
 	return latestChar;
@@ -28,16 +28,16 @@ void StarterUart::InitUart()
 {
 	__HAL_RCC_UART4_CLK_ENABLE();
 
-	handle.Instance              = UART4;
-	handle.Init.BaudRate         = 115200;
-	handle.Init.WordLength       = UART_WORDLENGTH_8B;
-	handle.Init.StopBits         = UART_STOPBITS_1;
-	handle.Init.Parity           = UART_PARITY_NONE;
-	handle.Init.Mode             = UART_MODE_RX;
-	handle.Init.HwFlowCtl        = UART_HWCONTROL_NONE;
-	handle.Init.OverSampling     = UART_OVERSAMPLING_16;
+	htim.Instance              = UART4;
+	htim.Init.BaudRate         = 115200;
+	htim.Init.WordLength       = UART_WORDLENGTH_8B;
+	htim.Init.StopBits         = UART_STOPBITS_1;
+	htim.Init.Parity           = UART_PARITY_NONE;
+	htim.Init.Mode             = UART_MODE_RX;
+	htim.Init.HwFlowCtl        = UART_HWCONTROL_NONE;
+	htim.Init.OverSampling     = UART_OVERSAMPLING_16;
 
-	HAL_UART_Init(&handle);
+	HAL_UART_Init(&htim);
 }
 
 void StarterUart::InitGpio()

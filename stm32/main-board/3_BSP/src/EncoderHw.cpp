@@ -7,7 +7,7 @@ EncoderHw::EncoderHw()
 
 	TIM2->CNT = 0; // Reset timer
 
-	HAL_TIM_Encoder_Start(&handle, TIM_CHANNEL_ALL);
+	HAL_TIM_Encoder_Start(&htim, TIM_CHANNEL_ALL);
 }
 
 EncoderHw* EncoderHw::GetInstance()
@@ -48,12 +48,12 @@ void EncoderHw::InitTimer()
 	TIM_Encoder_InitTypeDef sConfig       = {0};
 	TIM_MasterConfigTypeDef sMasterConfig = {0};
 
-	handle.Instance               = TIM2;
-	handle.Init.Prescaler         = 0;
-	handle.Init.CounterMode       = TIM_COUNTERMODE_DOWN;
-	handle.Init.Period            = 0xFFFFFFFF;
-	handle.Init.ClockDivision     = TIM_CLOCKDIVISION_DIV1;
-	handle.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+	htim.Instance               = TIM2;
+	htim.Init.Prescaler         = 0;
+	htim.Init.CounterMode       = TIM_COUNTERMODE_DOWN;
+	htim.Init.Period            = 0xFFFFFFFF;
+	htim.Init.ClockDivision     = TIM_CLOCKDIVISION_DIV1;
+	htim.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
 
 	sConfig.EncoderMode           = TIM_ENCODERMODE_TI12;
 	// TODO négyszeres kiértékelés!!
@@ -67,7 +67,7 @@ void EncoderHw::InitTimer()
 	sConfig.IC2Prescaler          = TIM_ICPSC_DIV1;
 	sConfig.IC2Filter             = 0;
 
-	if (HAL_TIM_Encoder_Init(&handle, &sConfig) != HAL_OK)
+	if (HAL_TIM_Encoder_Init(&htim, &sConfig) != HAL_OK)
 	{
 		//Error_Handler();
 	}
@@ -75,7 +75,7 @@ void EncoderHw::InitTimer()
 	sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
 	sMasterConfig.MasterSlaveMode     = TIM_MASTERSLAVEMODE_DISABLE;
 
-	if (HAL_TIMEx_MasterConfigSynchronization(&handle, &sMasterConfig) != HAL_OK)
+	if (HAL_TIMEx_MasterConfigSynchronization(&htim, &sMasterConfig) != HAL_OK)
 	{
 		//Error_Handler();
 	}

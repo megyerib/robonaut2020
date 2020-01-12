@@ -1,6 +1,5 @@
 #include "stm32f4xx_hal_gpio.h"
 #include "Servo.h"
-#include "Timer.h"
 #include "Defines.h"
 
 
@@ -10,6 +9,9 @@
 #define SERVO_REAR_GPIO_Port    GPIOB
 #define SERVO_SENSOR_Pin        GPIO_PIN_5
 #define SERVO_SENSOR_GPIO_Port  GPIOA
+
+static TIM_HandleTypeDef htim8;
+static TIM_HandleTypeDef htim12;
 
 Servo::Servo(TimerInstance TIM, uint32_t Channel)
 {
