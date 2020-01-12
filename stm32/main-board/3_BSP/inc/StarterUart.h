@@ -1,19 +1,21 @@
 #pragma once
 
-#include "Stm32Uart.h"
+#include "stm32f4xx_hal.h"
 
-class StarterUart : public Stm32Uart
+class StarterUart
 {
-	uint8_t rxChar = 0;
-
-	StarterUart();
-
-	void TxCompleteCallback() override;
-	void RxCompleteCallback() override;
-	void Init();
-
 public:
 	static StarterUart* GetInstance();
 
-	uint8_t GetLastChar();
+	uint8_t GetLatestChar();
+
+private:
+	uint8_t latestChar = 0;
+
+	UART_HandleTypeDef handle;
+
+	StarterUart();
+
+	void InitUart();
+	void InitGpio();
 };

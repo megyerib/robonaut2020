@@ -8,14 +8,13 @@ Starter::Starter()
 Starter* Starter::GetInstance()
 {
 	static Starter instance;
-
 	return &instance;
 }
 
 StarterState Starter::GetState()
 {
 	StarterState ret = NoSignal;
-	uint8_t c = uart->GetLastChar();
+	uint8_t c = uart->GetLatestChar();
 
 	switch (c)
 	{

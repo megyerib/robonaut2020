@@ -13,16 +13,12 @@ RemoteHw::RemoteHw()
 	InitTimer();
 	InitDma();
 
-	HAL_StatusTypeDef status1 = HAL_TIM_IC_Start_DMA(&htim, TIM_CHANNEL_1, (uint32_t*) data[RemCh1], DATA_BUF_SIZE);
+	HAL_TIM_IC_Start_DMA(&htim, TIM_CHANNEL_1, (uint32_t*) data[RemCh1], DATA_BUF_SIZE);
 	htim.State = HAL_TIM_STATE_READY; // HAL bug
-	HAL_StatusTypeDef status2 = HAL_TIM_IC_Start_DMA(&htim, TIM_CHANNEL_2, (uint32_t*) data[RemCh2], DATA_BUF_SIZE);
+	HAL_TIM_IC_Start_DMA(&htim, TIM_CHANNEL_2, (uint32_t*) data[RemCh2], DATA_BUF_SIZE);
 	htim.State = HAL_TIM_STATE_READY; // HAL bug
-	HAL_StatusTypeDef status3 = HAL_TIM_IC_Start_DMA(&htim, TIM_CHANNEL_4, (uint32_t*) data[RemCh3], DATA_BUF_SIZE);
+	HAL_TIM_IC_Start_DMA(&htim, TIM_CHANNEL_4, (uint32_t*) data[RemCh3], DATA_BUF_SIZE);
 	htim.State = HAL_TIM_STATE_READY; // HAL bug
-
-	UNUSED(status1);
-	UNUSED(status2);
-	UNUSED(status3);
 }
 
 RemoteHw* RemoteHw::GetInstance()
@@ -124,11 +120,10 @@ void RemoteHw::InitDma()
 	hdma[RemCh1].Init.FIFOMode = DMA_FIFOMODE_DISABLE;
 
 	HAL_DMA_Init(&hdma[RemCh1]);
-
-	/* Several peripheral DMA handle pointers point to the same DMA handle.
-	Be aware that there is only one stream to perform all the requested DMAs. */
 	__HAL_LINKDMA(&htim,hdma[TIM_DMA_ID_CC1],hdma[RemCh1]);
-	//__HAL_LINKDMA(&htim3,hdma[TIM_DMA_ID_TRIGGER],hdma[RemCh1]);
+
+	HAL_NVIC_SetPriority(DMA1_Stream4_IRQn, 0, 0);
+	HAL_NVIC_EnableIRQ(DMA1_Stream4_IRQn);
 
 	/* TIM3_CH2 Init */
 	hdma[RemCh2].Instance = DMA1_Stream5;
@@ -143,8 +138,10 @@ void RemoteHw::InitDma()
 	hdma[RemCh2].Init.FIFOMode = DMA_FIFOMODE_DISABLE;
 
 	HAL_DMA_Init(&hdma[RemCh2]);
-
 	__HAL_LINKDMA(&htim,hdma[TIM_DMA_ID_CC2],hdma[RemCh2]);
+
+	HAL_NVIC_SetPriority(DMA1_Stream5_IRQn, 0, 0);
+	HAL_NVIC_EnableIRQ(DMA1_Stream5_IRQn);
 
 	/* TIM3_CH4_UP Init */
 	hdma[RemCh3].Instance = DMA1_Stream2;
@@ -159,21 +156,10 @@ void RemoteHw::InitDma()
 	hdma[RemCh3].Init.FIFOMode = DMA_FIFOMODE_DISABLE;
 
 	HAL_DMA_Init(&hdma[RemCh3]);
-
-	/* Several peripheral DMA handle pointers point to the same DMA handle.
-	Be aware that there is only one stream to perform all the requested DMAs. */
 	__HAL_LINKDMA(&htim,hdma[TIM_DMA_ID_CC4],hdma[RemCh3]);
-	//__HAL_LINKDMA(&htim3,hdma[TIM_DMA_ID_UPDATE],hdma[RemCh3]);
-
 
 	HAL_NVIC_SetPriority(DMA1_Stream2_IRQn, 0, 0);
 	HAL_NVIC_EnableIRQ(DMA1_Stream2_IRQn);
-
-	HAL_NVIC_SetPriority(DMA1_Stream4_IRQn, 0, 0);
-	HAL_NVIC_EnableIRQ(DMA1_Stream4_IRQn);
-
-	HAL_NVIC_SetPriority(DMA1_Stream5_IRQn, 0, 0);
-	HAL_NVIC_EnableIRQ(DMA1_Stream5_IRQn);
 }
 
 void RemoteHw::timCh1Irq()
