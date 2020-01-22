@@ -1,7 +1,7 @@
 #include "TestTask.h"
 #include "TaskPrio.h"
 
-#include "Traction.h"
+#include "Remote.h"
 
 TestTask::TestTask() : CyclicTask((char*)"TEST", 1000, MAIN_TASK_PRIO, 256)
 {
@@ -21,8 +21,13 @@ void TestTask::TaskInit()
 
 void TestTask::TaskFunction()
 {
-	static Traction* traction = Traction::GetInstance();
+	static Remote* remote = Remote::GetInstance();
 
-	traction->SetDutyCycle(0.2);
-	traction->Process();
+	float ch1 = remote->GetValue(SteeringCh);
+	float ch2 = remote->GetValue(ThrottleCh);
+	RemoteMode ch3 = remote->GetMode();
+
+	UNUSED(ch1);
+	UNUSED(ch2);
+	UNUSED(ch3);
 }

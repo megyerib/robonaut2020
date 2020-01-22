@@ -2,7 +2,7 @@
 
 #include "stm32f4xx_hal.h"
 
-#define DATA_BUF_SIZE  (10u)
+#define DATA_BUF_SIZE  (20u) /* Larger buffer -> less DMA IRQ */
 
 typedef enum
 {

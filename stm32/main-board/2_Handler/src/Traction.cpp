@@ -39,7 +39,7 @@ void Traction::SendDutyCycle(float d /* % [-1;+1] */)
 
 	size = sprintf((char*)buf, "%d\r\n", message);
 
-	uart->Send(buf, size);
+	uart->Transmit(buf, size);
 }
 
 void Traction::Process()

@@ -14,12 +14,12 @@ int main(void)
 		//SteeringTask :: Init();
 		//EncoderTask  :: Init();
 		//DistanceTask :: Init();
-		TraceTask::Init();
+		//TraceTask::Init();
 
 		// Application tasks
 		//Q1Task       :: Init();*/
 
-	    //TestTask     :: Init();
+	    TestTask     :: Init();
 		//ServoCalibTask :: Init();
 		//SensorServoCalibTask :: Init();
 

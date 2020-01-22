@@ -15,8 +15,7 @@ SerialProcessor::~SerialProcessor()
 
 void SerialProcessor::GetLastLine(void* buf, size_t* size)
 {
-	size_t received;
-	uart->Receive(&rxBuf[rxBufIndex], &received);
+	size_t received = uart->Receive(&rxBuf[rxBufIndex], rxBufSize - rxBufIndex);
 
 	rxBufIndex += received;
 

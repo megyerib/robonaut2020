@@ -1,6 +1,7 @@
 #pragma once
 
 #include "stm32f4xx_hal.h"
+#include "Serial.h"
 
 typedef void(*ClkEn)(void);
 
@@ -46,11 +47,11 @@ typedef struct
 }
 DMA_UART_CFG;
 
-class DmaUart
+class DmaUart : public Serial
 {
 public:
-	void Send(void* buf, size_t size);
-	void Receive(void* buf, size_t* size);
+	size_t Transmit(void* buffer, size_t size) override;
+	size_t Receive(void* buffer, size_t targetSize) override;
 
 	void HandleUartIrq();
 	void HandleDmaRxIrq();

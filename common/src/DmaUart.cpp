@@ -10,23 +10,27 @@ DmaUart::DmaUart(DMA_UART_CFG& cfg) : cfg(cfg)
 	HAL_UART_Receive_DMA(&huart, cfg.rxBuf, cfg.rxBufSize);
 }
 
-void DmaUart::Send(void* buf, size_t size)
+size_t DmaUart::Transmit(void* buffer, size_t size)
 {
-	HAL_StatusTypeDef status = HAL_UART_Transmit_DMA(&huart, (uint8_t*)buf, size);
-	UNUSED(status);
+	HAL_UART_Transmit_DMA(&huart, (uint8_t*) buffer, size);
+
+	return 0;
 }
 
-void DmaUart::Receive(void* dst, size_t* size) // Todo target buffer size
+size_t DmaUart::Receive(void* buffer, size_t targetSize)
 {
-	uint8_t* buf = (uint8_t*) dst;
+	UNUSED(targetSize); // TODO
+
+	uint8_t* buf = (uint8_t*) buffer;
 	size_t end;
+	size_t size = 0;
 
 	end = cfg.rxBufSize - hdma_uart_rx.Instance->NDTR;
 
 	if (rxBufIndex <= end)
 	{
-		*size = end - rxBufIndex;
-		memcpy(buf, &cfg.rxBuf[rxBufIndex], *size);
+		size = end - rxBufIndex;
+		memcpy(buf, &cfg.rxBuf[rxBufIndex], size);
 	}
 	else // Circular copy
 	{
@@ -36,10 +40,12 @@ void DmaUart::Receive(void* dst, size_t* size) // Todo target buffer size
 		memcpy(buf, &cfg.rxBuf[rxBufIndex], size1);
 		memcpy(&buf[size1], cfg.rxBuf, size2);
 
-		*size = size1 + size2;
+		size = size1 + size2;
 	}
 
 	rxBufIndex = end;
+
+	return size;
 }
 
 void DmaUart::HandleUartIrq()
