@@ -39,6 +39,14 @@ void Distance::SetFrontServo(float angle)
 void Distance::Process()
 {
     tof_front->Process();
+
+    uart->SendByte((uint8_t)(tof_front->GetDistance_mm()/10));
+}
+
+
+int Distance::GetSharpDistance(void)
+{
+    return uart->GetLastChar();
 }
 
 Distance::Distance()
@@ -54,4 +62,6 @@ Distance::Distance()
     tof_front->Init();
 
     SetFrontServo(1.57f);
+
+    uart = StarterUart::GetInstance();
 }

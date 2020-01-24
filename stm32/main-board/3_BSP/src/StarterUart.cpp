@@ -73,3 +73,28 @@ void StarterUart::Init()
 	HAL_NVIC_SetPriority(USART1_IRQn, STARTER_UART_NVIC_PRIO, 0);
 	HAL_NVIC_EnableIRQ(USART1_IRQn);
 }
+
+void StarterUart::SendByte(uint8_t byte)
+{
+    HAL_UART_Transmit_IT(&handle, &byte, 1);
+}
+
+void StarterUart::SendWord(uint16_t word)
+{
+    TypeConverter conv;
+    //conv.word = word;
+
+   // HAL_UART_Transmit_IT(&handle, &conv., 2);
+}
+
+void StarterUart::SendDWord(uint32_t dword)
+{
+
+
+   // HAL_UART_Transmit_IT(&handle, &dword, 4);
+}
+
+void StarterUart::SendFloat(float value)
+{
+
+}

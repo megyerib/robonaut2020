@@ -27,4 +27,7 @@ public:
 	void GetMessage(uint8_t* dst, size_t* len);
 
 	void Send(uint8_t* buffer, size_t size);
+
+	uint32_t tick;
+	uint32_t diff;
 };

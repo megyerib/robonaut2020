@@ -62,4 +62,23 @@ void TestTask::TaskFunction()
 	distance->SetFrontServo(steering->GetFrontAngle());
 
 	distance->Process();
+
+//    float dst = distance->GetSharpDistance();
+//
+//    if (dst < 400 && dst > 0)
+//    {
+//        // Speed.
+//        if (dst > 60)
+//        {
+//            dst = 0;
+//        }
+//        else if (dst < 40)
+//        {
+//            dst = 4;
+//        }
+//        else
+//        {
+//            dst = 22;
+//        }
+//    }
 }

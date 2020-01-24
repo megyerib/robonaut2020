@@ -54,7 +54,7 @@ TOF_L1::TOF_L1(uint8_t             const Addr,
 
 void TOF_L1::Init()
 {
-    vTaskDelay(200);
+    vTaskDelay(100);
     Restart();
 
     if (isAddressForgotten() == true)

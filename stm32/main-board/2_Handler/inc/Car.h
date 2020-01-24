@@ -57,5 +57,7 @@ private:
     void CheckDeadmanSwitch();
     void FollowStateMachine();
 
+    float CalcFollowSpeed();
+
     int prescaler;
 };

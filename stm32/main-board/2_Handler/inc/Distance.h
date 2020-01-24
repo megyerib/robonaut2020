@@ -2,6 +2,7 @@
 
 #include "ToF_4m_L1.h"
 #include "Servo.h"
+#include "StarterUart.h"
 
 #define DISTANCE_SAMPLING_CYCLE   50 /* ms */
 
@@ -18,6 +19,8 @@ class Distance
 private:
     Servo*   srv_front;
 
+    StarterUart* uart;
+
     TOF_L1*  tof_front;
     //TOF_L1*  tof_right;
     //TOF_L1*  tof_x;
@@ -27,6 +30,8 @@ public:
 	float GetDistance(DistanceSensor sensor); /* m */
 	void SetFrontServo(float angle /* rad */);
 	void Process();
+
+	int GetSharpDistance(void); /* cm */
 
 private:
 	Distance();

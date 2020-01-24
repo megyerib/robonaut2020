@@ -6,6 +6,8 @@ LsUart3::LsUart3() : Stm32Uart(Uart3)
 {
 	Init();
 
+	tick = 0;
+
 	HAL_UART_Receive_IT(&handle, &rxBuffer[rxBufSize], 1);
 }
 
@@ -50,6 +52,10 @@ void LsUart3::RxCompleteCallback()
 		__enable_irq();
 
 		rxBufSize = 0;
+
+		diff = tick;
+		tick = HAL_GetTick();
+		diff = tick - diff;
 	}
 
 	HAL_UART_Receive_IT(&handle, &rxBuffer[rxBufSize], 1);

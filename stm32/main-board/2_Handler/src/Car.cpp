@@ -1,8 +1,8 @@
 #include "Car.h"
 
 #define CAR_SPEED_STRAIGHT          (0.22f)   /* % */
-#define CAR_SPEED_DECEL             (0.19)    /* % */
-#define CAR_SPEED_TURN              (0.16f)   /* % */
+#define CAR_SPEED_DECEL             (0.20)    /* % */
+#define CAR_SPEED_TURN              (0.17f)   /* % */
 #define CAR_SPEED_ACCEL             (0.19f)   /* % */
 
 #define CAR_WAIT_BEFORE_BRAKING     (1.0f)    /* m */
@@ -139,8 +139,8 @@ Car::Car()
 
     wheels->SetMode(SingleLineFollow_Slow);
 
-    state   = Turn; // Wait
-    recover = Turn;
+    state   = Follow; // Wait
+    recover = Follow;
 
     dist_ctrl = new Pd_Controller(CAR_DIST_CTRL_P, CAR_DIST_CTRL_D);
     dist_ctrl->SetSetpoint(0.6);
@@ -162,56 +162,85 @@ void Car::CheckDeadmanSwitch()
 
 void Car::FollowStateMachine()
 {
-    float dst = distance->GetDistance(ToF_Front);
+    float motor_duty = 0;
 
-    if (dst < 4.0f && dst > 0.0f)
+    motor_duty = CalcFollowSpeed();
+
+    // Speed
+    motor->SetDutyCycle(motor_duty);
+
+    // Track
+    wheels->SetLine(lineSensor->GetFrontLine(), 0);
+
+    // Sensor Direction
+    distance->SetFrontServo(wheels->GetFrontAngle()/2.0f);
+}
+
+float Car::CalcFollowSpeed()
+{
+    bool  isSharpActive = true;
+    float motor_duty    = 0.0f;
+    float dst           = 0.0f;
+
+    if (isSharpActive == true)
     {
+        dst = distance->GetSharpDistance();
+
         // Speed.
-        if (dst > 0.6f)
+        if (dst > 60.0f)
         {
-            motor->SetDutyCycle(0.15f);
+            motor_duty = 0.15f;
         }
-        else if (dst < 0.4f)
+        else if (dst < 50.0f)
         {
-            if (encoder->GetSpeed() > 0)
+            if (encoder->GetSpeed() > 0.0f)
             {
-                motor->SetDutyCycle(-0.1f);
+                motor_duty = -0.1f;
             }
             else
             {
-                motor->SetDutyCycle(0.0f);
+                motor_duty = 0.0f;
             }
         }
         else
         {
-            float d = (dst - 0.4) / 0.2 * 0.15f;
+            float d = 0.15f / 10.0f * (dst - 50.0f);
 
-            motor->SetDutyCycle(d);
+            motor_duty = d;
+        }
+    }
+    else
+    {
+        dst = distance->GetDistance(ToF_Front);
+
+        if (dst < 4.0f && dst > 0.0f)
+        {
+            // Speed.
+            if (dst > 0.6f)
+            {
+                motor_duty = 0.15f;
+            }
+            else if (dst < 0.4f)
+            {
+                if (encoder->GetSpeed() > 0)
+                {
+                    motor_duty = -0.1f;
+                }
+                else
+                {
+                    motor_duty = 0.0f;
+                }
+            }
+            else
+            {
+                float d = (dst - 0.4) / 0.2 * 0.15f;
+
+                motor_duty = d;
+            }
         }
     }
 
-//    if (prescaler == 2)
-//    {
-//        dist_ctrl->Process(distance->GetDistance(ToF_Front));
-//        float speed = dist_ctrl->GetControlValue();
-//        if (speed > 0.20f)
-//        {
-//            speed = 0.20f;
-//        }
-//        else if (speed < -0.1f)
-//        {
-//            speed = -0.1f;
-//        }
-//        else {}
-//        motor->SetDutyCycle(speed);
-//
-//        prescaler = 0;
-//    }
-//    prescaler++;
-
-
-    // Direction.
-    wheels->SetLine(lineSensor->GetFrontLine(), 0);
-    distance->SetFrontServo(wheels->GetFrontAngle()/2);
+    return motor_duty;
 }
+
 
