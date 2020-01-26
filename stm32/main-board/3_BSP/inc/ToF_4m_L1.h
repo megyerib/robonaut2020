@@ -5,6 +5,7 @@
 #include "vl53l1_def.h"
 
 #include "Tof_I2c.h"
+#include "Transmitter.h"
 
 #define TOF_FRONT_XSDN_Pin  GPIO_PIN_15
 #define TOF_FRONT_XSDN_Port GPIOC
@@ -27,6 +28,8 @@ private:
 
     GPIO_TypeDef*   XSDN_Port;
     uint16_t        XSDN_Pin;
+
+    Transmitter*    trace;
 
 public:
     TOF_L1();

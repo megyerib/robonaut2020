@@ -1,5 +1,6 @@
 #include "Distance.h"
 #include "Defines.h"
+#include "StringQueue.h"
 
 Distance* Distance::GetInstance()
 {

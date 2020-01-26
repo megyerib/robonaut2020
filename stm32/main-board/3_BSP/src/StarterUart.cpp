@@ -11,33 +11,47 @@ StarterUart::StarterUart()
 StarterUart* StarterUart::GetInstance()
 {
 	static StarterUart instance;
-	return &instance;
+	return (&instance);
 }
 
-uint8_t StarterUart::GetLatestChar()
+int32_t StarterUart::Receive(void* buffer, size_t& size, size_t targetSize)
 {
-	if (htim.Instance->SR & USART_SR_RXNE)
+	if (buffer == nullptr)
 	{
-		latestChar = htim.Instance->DR;
+		return RECEIVE_BUFFER_NULL;
+	}
+	if (targetSize < 1)
+	{
+		return RECEIVE_TARGET_SIZE_INSUFFICIENT;
 	}
 
-	return latestChar;
+	if (huart.Instance->SR & USART_SR_RXNE)
+	{
+		*((uint8_t*)buffer) = huart.Instance->DR;
+		size = 1;
+	}
+	else
+	{
+		size = 0;
+	}
+
+	return RECEIVE_OK;
 }
 
 void StarterUart::InitUart()
 {
 	__HAL_RCC_UART4_CLK_ENABLE();
 
-	htim.Instance              = UART4;
-	htim.Init.BaudRate         = 115200;
-	htim.Init.WordLength       = UART_WORDLENGTH_8B;
-	htim.Init.StopBits         = UART_STOPBITS_1;
-	htim.Init.Parity           = UART_PARITY_NONE;
-	htim.Init.Mode             = UART_MODE_RX;
-	htim.Init.HwFlowCtl        = UART_HWCONTROL_NONE;
-	htim.Init.OverSampling     = UART_OVERSAMPLING_16;
+	huart.Instance              = UART4;
+	huart.Init.BaudRate         = 115200;
+	huart.Init.WordLength       = UART_WORDLENGTH_8B;
+	huart.Init.StopBits         = UART_STOPBITS_1;
+	huart.Init.Parity           = UART_PARITY_NONE;
+	huart.Init.Mode             = UART_MODE_RX;
+	huart.Init.HwFlowCtl        = UART_HWCONTROL_NONE;
+	huart.Init.OverSampling     = UART_OVERSAMPLING_16;
 
-	HAL_UART_Init(&htim);
+	HAL_UART_Init(&huart);
 }
 
 void StarterUart::InitGpio()

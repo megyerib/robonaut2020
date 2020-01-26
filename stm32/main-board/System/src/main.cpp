@@ -13,8 +13,8 @@ int main(void)
 		//TractionTask :: Init();
 		//SteeringTask :: Init();
 		//EncoderTask  :: Init();
-		//DistanceTask :: Init();
-		//TraceTask::Init();
+		DistanceTask :: Init();
+		TraceTask    :: Init();
 
 		// Application tasks
 		//Q1Task       :: Init();*/

@@ -2,6 +2,7 @@
 
 #include "ToF_4m_L1.h"
 #include "Servo.h"
+#include "Transmitter.h"
 
 #define DISTANCE_SAMPLING_CYCLE   50 /* ms */
 
@@ -21,6 +22,8 @@ private:
     TOF_L1*  tof_front;
     //TOF_L1*  tof_right;
     //TOF_L1*  tof_x;
+
+    Transmitter* trace;
 
 public:
 	static Distance* GetInstance();

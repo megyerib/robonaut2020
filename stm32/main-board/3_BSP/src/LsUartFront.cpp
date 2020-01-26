@@ -55,7 +55,7 @@ static DMA_UART_CFG uart_cfg =
 CLASS_NAME* CLASS_NAME::GetInstance()
 {
 	static CLASS_NAME instance;
-	return &instance;
+	return (&instance);
 }
 
 CLASS_NAME::CLASS_NAME() : DmaUart(uart_cfg)

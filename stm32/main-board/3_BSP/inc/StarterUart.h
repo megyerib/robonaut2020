@@ -1,21 +1,20 @@
 #pragma once
 
 #include "stm32f4xx_hal.h"
+#include "Receiver.h"
 
-class StarterUart
+class StarterUart : public Receiver
 {
 public:
 	static StarterUart* GetInstance();
 
-	uint8_t GetLatestChar();
+	virtual int32_t Receive(void* buffer, size_t& size, size_t targetSize) override;
 
 private:
-	uint8_t latestChar = 0;
-
-	UART_HandleTypeDef htim;
+	UART_HandleTypeDef huart;
 
 	StarterUart();
 
 	void InitUart();
-	void InitGpio();
+	static void InitGpio();
 };

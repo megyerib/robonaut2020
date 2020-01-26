@@ -1,6 +1,6 @@
 #pragma once
 
-#include "StarterUart.h"
+#include "Receiver.h"
 
 typedef enum
 {
@@ -10,7 +10,8 @@ typedef enum
 	Countdown3,
 	Countdown4,
 	Countdown5,
-	NoSignal
+	NoSignal,
+	Error
 }
 StarterState;
 
@@ -21,7 +22,8 @@ public:
 	StarterState GetState();
 
 private:
-	StarterUart* uart;
+	Receiver* uart;
+	StarterState state = NoSignal;
 
 	Starter();
 };

@@ -20,9 +20,9 @@ public:
 	static RemoteHw* GetInstance();
 	uint16_t GetPulseWidth(RemoteHwChannel ch); /* us */
 
-	void timCh1Irq();
-	void timCh2Irq();
-	void timCh4Irq();
+	void Ch1DmaIrq();
+	void Ch2DmaIrq();
+	void Ch4DmaIrq();
 
 private:
 	static uint16_t data[RemChNum][DATA_BUF_SIZE];

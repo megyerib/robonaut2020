@@ -1,21 +1,23 @@
-#include "SerialProcessor.h"
+#include <LastLineReader.h>
 #include <cstring>
 
-SerialProcessor::SerialProcessor(DmaUart* uart, size_t rxBufSize)
+LastLineReader::LastLineReader(DmaUart* uart, size_t rxBufSize)
 	: uart(uart),
 	  rxBufSize(rxBufSize)
 {
 	rxBuf = new uint8_t[rxBufSize];
 }
 
-SerialProcessor::~SerialProcessor()
+LastLineReader::~LastLineReader()
 {
 	delete rxBuf;
 }
 
-void SerialProcessor::GetLastLine(void* buf, size_t* size)
+int32_t LastLineReader::Receive(void* buffer, size_t& size, size_t targetSize)
 {
-	size_t received = uart->Receive(&rxBuf[rxBufIndex], rxBufSize - rxBufIndex);
+	size_t received;
+
+	uart->Receive(&rxBuf[rxBufIndex], received, rxBufSize - rxBufIndex);
 
 	rxBufIndex += received;
 
@@ -47,12 +49,12 @@ void SerialProcessor::GetLastLine(void* buf, size_t* size)
 
 	if (validSize > 0)
 	{
-		memcpy(buf, &rxBuf[validBegin], validSize);
-		*size = validSize;
+		memcpy(buffer, &rxBuf[validBegin], validSize);
+		size = validSize;
 	}
 	else
 	{
-		*size = 0;
+		size = 0;
 	}
 
 	// Tidy up -------------------------------------------------------
@@ -79,4 +81,6 @@ void SerialProcessor::GetLastLine(void* buf, size_t* size)
 
 		rxBufIndex = blockSize;
 	}
+
+	return RECEIVE_OK;
 }

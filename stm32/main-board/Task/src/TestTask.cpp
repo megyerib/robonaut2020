@@ -2,10 +2,11 @@
 #include "TaskPrio.h"
 
 #include "Remote.h"
+#include "StringQueue.h"
 
 TestTask::TestTask() : CyclicTask((char*)"TEST", 1000, MAIN_TASK_PRIO, 256)
 {
-
+	msgQueue = StringQueue::GetInstance(TestTrace);
 }
 
 TestTask* TestTask::Init()
@@ -21,13 +22,8 @@ void TestTask::TaskInit()
 
 void TestTask::TaskFunction()
 {
-	static Remote* remote = Remote::GetInstance();
-
-	float ch1 = remote->GetValue(SteeringCh);
-	float ch2 = remote->GetValue(ThrottleCh);
-	RemoteMode ch3 = remote->GetMode();
-
-	UNUSED(ch1);
-	UNUSED(ch2);
-	UNUSED(ch3);
+	static char buffer1[] = "Test";
+	static char buffer2[] = "ASD";
+	msgQueue->Transmit(buffer1, 4);
+	msgQueue->Transmit(buffer2, 3);
 }

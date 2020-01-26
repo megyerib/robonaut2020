@@ -1,7 +1,7 @@
 #pragma once
 
-#include "SerialProcessor.h"
 #include "Line.h"
+#include "Receiver.h"
 
 #define LINE_SAMPLING_CYCLE    5 /* ms */
 
@@ -32,8 +32,8 @@ public:
 	void Process(); // For the OS task
 
 private:
-	SerialProcessor* frontProcessor;
-	SerialProcessor* rearProcessor;
+	Receiver* frontProcessor;
+	Receiver* rearProcessor;
 
 	Line frontLine = {0};
 	Line rearLine = {0};

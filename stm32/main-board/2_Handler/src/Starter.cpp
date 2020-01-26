@@ -1,4 +1,5 @@
 #include "Starter.h"
+#include "StarterUart.h"
 
 Starter::Starter()
 {
@@ -13,19 +14,24 @@ Starter* Starter::GetInstance()
 
 StarterState Starter::GetState()
 {
-	StarterState ret = NoSignal;
-	uint8_t c = uart->GetLatestChar();
+	uint8_t c;
+	size_t receivedChars;
 
-	switch (c)
+	uart->Receive(&c, receivedChars, 1);
+
+	if (receivedChars > 0)
 	{
-		case '5': ret = Countdown5; break;
-		case '4': ret = Countdown4; break;
-		case '3': ret = Countdown3; break;
-		case '2': ret = Countdown2; break;
-		case '1': ret = Countdown1; break;
-		case '0': ret = Go;         break;
-		default:  ret = NoSignal;   break;
+		switch (c)
+		{
+			case '5': state = Countdown5; break;
+			case '4': state = Countdown4; break;
+			case '3': state = Countdown3; break;
+			case '2': state = Countdown2; break;
+			case '1': state = Countdown1; break;
+			case '0': state = Go;         break;
+			default:  state = Error;      break;
+		}
 	}
 
-	return ret;
+	return state;
 }

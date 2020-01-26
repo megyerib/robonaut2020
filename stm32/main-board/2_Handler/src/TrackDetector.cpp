@@ -6,6 +6,7 @@
 
 #include "LsUartFront.h"
 #include "LsUartRear.h"
+#include "LastLineReader.h"
 
 #define LINE_CNT_FILTER_SIZE   4
 
@@ -14,8 +15,8 @@ TrackDetector::TrackDetector()
 	DmaUart* uartFront = (DmaUart*) LsUartFront::GetInstance();
 	DmaUart* uartRear  = (DmaUart*) LsUartRear::GetInstance();;
 
-	frontProcessor = new SerialProcessor(uartFront, 100);
-	rearProcessor  = new SerialProcessor(uartRear,  100);
+	frontProcessor = (Receiver*) new LastLineReader(uartFront, 100);
+	rearProcessor  = (Receiver*) new LastLineReader(uartRear,  100);
 }
 
 TrackDetector* TrackDetector::GetInstance()
@@ -45,7 +46,7 @@ void TrackDetector::GetFrontLineData()
 	uint8_t base64_buf[50];
 	size_t  base64_size;
 
-	frontProcessor->GetLastLine(base64_buf, &base64_size);
+	frontProcessor->Receive(base64_buf, base64_size, 50);
 
 	if (base64_size == 11)
 	{
@@ -66,7 +67,7 @@ void TrackDetector::GetRearLineData()
 	uint8_t base64_buf[50];
 	size_t  base64_size;
 
-	rearProcessor->GetLastLine(base64_buf, &base64_size);
+	rearProcessor->Receive(base64_buf, base64_size, 50);
 
 	if (base64_size == 11)
 	{

@@ -1,4 +1,5 @@
 #include "Trace.h"
+#include "StringQueue.h"
 
 Trace::Trace()
 {
@@ -13,14 +14,28 @@ Trace* Trace::GetInstance()
 
 void Trace::Process()
 {
-	static char rxBuf[100] = "Hello!\n"; // static -> doesn't consume task
-	static size_t bufSize = 7;
+	static char rxBuf[1000];
 
-	size_t tmpSize = uart->Receive(rxBuf, 100);
+	size_t bufSize = 0;
 
-	if (tmpSize > 0)
+	for (int i = 0; i < StringQueueNum; i++)
 	{
-		bufSize = tmpSize;
+		Receiver* queue = StringQueue::GetInstance((STR_QUEUE_ID)i);
+
+		if (queue != nullptr)
+		{
+			size_t size;
+			queue->Receive(&rxBuf[bufSize], size, 1000 /*TODO*/);
+
+			while (size > 0)
+			{
+				bufSize += size;
+				rxBuf[bufSize] = '\n';
+				bufSize++;
+
+				queue->Receive(&rxBuf[bufSize], size, 1000 /*TODO*/);
+			}
+		}
 	}
 
 	uart->Transmit(rxBuf, bufSize);

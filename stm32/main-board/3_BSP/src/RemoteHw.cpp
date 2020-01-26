@@ -170,32 +170,32 @@ void RemoteHw::InitDma()
 	HAL_NVIC_EnableIRQ(DMA1_Stream2_IRQn);
 }
 
-void RemoteHw::timCh1Irq()
+void RemoteHw::Ch1DmaIrq()
 {
 	HAL_DMA_IRQHandler(&hdma[RemCh1]);
 }
 
-void RemoteHw::timCh2Irq()
+void RemoteHw::Ch2DmaIrq()
 {
 	HAL_DMA_IRQHandler(&hdma[RemCh2]);
 }
 
-void RemoteHw::timCh4Irq()
+void RemoteHw::Ch4DmaIrq()
 {
 	HAL_DMA_IRQHandler(&hdma[RemCh3]);
 }
 
 extern "C" void DMA1_Stream2_IRQHandler(void)
 {
-	RemoteHw::GetInstance()->timCh4Irq();
+	RemoteHw::GetInstance()->Ch4DmaIrq();
 }
 
 extern "C" void DMA1_Stream4_IRQHandler(void)
 {
-	RemoteHw::GetInstance()->timCh1Irq();
+	RemoteHw::GetInstance()->Ch1DmaIrq();
 }
 
 extern "C" void DMA1_Stream5_IRQHandler(void)
 {
-	RemoteHw::GetInstance()->timCh2Irq();
+	RemoteHw::GetInstance()->Ch2DmaIrq();
 }

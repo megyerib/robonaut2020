@@ -10,20 +10,21 @@ DmaUart::DmaUart(DMA_UART_CFG& cfg) : cfg(cfg)
 	HAL_UART_Receive_DMA(&huart, cfg.rxBuf, cfg.rxBufSize);
 }
 
-size_t DmaUart::Transmit(void* buffer, size_t size)
+int32_t DmaUart::Transmit(const void* buffer, size_t size)
 {
 	HAL_UART_Transmit_DMA(&huart, (uint8_t*) buffer, size);
 
 	return 0;
 }
 
-size_t DmaUart::Receive(void* buffer, size_t targetSize)
+int32_t DmaUart::Receive(void* buffer, size_t& size, size_t targetSize)
 {
 	UNUSED(targetSize); // TODO
 
 	uint8_t* buf = (uint8_t*) buffer;
 	size_t end;
-	size_t size = 0;
+
+	size = 0;
 
 	end = cfg.rxBufSize - hdma_uart_rx.Instance->NDTR;
 

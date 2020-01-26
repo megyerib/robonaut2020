@@ -1,7 +1,8 @@
 #pragma once
 
 #include "stm32f4xx_hal.h"
-#include "Serial.h"
+#include "Transmitter.h"
+#include "Receiver.h"
 
 typedef void(*ClkEn)(void);
 
@@ -47,18 +48,18 @@ typedef struct
 }
 DMA_UART_CFG;
 
-class DmaUart : public Serial
+class DmaUart : public Transmitter, public Receiver
 {
 public:
-	size_t Transmit(void* buffer, size_t size) override;
-	size_t Receive(void* buffer, size_t targetSize) override;
+	virtual int32_t Transmit(const void* buffer, size_t size) override;
+	virtual int32_t Receive(void* buffer, size_t& size, size_t targetSize) override;
 
 	void HandleUartIrq();
 	void HandleDmaRxIrq();
 	void HandleDmaTxIrq();
 
 protected:
-	DmaUart(DMA_UART_CFG& cfg);
+	explicit DmaUart(DMA_UART_CFG& cfg);
 
 private:
 	size_t rxBufIndex = 0;
