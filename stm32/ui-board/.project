@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>main-board</name>
+	<name>ui-board</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -21,21 +21,18 @@
 	<natures>
 		<nature>com.st.stm32cube.ide.mcu.MCUProjectNature</nature>
 		<nature>org.eclipse.cdt.core.cnature</nature>
-		<nature>org.eclipse.cdt.managedbuilder.core.ScannerConfigNature</nature>
 		<nature>org.eclipse.cdt.core.ccnature</nature>
+		<nature>com.st.stm32cube.ide.mcu.MCUCubeIdeServicesRevAProjectNature</nature>
+		<nature>com.st.stm32cube.ide.mcu.MCUManagedMakefileProjectNature</nature>
+		<nature>com.st.stm32cube.ide.mcu.MCUSingleCpuProjectNature</nature>
 		<nature>org.eclipse.cdt.managedbuilder.core.managedBuildNature</nature>
-		<nature>com.st.stm32cube.ide.mcu.MCUTSConvertedProjectNature</nature>
+		<nature>org.eclipse.cdt.managedbuilder.core.ScannerConfigNature</nature>
 	</natures>
 	<linkedResources>
 		<link>
 			<name>Lib/CMSIS</name>
 			<type>2</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Driver/CMSIS</locationURI>
-		</link>
-		<link>
-			<name>Lib/Cots</name>
-			<type>2</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Cots</locationURI>
+			<locationURI>copy_PARENT/Driver/CMSIS</locationURI>
 		</link>
 		<link>
 			<name>Lib/FreeRTOS</name>
@@ -43,30 +40,29 @@
 			<locationURI>PARENT-1-PROJECT_LOC/Middleware/FreeRTOS</locationURI>
 		</link>
 		<link>
-			<name>Lib/LibF4</name>
+			<name>Lib/STM32F0xx_HAL</name>
 			<type>2</type>
-			<locationURI>PARENT-2-PROJECT_LOC/common/LibF4</locationURI>
-		</link>
-		<link>
-			<name>Lib/STM32F4xx_HAL</name>
-			<type>2</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Driver/STM32F4xx_HAL</locationURI>
+			<locationURI>copy_PARENT/Driver/STM32F0xx_HAL</locationURI>
 		</link>
 		<link>
 			<name>Lib/inc</name>
 			<type>2</type>
-			<locationURI>PARENT-2-PROJECT_LOC/common/inc</locationURI>
+			<locationURI>copy_PARENT1/common/inc</locationURI>
 		</link>
 		<link>
 			<name>Lib/src</name>
 			<type>2</type>
-			<locationURI>PARENT-2-PROJECT_LOC/common/src</locationURI>
+			<locationURI>copy_PARENT1/common/src</locationURI>
 		</link>
 	</linkedResources>
 	<variableList>
 		<variable>
 			<name>copy_PARENT</name>
 			<value>file:/E:/Git/robonaut2020/stm32</value>
+		</variable>
+		<variable>
+			<name>copy_PARENT1</name>
+			<value>$%7BPARENT-1-copy_PARENT%7D</value>
 		</variable>
 	</variableList>
 </projectDescription>
