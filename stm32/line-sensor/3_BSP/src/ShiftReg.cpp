@@ -23,11 +23,11 @@ bool ShiftReg::Display(void* data, size_t size)
 {
 	bool ret = false;
 
-	if (spi->isReady())
+	if (spi->IsReady())
 	{
 		spi->Send(data, size);
 
-		while(!spi->isReady());
+		while(!spi->IsReady());
 
 		HAL_GPIO_WritePin(LE_Port, LE_Pin, GPIO_PIN_SET);
 		HAL_GPIO_WritePin(LE_Port, LE_Pin, GPIO_PIN_RESET);

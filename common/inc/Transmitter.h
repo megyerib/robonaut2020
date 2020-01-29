@@ -7,6 +7,7 @@
 #define TRANSMIT_BUFFER_NULL               (-1)
 #define TRANSMIT_TARGET_SIZE_INSUFFICIENT  (-2)
 #define TRANSMIT_INTERNAL_ERROR            (-3)
+#define TRANSMIT_BUSY                      (-4)
 
 class Transmitter
 {

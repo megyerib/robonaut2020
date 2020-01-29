@@ -15,11 +15,11 @@ class Spi
 
 	Spi();
 
-	void MspInit();
-	void Init();
+	void InitGpio();
+	void InitSpi();
 
 public:
 	static Spi* GetInstance();
 	void Send(void* data, size_t size);
-	bool isReady();
+	bool IsReady();
 };

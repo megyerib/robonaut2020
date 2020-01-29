@@ -9,8 +9,8 @@ Spi::Spi()
 {
 	hspi1 = &handle;
 
-	MspInit();
-	Init();
+	InitGpio();
+	InitSpi();
 }
 
 Spi* Spi::GetInstance()
@@ -20,7 +20,7 @@ Spi* Spi::GetInstance()
 	return instance;
 }
 
-void Spi::MspInit()
+void Spi::InitGpio()
 {
 	// MSP = MCU Support Package
 
@@ -46,7 +46,7 @@ void Spi::MspInit()
 	HAL_NVIC_EnableIRQ(SPI1_IRQn);
 }
 
-void Spi::Init()
+void Spi::InitSpi()
 {
 	handle.Instance = SPI1;
 	handle.Init.Mode = SPI_MODE_MASTER;
@@ -78,7 +78,7 @@ void Spi::Send(void* data, size_t size)
 	}
 }
 
-bool Spi::isReady()
+bool Spi::IsReady()
 {
 	return HAL_SPI_GetState(&handle) == HAL_SPI_STATE_READY;
 }
