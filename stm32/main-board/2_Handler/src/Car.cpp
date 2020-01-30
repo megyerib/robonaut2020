@@ -136,6 +136,7 @@ Car::Car()
    // trace         = Trace::GetInstance();
     delayDistance = new WaitDistance();
     //delayTime     = new WaitTime();
+    navigation    = Navigation::GetInstance();
 
     wheels->SetMode(SingleLineFollow_Slow);
 

@@ -9,7 +9,8 @@ public:
     I2C_HandleTypeDef* GetHandle();
 
 private:
-    I2C_HandleTypeDef* handle;
+    static I2C_HandleTypeDef hi2c;
+    static bool configured;
 
     INERT_I2C();
     void Init();

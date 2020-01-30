@@ -1,4 +1,8 @@
 #include "Inert_I2c.h"
+#include "lsm6dso_reg.h"
+
+I2C_HandleTypeDef INERT_I2C::hi2c = {0};
+bool INERT_I2C::configured = false;
 
 INERT_I2C* INERT_I2C::GetInstance()
 {
@@ -8,46 +12,47 @@ INERT_I2C* INERT_I2C::GetInstance()
 
 I2C_HandleTypeDef* INERT_I2C::GetHandle()
 {
-    return handle;
+    return &hi2c;
 }
 
 INERT_I2C::INERT_I2C()
 {
-
+    if (configured == false)
+    {
+        Init();
+    }
 }
 
 void INERT_I2C::Init()
 {
-    // TODO
-    //handle = &tof_handle;
+    ConfigureGpio();
 
-    // I2C1 clock enable
-    __HAL_RCC_I2C1_CLK_ENABLE();
+    // I2C3 clock enable
+    __HAL_RCC_I2C3_CLK_ENABLE();
 
-    // I2C1 interrupt Init
-    HAL_NVIC_SetPriority(I2C3_EV_IRQn, 5, 0);
+    // I2C3 interrupt Init
+    HAL_NVIC_SetPriority(I2C3_EV_IRQn, 5, 1);
     HAL_NVIC_EnableIRQ(I2C3_EV_IRQn);
-    HAL_NVIC_SetPriority(I2C3_ER_IRQn, 5, 0);
+    HAL_NVIC_SetPriority(I2C3_ER_IRQn, 5, 1);
     HAL_NVIC_EnableIRQ(I2C3_ER_IRQn);
 
-    //ConfigureHandle();
+    ConfigureHandle();
 
-    //ConfigureGpio();
+    configured = true;
 }
 
 void INERT_I2C::ConfigureHandle()
 {
-    // TODO
-    handle->Instance                 = I2C3;
-    handle->Init.ClockSpeed          = 50000;
-    handle->Init.DutyCycle           = I2C_DUTYCYCLE_2;
-    handle->Init.OwnAddress1         = 0;
-    handle->Init.AddressingMode      = I2C_ADDRESSINGMODE_7BIT;
-    handle->Init.DualAddressMode     = I2C_DUALADDRESS_DISABLE;
-    handle->Init.OwnAddress2         = 0;
-    handle->Init.GeneralCallMode     = I2C_GENERALCALL_DISABLE;
-    handle->Init.NoStretchMode       = I2C_NOSTRETCH_DISABLE;
-    if (HAL_I2C_Init(handle) != HAL_OK)
+    hi2c.Instance                 = I2C3;
+    hi2c.Init.ClockSpeed          = 400000;
+    hi2c.Init.DutyCycle           = I2C_DUTYCYCLE_2;
+    hi2c.Init.OwnAddress1         = 0;
+    hi2c.Init.AddressingMode      = I2C_ADDRESSINGMODE_7BIT;
+    hi2c.Init.DualAddressMode     = I2C_DUALADDRESS_DISABLE;
+    hi2c.Init.OwnAddress2         = 0;
+    hi2c.Init.GeneralCallMode     = I2C_GENERALCALL_DISABLE;
+    hi2c.Init.NoStretchMode       = I2C_NOSTRETCH_DISABLE;
+    if (HAL_I2C_Init(&hi2c) != HAL_OK)
     {
         //Error_Handler();
     }
@@ -55,27 +60,26 @@ void INERT_I2C::ConfigureHandle()
 
 void INERT_I2C::ConfigureGpio()
 {
-    // TODO
     GPIO_InitTypeDef GPIO_InitStruct = {0};
 
-    __HAL_RCC_GPIOB_CLK_ENABLE();
+    __HAL_RCC_GPIOC_CLK_ENABLE();
+    __HAL_RCC_GPIOA_CLK_ENABLE();
 
-    // I2C1 GPIO Configuration:
-    //   PB6 ------> I2C1_SCL
-    //   PB7 ------> I2C1_SDA
-    //
-    GPIO_InitStruct.Pin         = GPIO_PIN_6|GPIO_PIN_7;
+    // I2C3 GPIO Configuration:
+    //  PC9     ------> I2C3_SDA
+    GPIO_InitStruct.Pin         = GPIO_PIN_9;
     GPIO_InitStruct.Mode        = GPIO_MODE_AF_OD;
     GPIO_InitStruct.Pull        = GPIO_PULLUP;
     GPIO_InitStruct.Speed       = GPIO_SPEED_FREQ_VERY_HIGH;
-    GPIO_InitStruct.Alternate   = GPIO_AF4_I2C1;
-    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+    GPIO_InitStruct.Alternate   = GPIO_AF4_I2C3;
+    HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-    // Init Debug GPIOSs (Free123)
+    //  PA8     ------> I2C3_SCL
     GPIO_InitStruct = {0};
-    GPIO_InitStruct.Pin         = GPIO_PIN_5|GPIO_PIN_4|GPIO_PIN_3;
-    GPIO_InitStruct.Mode        = GPIO_MODE_OUTPUT_PP;
-    GPIO_InitStruct.Pull        = GPIO_NOPULL;
-    GPIO_InitStruct.Speed       = GPIO_SPEED_FREQ_LOW;
-    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+    GPIO_InitStruct.Pin         = GPIO_PIN_8;
+    GPIO_InitStruct.Mode        = GPIO_MODE_AF_OD;
+    GPIO_InitStruct.Pull        = GPIO_PULLUP;
+    GPIO_InitStruct.Speed       = GPIO_SPEED_FREQ_VERY_HIGH;
+    GPIO_InitStruct.Alternate   = GPIO_AF4_I2C3;
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 }

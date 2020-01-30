@@ -8,6 +8,7 @@
 #include "Traction.h"
 #include "TrackDetector.h"
 #include "Distance.h"
+#include "Navigation.h"
 
 #include "Timepiece.h"
 #include "Trace.h"
@@ -39,6 +40,7 @@ private:
     Trace*          trace;
     WaitDistance*   delayDistance;
     //WaitTime*       delayTime;
+    Navigation*     navigation;
 
     QualiState      state;
     QualiState      recover;
