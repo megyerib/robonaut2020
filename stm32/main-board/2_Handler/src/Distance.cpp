@@ -47,7 +47,7 @@ Distance::Distance()
     srv_front->Enable();
 
     tof_front = new TOF_L1(0x20,
-                           50,
+                           100,
                            200,
                            TOF_FRONT_XSDN_Port,
                            TOF_FRONT_XSDN_Pin);

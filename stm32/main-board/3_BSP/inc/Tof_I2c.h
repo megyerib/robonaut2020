@@ -8,6 +8,8 @@ public:
     static ToF_I2c* GetInstance();
     I2C_HandleTypeDef* GetHandle();
 
+    void Reset();
+
 private:
     I2C_HandleTypeDef* handle;
 
@@ -15,4 +17,5 @@ private:
     void Init();
     void ConfigureHandle();
     void ConfigureGpio();
+    void DeInit();
 };

@@ -17,7 +17,7 @@ TOF_L1::TOF_L1()
 
     Dev->I2cDevAddr      = 0x52;
     Dev->I2cHandle       = i2c->GetHandle();
-    Dev->comms_speed_khz = 400;
+    Dev->comms_speed_khz = 100;
     Dev->comms_type      = 1;
 
     status              = VL53L1_ERROR_NONE;
@@ -54,7 +54,7 @@ TOF_L1::TOF_L1(uint8_t             const Addr,
 
 void TOF_L1::Init()
 {
-    vTaskDelay(200);
+    vTaskDelay(100);
     Restart();
 
     if (isAddressForgotten() == true)
@@ -81,16 +81,16 @@ void TOF_L1::Process()
             uint16_t milimeter = RangingData.RangeMilliMeter;
             if (milimeter > 300)
             {
-                HAL_GPIO_WritePin(FREE1_GPIO_Port, FREE1_Pin, GPIO_PIN_SET);
+                //HAL_GPIO_WritePin(FREE1_GPIO_Port, FREE1_Pin, GPIO_PIN_SET);
             }
             else
             {
-                HAL_GPIO_WritePin(FREE1_GPIO_Port, FREE1_Pin, GPIO_PIN_RESET);
+                //HAL_GPIO_WritePin(FREE1_GPIO_Port, FREE1_Pin, GPIO_PIN_RESET);
             }
         }
         else
         {
-            HAL_GPIO_WritePin(FREE1_GPIO_Port, FREE1_Pin, GPIO_PIN_RESET);
+            //HAL_GPIO_WritePin(FREE1_GPIO_Port, FREE1_Pin, GPIO_PIN_RESET);
         }
         status = VL53L1_ClearInterruptAndStartMeasurement(Dev);
     }
@@ -98,7 +98,10 @@ void TOF_L1::Process()
     {
         // DEB
         HAL_GPIO_WritePin(FREE3_LED_GPIO_Port, FREE3_LED_Pin, GPIO_PIN_RESET);
+        i2c->Reset();
         Init();
+        VL53L1DevDataSet(Dev, PalState, VL53L1_STATE_IDLE);
+        VL53L1_StopMeasurement(Dev);
     }
 }
 
@@ -171,7 +174,7 @@ void TOF_L1::Startup()
 void TOF_L1::Restart()
 {
     Shutdown();
-    vTaskDelay(200);
+    vTaskDelay(150);
     Startup();
 }
 

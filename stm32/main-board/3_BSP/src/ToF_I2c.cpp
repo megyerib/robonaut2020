@@ -12,6 +12,12 @@ I2C_HandleTypeDef* ToF_I2c::GetHandle()
     return handle;
 }
 
+void ToF_I2c::Reset()
+{
+    DeInit();
+    Init();
+}
+
 ToF_I2c::ToF_I2c()
 {
     Init();
@@ -33,7 +39,6 @@ void ToF_I2c::Init()
     HAL_NVIC_EnableIRQ(I2C1_ER_IRQn);
 
     ConfigureHandle();
-
 }
 
 void ToF_I2c::ConfigureHandle()
@@ -79,4 +84,18 @@ void ToF_I2c::ConfigureGpio()
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 }
 
+void ToF_I2c::DeInit()
+{
+    __HAL_RCC_I2C1_CLK_DISABLE();
 
+    HAL_NVIC_DisableIRQ(I2C1_EV_IRQn);
+    HAL_NVIC_DisableIRQ(I2C1_ER_IRQn);
+
+    HAL_GPIO_DeInit(GPIOB, GPIO_PIN_6|GPIO_PIN_7);
+    HAL_GPIO_DeInit(GPIOB, GPIO_PIN_5|GPIO_PIN_4|GPIO_PIN_3);
+
+    HAL_I2C_DeInit(handle);
+
+    handle = {0};
+    tof_handle = {0};
+}
