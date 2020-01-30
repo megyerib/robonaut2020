@@ -21,6 +21,8 @@ void ToF_I2c::Init()
 {
     handle = &tof_handle;
 
+    ConfigureGpio();
+
     // I2C1 clock enable
     __HAL_RCC_I2C1_CLK_ENABLE();
 
@@ -32,13 +34,12 @@ void ToF_I2c::Init()
 
     ConfigureHandle();
 
-    ConfigureGpio();
 }
 
 void ToF_I2c::ConfigureHandle()
 {
     handle->Instance                 = I2C1;
-    handle->Init.ClockSpeed          = 50000;
+    handle->Init.ClockSpeed          = 100000;
     handle->Init.DutyCycle           = I2C_DUTYCYCLE_2;
     handle->Init.OwnAddress1         = 0;
     handle->Init.AddressingMode      = I2C_ADDRESSINGMODE_7BIT;

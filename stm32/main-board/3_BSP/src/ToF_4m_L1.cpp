@@ -81,16 +81,16 @@ void TOF_L1::Process()
             uint16_t milimeter = RangingData.RangeMilliMeter;
             if (milimeter > 300)
             {
-                //HAL_GPIO_WritePin(FREE1_GPIO_Port, FREE1_Pin, GPIO_PIN_SET);
+                HAL_GPIO_WritePin(FREE1_GPIO_Port, FREE1_Pin, GPIO_PIN_SET);
             }
             else
             {
-                //HAL_GPIO_WritePin(FREE1_GPIO_Port, FREE1_Pin, GPIO_PIN_RESET);
+                HAL_GPIO_WritePin(FREE1_GPIO_Port, FREE1_Pin, GPIO_PIN_RESET);
             }
         }
         else
         {
-            //HAL_GPIO_WritePin(FREE1_GPIO_Port, FREE1_Pin, GPIO_PIN_RESET);
+            HAL_GPIO_WritePin(FREE1_GPIO_Port, FREE1_Pin, GPIO_PIN_RESET);
         }
         status = VL53L1_ClearInterruptAndStartMeasurement(Dev);
     }
