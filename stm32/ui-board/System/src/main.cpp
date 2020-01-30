@@ -1,6 +1,8 @@
 #include "System.h"
 #include "ShiftReg.h"
 
+#include "MatrixImg.h"
+
 typedef struct
 {
 	uint8_t ledImg;
@@ -8,10 +10,6 @@ typedef struct
 	uint8_t row;
 }
 OUTPUT_IMAGE;
-
-typedef const uint8_t MATRIX_IMG[8];
-
-MATRIX_IMG img_X = {0x3C, 0x7E, 0x67, 0x03, 0x03, 0x67, 0x7E, 0x3C};
 
 
 int main(void)
@@ -25,8 +23,8 @@ int main(void)
 
 	while (1)
 	{
-		buf.col = ~img_X[i];
-		buf.row = 1 << i;
+		buf.row = img_big7[i];
+		buf.col = ~(1 << i);
 
 		sr->Transmit(&buf, 3);
 
