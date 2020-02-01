@@ -42,6 +42,8 @@ public:
     float GetAccel_mg(Axis const t);
     void  OffsetCalibration();
 
+    uint8_t GetRandomNumber();
+
 private:    // I2C interface
     INERT_I2C*      i2c;
     uint8_t         address;

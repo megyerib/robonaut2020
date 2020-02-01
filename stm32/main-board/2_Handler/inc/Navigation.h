@@ -37,6 +37,8 @@ public:
     void SetPosition(Position const pos, float const ds, float const dpsi);
     Position GetPosition();
 
+    uint8_t GetRandomNumber();
+
 private:
     Navigation();
 

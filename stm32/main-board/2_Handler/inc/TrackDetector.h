@@ -10,7 +10,16 @@ typedef enum
 	None,
 	Single,
 	Acceleration,
-	Braking
+	Braking,
+    Exit,
+    ExitReverse,
+    ForkBoth,
+    ForkLeft,
+    ForkRight,
+    JunctionBoth,
+    JunctionLeft,
+    JunctionRight,
+    CrossingPoint
 }
 TrackType;
 

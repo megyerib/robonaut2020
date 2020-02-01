@@ -28,6 +28,11 @@ Position Navigation::GetPosition()
     return position;
 }
 
+uint8_t Navigation::GetRandomNumber()
+{
+    return inert->GetRandomNumber();
+}
+
 Navigation::Navigation()
 {
     inert = new LSM6DSO();

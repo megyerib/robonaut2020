@@ -159,9 +159,14 @@ float LSM6DSO::GetAccel_mg(Axis const t)
     return acceleration;
 }
 
-void  LSM6DSO::OffsetCalibration()
+void LSM6DSO::OffsetCalibration()
 {
     // TODO
+}
+
+uint8_t LSM6DSO::GetRandomNumber()
+{
+    return (uint8_t)((uint32_t)((acceleration_mg[0] + angular_rate_mdps[3]) * 100) % 255);
 }
 
 /*
