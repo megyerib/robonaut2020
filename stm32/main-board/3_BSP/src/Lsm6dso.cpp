@@ -99,6 +99,71 @@ void LSM6DSO::Process()
     }
 }
 
+float LSM6DSO::GetAngular_mdps(Axis const t)
+{
+    float angular = 0.0f;
+
+    switch (t)
+    {
+        case Axis::r:
+        {
+            angular = angular_rate_mdps[0];
+            break;
+        }
+        case Axis::p:
+        {
+            angular = angular_rate_mdps[1];
+            break;
+        }
+        case Axis::y:
+        {
+
+            angular = angular_rate_mdps[2];
+            break;
+        }
+        default:
+            // Wrong axis.
+            break;
+    }
+
+    return angular;
+}
+
+float LSM6DSO::GetAccel_mg(Axis const t)
+{
+    float acceleration = 0.0f;
+
+    switch (t)
+    {
+        case Axis::x:
+        {
+            acceleration = acceleration_mg[0];
+            break;
+        }
+        case Axis::y:
+        {
+            acceleration = acceleration_mg[1];
+            break;
+        }
+        case Axis::z:
+        {
+
+            acceleration = acceleration_mg[2];
+            break;
+        }
+        default:
+            // Wrong axis.
+            break;
+    }
+
+    return acceleration;
+}
+
+void  LSM6DSO::OffsetCalibration()
+{
+    // TODO
+}
+
 /*
  * @brief  Write generic device register (platform dependent)
  *

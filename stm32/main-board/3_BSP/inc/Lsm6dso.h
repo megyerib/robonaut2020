@@ -3,11 +3,20 @@
 #include "Inert_I2c.h"
 #include "lsm6dso_reg.h"
 
-
 #define PWM_3V3             ( 915)
 #define OWN_ADDR            (0XD5)
 #define CONTROL_REG_ADDR    (0x0F)
 #define CONTROL_REG_VALUE   (0x6C)
+
+typedef enum
+{
+    x = 0,
+    y,
+    z,
+    roll,
+    pitch,
+    yaw
+} Axis;
 
 typedef union
 {
@@ -28,6 +37,10 @@ public:
 
     void Init();
     void Process();
+
+    float GetAngular_mdps(Axis const t);
+    float GetAccel_mg(Axis const t);
+    void  OffsetCalibration();
 
 private:    // I2C interface
     INERT_I2C*      i2c;
