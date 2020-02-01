@@ -105,17 +105,17 @@ float LSM6DSO::GetAngular_mdps(Axis const t)
 
     switch (t)
     {
-        case Axis::r:
+        case Axis::roll:
         {
             angular = angular_rate_mdps[0];
             break;
         }
-        case Axis::p:
+        case Axis::pitch:
         {
             angular = angular_rate_mdps[1];
             break;
         }
-        case Axis::y:
+        case Axis::yaw:
         {
 
             angular = angular_rate_mdps[2];

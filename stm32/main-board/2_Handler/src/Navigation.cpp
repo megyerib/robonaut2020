@@ -74,7 +74,7 @@ void Navigation::CalcDeltaOrientation()
     prev_angular = angular_yaw;
 }
 
-void Navigation::GetDeltaDistance()
+void Navigation::CalcDeltaDistance()
 {
     // TODO
     float act_enc = enc->GetDistance();
@@ -84,11 +84,11 @@ void Navigation::GetDeltaDistance()
     prev_enc = act_enc;
 }
 
-float Integral_Trapez (const double a, const double b, const double fa, const double fb)
+float Navigation::Integral_Trapez (const float a, const float b, const float fa, const float fb)
 {
     float integral;
 
     integral = (b - a) * (fb + fa) / 2;
 
-    float integral;
+    return integral;
 }

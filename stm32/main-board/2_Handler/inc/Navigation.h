@@ -44,5 +44,5 @@ private:
     void Odometry();
     void CalcDeltaOrientation();
     void CalcDeltaDistance();
-    float Integral_Trapez();
+    float Integral_Trapez(const float a, const float b, const float fa, const float fb);
 };

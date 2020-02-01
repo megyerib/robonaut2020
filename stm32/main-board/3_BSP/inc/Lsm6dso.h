@@ -65,6 +65,5 @@ private:    // LSM6DSO components
     static void    platform_init (void);
 
 private:
-    void OffsetCalibration();
 
 };
