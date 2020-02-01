@@ -29,8 +29,6 @@ private:
     GPIO_TypeDef*   XSDN_Port;
     uint16_t        XSDN_Pin;
 
-    Transmitter*    trace;
-
 public:
     TOF_L1();
     TOF_L1(uint8_t              const Addr,
