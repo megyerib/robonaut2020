@@ -2,20 +2,18 @@
 
 #include "stm32f4xx_hal.h"
 
-class ToF_I2c
+class INERT_I2C
 {
 public:
-    static ToF_I2c* GetInstance();
+    static INERT_I2C* GetInstance();
     I2C_HandleTypeDef* GetHandle();
 
-    void Reset();
-
 private:
-    I2C_HandleTypeDef* handle;
+    static I2C_HandleTypeDef hi2c;
+    static bool configured;
 
-    ToF_I2c();
+    INERT_I2C();
     void Init();
     void ConfigureHandle();
     void ConfigureGpio();
-    void DeInit();
 };

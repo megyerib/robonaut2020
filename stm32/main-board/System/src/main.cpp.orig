@@ -9,13 +9,21 @@ int main(void)
 	// Module & task initializations
 
 		// Service tasks
+<<<<<<< HEAD
 		//TrackTask    :: Init();
 		//TractionTask :: Init();
 		//SteeringTask :: Init();
 		//EncoderTask  :: Init();
-		//DistanceTask :: Init();
+		DistanceTask :: Init();
 		TraceTask    :: Init();
+=======
+		TrackTask      :: Init();
+		TractionTask   :: Init();
+		SteeringTask   :: Init();
+		EncoderTask    :: Init();
+		DistanceTask   :: Init();
 		NavigationTask :: Init();
+>>>>>>> origin/joci
 
 		// Application tasks
 		//Q1Task       :: Init();*/

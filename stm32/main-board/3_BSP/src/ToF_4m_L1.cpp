@@ -1,7 +1,6 @@
 #include "ToF_4m_L1.h"
 #include "FreeRTOS.h"
 #include "task.h"
-#include "StringQueue.h"
 
 #define FREE3_LED_Pin       GPIO_PIN_3
 #define FREE3_LED_GPIO_Port GPIOB
@@ -12,7 +11,20 @@
 
 TOF_L1::TOF_L1()
 {
-    TOF_L1(0x52, 400, 200, TOF_FRONT_XSDN_Port, TOF_FRONT_XSDN_Pin);
+    i2c = ToF_I2c::GetInstance();
+
+    InitXsdnGpio();
+
+    Dev->I2cDevAddr      = 0x52;
+    Dev->I2cHandle       = i2c->GetHandle();
+    Dev->comms_speed_khz = 100;
+    Dev->comms_type      = 1;
+
+    status              = VL53L1_ERROR_NONE;
+    timingBudget_ms     = 200;
+
+    XSDN_Port           = TOF_FRONT_XSDN_Port;
+    XSDN_Pin            = TOF_FRONT_XSDN_Pin;
 }
 
 TOF_L1::TOF_L1(uint8_t             const Addr,
@@ -38,13 +50,11 @@ TOF_L1::TOF_L1(uint8_t             const Addr,
 
     XSDN_Port = XsdnPort;
     XSDN_Pin  = XsdnPin;
-
-    trace = StringQueue::GetInstance(TofFrontTrace);
 }
 
 void TOF_L1::Init()
 {
-    vTaskDelay(200);
+    vTaskDelay(100);
     Restart();
 
     if (isAddressForgotten() == true)
@@ -83,16 +93,15 @@ void TOF_L1::Process()
             //HAL_GPIO_WritePin(FREE1_GPIO_Port, FREE1_Pin, GPIO_PIN_RESET);
         }
         status = VL53L1_ClearInterruptAndStartMeasurement(Dev);
-
-        trace->Transmit("ToF ok", 6);
     }
     else
     {
         // DEB
         HAL_GPIO_WritePin(FREE3_LED_GPIO_Port, FREE3_LED_Pin, GPIO_PIN_RESET);
+        i2c->Reset();
         Init();
-
-        trace->Transmit("ToF rekt", 8);
+        VL53L1DevDataSet(Dev, PalState, VL53L1_STATE_IDLE);
+        VL53L1_StopMeasurement(Dev);
     }
 }
 
@@ -165,7 +174,7 @@ void TOF_L1::Startup()
 void TOF_L1::Restart()
 {
     Shutdown();
-    vTaskDelay(200);
+    vTaskDelay(150);
     Startup();
 }
 

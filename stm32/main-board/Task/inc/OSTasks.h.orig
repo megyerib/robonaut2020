@@ -8,8 +8,11 @@
 #include "SteeringTask.h"
 #include "EncoderTask.h"
 #include "DistanceTask.h"
+<<<<<<< HEAD
 #include "TraceTask.h"
+=======
 #include "NavigationTask.h"
+>>>>>>> origin/joci
 
 // Application tasks
 #include "Q1Task.h"
