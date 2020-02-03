@@ -8,12 +8,13 @@ private:
     float kd;
     float derivative;
     float previous_error;
+    float previous_line;
 
 public:
     Pd_Controller();
-    Pd_Controller(float Kp, float Kd);
+    Pd_Controller(float const Kp, float const Kd);
 
-    void Process(float processValue) override;
+    void Process(float const processValue) override;
 
-    void Set_D_Term(float D);
+    void Set_D_Term(float const D);
 };
