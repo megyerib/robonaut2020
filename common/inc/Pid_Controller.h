@@ -1,15 +1,22 @@
-/*
- * Pid_Controller.h
- *
- *  Created on: Nov 17, 2019
- *      Author: Joci
- */
+#pragma once
 
-#ifndef PID_CONTROLLER_H_
-#define PID_CONTROLLER_H_
+#include "Controller.h"
 
+class Pid_Controller : public Controller
+{
+private:
+    float ki;
+    float kd;
+    float integrate;
+    float derivative;
+    float previous_error;
 
+public:
+    Pid_Controller();
+    Pid_Controller(float const Kp, float const Ki, float const Kd);
 
+    void Process(float const porcessValue) override;
 
-
-#endif /* PID_CONTROLLER_H_ */
+    void Set_I_Term(float const I);
+    void Set_D_Term(float const D);
+};
