@@ -14,17 +14,54 @@
 #include "Trace.h"
 #include "WaitDistance.h"
 #include "WaitTime.h"
+#include "Map.h"
+
+#define USE_RADIO_STARTER      (1U)    /* 0 = with radio, 1 = can start without radio */
+#define USE_DEADMAN_SWITCH     (1U)    /* 0 = no remote,  1 = starts/stops with remote */
+#define USE_MINIMAL_STRATEGY   (1U)    /* 0 = algorithms, 1 = basic drive */
+
+#define OVERTAKE_SEGMENT       (8U)    /* Overtake can be done starting from this segment */
 
 typedef enum
 {
-    Wait = 0,
-    Straight,
-    Decelerate,
-    Turn,
-    Accelerate,
-    Follow,
-    Stop
-} QualiState;
+    la_Idle = 0,
+    la_Straight,
+    la_Junction,
+    la_Turn,
+    la_Reverse,
+    la_Exit,
+    la_End,     // For test
+    sp_Wait,    // For test
+    sp_Follow,
+    sp_Overtake,
+    sp_Straight,
+    sp_Decelerate,
+    sp_Turn,
+    sp_Accelerate,
+    sp_Stop
+} RaceState;
+
+typedef enum
+{
+    InvalidLap = 0,
+    Follow_One,
+    Follow_Two,
+    Lap_One,
+    Lap_Two,
+    Lap_Three,
+} Lap;
+
+typedef struct
+{
+    RaceState    state;
+    float        speed;
+    uint32_t     dist_travelled;
+    TrackType    track;
+    Position     position;
+    float        front_distance;
+    SteeringMode wheel_mode;
+    float        targetSpeed;
+} CarProperties;
 
 class Car
 {
@@ -42,8 +79,15 @@ private:
     //WaitTime*       delayTime;
     Navigation*     navigation;
 
-    QualiState      state;
-    QualiState      recover;
+    Map*            map;
+    TurnType        nextTurn;
+
+    CarProperties   carProp;
+    RaceState       recoverState;
+
+    Lap             actLap;
+    uint8_t         segmentCounter;
+
 
     Pd_Controller*  dist_ctrl;
 
@@ -56,8 +100,20 @@ public:
 
 private:
     Car();
-    void CheckDeadmanSwitch();
-    void FollowStateMachine();
 
+    void CheckDeadmanSwitch();
+
+    void BasicDrive_StateMachine();
+    void Follow_StateMachine();
+    void BasicLabyrinth_StateMachine();
+    void Race_StateMachine();
+    void Minimal_StateMachine();
+
+    void Maneuver_Reverse();
+    void Maneuver_ChangeLane();
+    void Maneuver_Overtake();
+
+    void UpdateProperties();
+    void Actuate();
     int prescaler;
 };
