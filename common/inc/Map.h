@@ -86,6 +86,7 @@ public:
 
     void Process();
     TurnType WhichWayToTurn();
+    bool isDecisionMade();
 
 private:
 

@@ -6,7 +6,7 @@ Map* Map::GetInstance()
     return &instance;
 }
 
-void Map::Process()
+void Map::Process() // TODO make a task
 {
     actualTrackType = trackDetect->GetTrackType();
     IsCarOverRoadsign();
@@ -58,6 +58,11 @@ void Map::Process()
 TurnType Map::WhichWayToTurn()
 {
     return nextTurn;
+}
+
+bool Map::isDecisionMade()
+{
+    return decisionMade;
 }
 
 Map::Map()
@@ -168,23 +173,16 @@ bool Map::IsCrosspoint()
 {
     bool crosspointFound = false;
 
-    if (((prevTrackType == TrackType::JunctionBoth) ||
-         (prevTrackType == TrackType::JunctionLeft) ||
-         (prevTrackType == TrackType::JunctionRight))
+    if ((trackDetect->IsJunction(prevTrackType))
         &&
-        ((actualTrackType == TrackType::ForkBoth)  ||
-         (actualTrackType == TrackType::ForkLeft)  ||
-         (actualTrackType == TrackType::ForkRight) ||
-         (actualTrackType == TrackType::Single)))
+        ((trackDetect->IsFork(actualTrackType)) || (actualTrackType == TrackType::Single)))
     {
         crosspointFound = true;
     }
 
     if (prevTrackType == TrackType::Single
         &&
-        ((actualTrackType == TrackType::ForkBoth)  ||
-         (actualTrackType == TrackType::ForkLeft)  ||
-         (actualTrackType == TrackType::ForkRight)))
+        (trackDetect->IsFork(actualTrackType)))
     {
         crosspointFound = true;
     }
