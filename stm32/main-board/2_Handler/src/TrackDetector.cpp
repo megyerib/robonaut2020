@@ -41,6 +41,30 @@ float TrackDetector::GetFrontLine()
 	return frontLinePos;
 }
 
+bool IsJunction(TrackType track)
+{
+    bool track_is_junction = false;
+
+    if ((track == TrackType::JunctionBoth) || (track == TrackType::JunctionLeft) || (TrackType::JunctionRight))
+    {
+        track_is_junction = true;
+    }
+
+    return track_is_junction;
+}
+
+bool IsFork(TrackType track)
+{
+    bool track_is_fork = false;
+
+    if ((track == TrackType::ForkBoth) || (track == TrackType::ForkLeft) || (TrackType::ForkRight))
+    {
+        track_is_fork = true;
+    }
+
+    return track_is_fork;
+}
+
 void TrackDetector::GetFrontLineData()
 {
 	uint8_t base64_buf[50];

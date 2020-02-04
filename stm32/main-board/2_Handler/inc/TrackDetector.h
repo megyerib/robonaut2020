@@ -19,6 +19,7 @@ typedef enum
     JunctionBoth,
     JunctionLeft,
     JunctionRight,
+    DeadEnd,
     CrossingPoint
 }
 TrackType;
@@ -34,11 +35,14 @@ class TrackDetector
 {
 public:
 	static TrackDetector* GetInstance();
+	void Process(); // For the OS task
+
 	void SetMode(TrackMode mode);
 	TrackType GetTrackType();
 	float GetFrontLine(); /* m */
 	float GetRearLine(); /* m */
-	void Process(); // For the OS task
+	bool IsJunction(TrackType track);
+	bool IsFork(TrackType track);
 
 private:
 	Receiver* frontProcessor;
