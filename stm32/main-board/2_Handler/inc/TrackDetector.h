@@ -26,6 +26,14 @@ TrackType;
 
 typedef enum
 {
+    ld_NoLine,
+    ld_Left,
+    ld_Middle,
+    ld_Right
+} LineDirection;
+
+typedef enum
+{
 	//Maze,
 	Speedrun
 }
@@ -41,8 +49,10 @@ public:
 	TrackType GetTrackType();
 	float GetFrontLine(); /* m */
 	float GetRearLine(); /* m */
-	bool IsJunction(TrackType track);
-	bool IsFork(TrackType track);
+
+	bool IsJunction(TrackType const track);
+	bool IsFork(TrackType const track);
+	float GetFrontLine(LineDirection const dir);
 
 private:
 	Receiver* frontProcessor;

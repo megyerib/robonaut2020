@@ -15,12 +15,11 @@
 #include "WaitDistance.h"
 #include "WaitTime.h"
 #include "Map.h"
+#include "Pid_Controller.h"
 
 #define USE_RADIO_STARTER      (1U)    /* 0 = with radio, 1 = can start without radio */
 #define USE_DEADMAN_SWITCH     (1U)    /* 0 = no remote,  1 = starts/stops with remote */
 #define USE_MINIMAL_STRATEGY   (1U)    /* 0 = algorithms, 1 = basic drive */
-
-#define OVERTAKE_SEGMENT       (8U)    /* Overtake can be done starting from this segment */
 
 typedef enum
 {
@@ -51,6 +50,14 @@ typedef enum
     Lap_Three,
 } Lap;
 
+typedef enum
+{
+    LeaveLine = 0,
+    SearchLine,
+    LineFound,
+    NoLineFound
+} LineSwitch_SM;
+
 typedef struct
 {
     RaceState    state;
@@ -61,6 +68,8 @@ typedef struct
     float        front_distance;
     SteeringMode wheel_mode;
     float        targetSpeed;
+    float        lineFollow_Front;
+    float        lineFollow_Rear;
 } CarProperties;
 
 class Car
@@ -88,8 +97,9 @@ private:
     Lap             actLap;
     uint8_t         segmentCounter;
 
+    LineSwitch_SM   switchState;
 
-    Pd_Controller*  dist_ctrl;
+    Pid_Controller* dist_ctrl;
 
     void WaitState();
 
@@ -115,5 +125,7 @@ private:
 
     void UpdateProperties();
     void Actuate();
+
+    LineDirection SelectLineDirection(TurnType const turn);
     int prescaler;
 };
