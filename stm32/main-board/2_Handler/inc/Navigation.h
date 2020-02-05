@@ -5,6 +5,9 @@
 
 #define NAVIGATION_SAMPLING_CYCLE   5 /* ms */
 
+#define MILI_DEG_S_TO_RAD_S     (M_PI / 180000.0f)
+#define MILI_TO_SI              (1000.0f)
+
 typedef enum
 {
     STM = 0,
@@ -32,6 +35,7 @@ private:
 
 public:
     static Navigation* GetInstance();
+    void Init();
 
     void Process();
     void SetPosition(Position const pos, float const ds, float const dpsi);
@@ -42,7 +46,6 @@ public:
 private:
     Navigation();
 
-    void Init();
     void Odometry();
     void CalcDeltaOrientation();
     void CalcDeltaDistance();

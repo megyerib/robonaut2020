@@ -4,7 +4,7 @@
 NavigationTask::NavigationTask() : CyclicTask((char*)"Navigation",
                                               NAVIGATION_SAMPLING_CYCLE,
                                               NAVIGATION_TASK_PRIO,
-                                              128)
+                                              256)
 {
 
 }
@@ -18,6 +18,7 @@ NavigationTask* NavigationTask::Init()
 void NavigationTask::TaskInit()
 {
     navigation = Navigation::GetInstance();
+    navigation->Init();
 }
 
 void NavigationTask::TaskFunction()

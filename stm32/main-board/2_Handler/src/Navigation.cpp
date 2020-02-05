@@ -6,6 +6,19 @@ Navigation* Navigation::GetInstance()
     return &instance;
 }
 
+void Navigation::Init()
+{
+    inert->Init();
+
+    position.n   = 0.0f;
+    position.e   = 0.0f;
+    position.psi = 0.0f;
+    d_s          = 0.0f;
+    d_psi        = 0.0f;
+    prev_enc     = enc->GetDistance();
+    prev_angular = inert->GetAngular_mdps(Axis::yaw);
+}
+
 void Navigation::Process()
 {
     inert->Process();
@@ -37,25 +50,12 @@ Navigation::Navigation()
 {
     inert = new LSM6DSO();
     enc   = Encoder::GetInstance();
-
-    inert->Init();
-}
-
-void Navigation::Init()
-{
-    position.n   = 0.0f;
-    position.e   = 0.0f;
-    position.psi = 0.0f;
-    d_s          = 0.0f;
-    d_psi        = 0.0f;
-    prev_enc     = enc->GetDistance();
-    prev_angular = inert->GetAngular_mdps(Axis::yaw);
 }
 
 void Navigation::Odometry()
 {
     CalcDeltaOrientation();
-    CalcDeltaOrientation();
+    CalcDeltaDistance();
 
     // psi_k = psi_k-1 + d_psi
     position.psi = position.psi + d_psi;
@@ -72,16 +72,15 @@ void Navigation::CalcDeltaOrientation()
     // TODO
     float angular_yaw;
 
-    angular_yaw = inert->GetAccel_mg(Axis::yaw);
+    angular_yaw = inert->GetAngular_mdps(Axis::yaw) * MILI_DEG_S_TO_RAD_S;
 
-    d_psi = Integral_Trapez(0.0f, NAVIGATION_SAMPLING_CYCLE, prev_angular, angular_yaw);
+    d_psi = Integral_Trapez(0.0f, NAVIGATION_SAMPLING_CYCLE / MILI_TO_SI, prev_angular, angular_yaw);
 
     prev_angular = angular_yaw;
 }
 
 void Navigation::CalcDeltaDistance()
 {
-    // TODO
     float act_enc = enc->GetDistance();
 
     d_s = act_enc - prev_enc;

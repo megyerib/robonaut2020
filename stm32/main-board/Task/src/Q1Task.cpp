@@ -6,7 +6,7 @@
 #define RC_THROTTLE_THRESHOLD    (0.1f)
 #define RC_THROTTLE_FUN_FACTOR   (0.4f)
 
-Q1Task::Q1Task() : CyclicTask((char*)"Q1", CYCLE_TIME, MAIN_TASK_PRIO, 512)
+Q1Task::Q1Task() : CyclicTask((char*)"Q1", CYCLE_TIME, MAIN_TASK_PRIO, 768)
 {
 
 }

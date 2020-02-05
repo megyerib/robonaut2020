@@ -166,7 +166,7 @@ void LSM6DSO::OffsetCalibration()
 
 uint8_t LSM6DSO::GetRandomNumber()
 {
-    return (uint8_t)((uint32_t)((acceleration_mg[0] + angular_rate_mdps[3]) * 100) % 255);
+    return (uint8_t)((uint32_t)((acceleration_mg[0] + angular_rate_mdps[3] + HAL_GetTick()) * 100) % 255);
 }
 
 /*
