@@ -89,6 +89,7 @@ public:
     void Process();
     TurnType WhichWayToTurn();
     bool isDecisionMade();
+    bool shouldExitMaze();
 
 private:
 
@@ -99,6 +100,7 @@ private:
     TurnType RollDiceOnTurn();
     void IsCarOverRoadsign();
     bool IsCrosspoint();
+
 
     bool cmpf(float const a, float const b, float const epsilon)
     {

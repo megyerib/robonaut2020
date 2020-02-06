@@ -6,26 +6,35 @@ Map* Map::GetInstance()
     return &instance;
 }
 
-void Map::Process() // TODO make a task
+void Map::Process()
 {
+    prevTrackType   = actualTrackType;
     actualTrackType = trackDetect->GetTrackType();
     IsCarOverRoadsign();
-    prevTrackType = actualTrackType;
 
     timeElapsed = clock->GetTime() - timeOrigo;
 
     actualPosition = navigation->GetPosition();
-
     actualDistance = encoder->GetDistance();
 
     switch (state)
     {
         case MapState::Drive:
         {
+            decisionMade = false;
+
             if (overRoadsign == true)
             {
-                state = MapState::OverRoadSign;
-                decisionMade = false;
+                if ((IsCrosspoint() == true)                    ||
+                    (actualTrackType == TrackType::Exit)        ||
+                    (actualTrackType == TrackType::ExitReverse))
+                {
+                    state = MapState::Decision;
+                }
+                else
+                {
+                    state = MapState::OverRoadSign;
+                }
             }
             break;
         }
@@ -40,7 +49,6 @@ void Map::Process() // TODO make a task
         {
             DecideNextTurn();
             decisionMade = true;
-
             state = MapState::OverRoadSign;
             break;
         }
@@ -59,12 +67,17 @@ bool Map::isDecisionMade()
     return decisionMade;
 }
 
+bool Map::shouldExitMaze()
+{
+    return shouldExit;
+}
+
 Map::Map()
 {
-    encoder     = Encoder::GetInstance();
-    trackDetect = TrackDetector::GetInstance();
-    clock       = Timepiece::GetInstance();
-    navigation  = Navigation::GetInstance();
+    encoder                 = Encoder::GetInstance();
+    trackDetect             = TrackDetector::GetInstance();
+    clock                   = Timepiece::GetInstance();
+    navigation              = Navigation::GetInstance();
 
     segments[32]            = {0U};
     foundSegmentCount       = 0U;
@@ -80,21 +93,26 @@ Map::Map()
     remainingTime           = TIME_START;
     nextTurn                = TurnType::NoTurn;
     decisionMade            = false;
-    overRoadsign    = false;
+    overRoadsign            = false;
 
-    actualTrackType = TrackType::Single;
-    prevTrackType   = TrackType::Single;
-    timeElapsed     = 0;
-    timeOrigo       = clock->GetTime();
-    actualPosition  = navigation->GetPosition();
-    actualDistance  = encoder->GetDistance();
+    actualTrackType         = TrackType::Single;
+    prevTrackType           = TrackType::Single;
+    timeElapsed             = 0;
+    timeOrigo               = clock->GetTime();
+    actualPosition          = navigation->GetPosition();
+    actualDistance          = encoder->GetDistance();
 }
 
 void Map::DecideNextTurn()
 {
     if (RANDOM_STRATEGY_ON == false)
     {
-
+        // TODO Labyrinth algorithm
+        // Add new segments
+        // Update already know segments
+        // Position can be set here if the end of the segment was found previously
+        // Set adjacent segments
+        // Plan route or discover new segment
     }
     else
     {
@@ -169,14 +187,14 @@ bool Map::IsCrosspoint()
 
     if ((trackDetect->IsJunction(prevTrackType) == true)
         &&
-        ((trackDetect->IsFork(actualTrackType)) || (actualTrackType == TrackType::Single)))
+        ((trackDetect->IsFork(actualTrackType) == true) || (actualTrackType == TrackType::Single) == true))
     {
         crosspointFound = true;
     }
 
     if (prevTrackType == TrackType::Single
         &&
-        (trackDetect->IsFork(actualTrackType)))
+        (trackDetect->IsFork(actualTrackType) == true))
     {
         crosspointFound = true;
     }
@@ -184,4 +202,3 @@ bool Map::IsCrosspoint()
     // The crossing point is the middle of the junction. This is the position registered to the segment.
     return crosspointFound;
 }
-
