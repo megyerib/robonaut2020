@@ -10,6 +10,7 @@
 #include "DistanceTask.h"
 #include "TraceTask.h"
 #include "NavigationTask.h"
+#include "MapTask.h"
 
 // Application tasks
 #include "Q1Task.h"

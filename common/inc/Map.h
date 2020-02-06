@@ -5,6 +5,8 @@
 #include "Encoder.h"
 #include "Timepiece.h"
 
+#define MAP_SAMPLING_PERIOD    50 /* ms */      /* TODO check tasks */
+
 #define RANDOM_STRATEGY_ON      (          0U)    /* 0 = use route planning, 1 = turn randomly. */
 #define EPSILON                 (      0.001f)    /* Compare margin for floats. */
 #define TIME_LIMIT              (  190000000U)    /* Max time that can be spent in the labyrinth in us. */

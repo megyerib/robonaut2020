@@ -31,14 +31,8 @@ void Map::Process() // TODO make a task
         }
         case MapState::OverRoadSign:
         {
-            if (IsCrosspoint() == true)
-            {
-                state = MapState::Decision;
-            }
-            else if (overRoadsign == false)
-            {
-                state = MapState::Drive;
-            }
+            if (IsCrosspoint() == true){        state = MapState::Decision; }
+            else if (overRoadsign == false){    state = MapState::Drive;    }
             else {}
             break;
         }
@@ -173,7 +167,7 @@ bool Map::IsCrosspoint()
 {
     bool crosspointFound = false;
 
-    if ((trackDetect->IsJunction(prevTrackType))
+    if ((trackDetect->IsJunction(prevTrackType) == true)
         &&
         ((trackDetect->IsFork(actualTrackType)) || (actualTrackType == TrackType::Single)))
     {
