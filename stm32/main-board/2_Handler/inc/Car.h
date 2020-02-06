@@ -58,6 +58,12 @@ typedef enum
     NoLineFound
 } LineSwitch_SM;
 
+typedef enum
+{
+    Reversing = 0,
+    JunctionFound
+} Reversing_SM;
+
 typedef struct
 {
     RaceState    state;
@@ -98,6 +104,7 @@ private:
     uint8_t         segmentCounter;
 
     LineSwitch_SM   switchState;
+    Reversing_SM    reversingState;
 
     Pid_Controller* dist_ctrl;
 

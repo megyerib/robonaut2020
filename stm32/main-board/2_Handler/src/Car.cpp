@@ -87,6 +87,7 @@ Car::Car()
     segmentCounter  = 0U;
 
     switchState     = LineSwitch_SM::LeaveLine;
+    reversingState  = Reversing_SM::Reversing;
 
     wheels->SetMode(carProp.wheel_mode);
 
@@ -236,7 +237,7 @@ void Car::Follow_StateMachine()
     distance->SetFrontServo(wheels->GetFrontAngle()/2);
 }
 
-void Car::BasicLabyrinth_StateMachine()
+void Car::BasicLabyrinth_StateMachine()     // TODO check MapTask
 {
     switch (carProp.state)
     {
@@ -280,7 +281,6 @@ void Car::BasicLabyrinth_StateMachine()
             break;
         }
         case la_Reverse:
-            // TODO think it over
             Maneuver_Reverse();
             if (lineSensor->IsJunction(carProp.track)){    carProp.state = la_Junction;    }
             break;
@@ -347,9 +347,43 @@ void Car::Minimal_StateMachine()
 
 }
 
-void Car::Maneuver_Reverse()
+void Car::Maneuver_Reverse()    // TODO end feature.
 {
+    carProp.lineFollow_Front = lineSensor->GetFrontLine(LineDirection::ld_Middle);
+    //carProp.lineFollow_Rear  = lineSensor->GetRearLine(LineDirection::ld_Middle);
+    carProp.targetSpeed      = MAZE_REVERSE_SPEED;
 
+    switch (reversingState) // combinations: fork -> single; junction -> single || fork
+    {
+        case Reversing_SM::Reversing:
+        {
+            if ((lineSensor->IsFork(carProp.track)) || (lineSensor->IsJunction(carProp.track)))
+            {
+                reversingState = Reversing_SM::JunctionFound;
+            }
+            break;
+        }
+        case Reversing_SM::JunctionFound:
+        {
+            if ((carProp.track == TrackType::Single) || (lineSensor->IsFork(carProp.track)))
+            {
+                // TODO dummy decision not to turn to the dead end again. Assumption: turn left means the left most line
+                if (nextTurn == TurnType::Left)
+                {
+                    nextTurn = TurnType::Right;
+                }
+                else
+                {
+                    nextTurn = TurnType::Left;
+                }
+
+                carProp.state = la_Turn;
+            }
+            break;
+        }
+        default:
+            break;
+    }
 }
 
 void Car::Maneuver_ChangeLane()     // TODO end feature
