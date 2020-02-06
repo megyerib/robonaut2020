@@ -61,6 +61,11 @@ bool Map::isDecisionMade()
 
 Map::Map()
 {
+    encoder     = Encoder::GetInstance();
+    trackDetect = TrackDetector::GetInstance();
+    clock       = Timepiece::GetInstance();
+    navigation  = Navigation::GetInstance();
+
     segments[32]            = {0U};
     foundSegmentCount       = 0U;
     discovSegmentCount      = 0U;
@@ -83,11 +88,6 @@ Map::Map()
     timeOrigo       = clock->GetTime();
     actualPosition  = navigation->GetPosition();
     actualDistance  = encoder->GetDistance();
-
-    navigation  = Navigation::GetInstance();
-    encoder     = Encoder::GetInstance();
-    trackDetect = TrackDetector::GetInstance();
-    clock       = Timepiece::GetInstance();
 }
 
 void Map::DecideNextTurn()

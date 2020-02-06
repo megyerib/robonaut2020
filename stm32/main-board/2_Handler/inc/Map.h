@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Navigation.h"
-#include "TrackDetector.h"
 #include "Encoder.h"
+#include "TrackDetector.h"
 #include "Timepiece.h"
+#include "Navigation.h"
 
 #define MAP_SAMPLING_PERIOD    50 /* ms */      /* TODO check tasks */
 
@@ -55,6 +55,11 @@ typedef enum
 class Map
 {
 private:
+    Navigation*    navigation;
+    Encoder*       encoder;
+    TrackDetector* trackDetect;
+    Timepiece*     clock;
+
     Segment      segments[32];
     uint8_t      foundSegmentCount;
     uint8_t      discovSegmentCount;
@@ -77,11 +82,6 @@ private:
     uint32_t     timeOrigo;
     Position     actualPosition;
     uint32_t     actualDistance;
-
-    Navigation*    navigation;
-    Encoder*       encoder;
-    TrackDetector* trackDetect;
-    Timepiece*     clock;
 
 public:
     static Map* GetInstance();
