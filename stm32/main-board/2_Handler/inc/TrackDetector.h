@@ -51,7 +51,7 @@ public:
 	float GetRearLine(); /* m */
 
 	bool IsJunction(TrackType const track);
-	bool IsFork(TrackType const track);
+	bool IsFork(TrackType track);
 	float GetFrontLine(LineDirection const dir);
 
 private:

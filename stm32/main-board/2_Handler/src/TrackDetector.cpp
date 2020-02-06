@@ -41,11 +41,11 @@ float TrackDetector::GetFrontLine()
 	return frontLinePos;
 }
 
-bool IsJunction(TrackType track)
+bool TrackDetector::IsJunction(TrackType track)
 {
     bool track_is_junction = false;
 
-    if ((track == TrackType::JunctionBoth) || (track == TrackType::JunctionLeft) || (TrackType::JunctionRight))
+    if ((track == TrackType::JunctionBoth) || (track == TrackType::JunctionLeft) || (track == TrackType::JunctionRight))
     {
         track_is_junction = true;
     }
@@ -53,11 +53,11 @@ bool IsJunction(TrackType track)
     return track_is_junction;
 }
 
-bool IsFork(TrackType track)
+bool TrackDetector::IsFork(TrackType track)
 {
     bool track_is_fork = false;
 
-    if ((track == TrackType::ForkBoth) || (track == TrackType::ForkLeft) || (TrackType::ForkRight))
+    if ((track == TrackType::ForkBoth) || (track == TrackType::ForkLeft) || (track == TrackType::ForkRight))
     {
         track_is_fork = true;
     }
