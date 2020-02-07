@@ -1,5 +1,12 @@
 #pragma once
 
+// HOW TO USE
+//
+// 1. Get instance
+// 2. Set mode
+// 3. Set line (periodically)
+//    Or set angle
+
 #include "Servo.h"
 #include "Pd_Controller.h"
 
@@ -21,7 +28,7 @@ typedef enum
 	SingleLine_Race_Accel,
 
 	Free,             // Angles are set manually
-	//Reverse
+	SteeringReverse
 	// ...
 } SteeringMode;
 
@@ -43,7 +50,6 @@ public:
 	void SetAngleManual(float front_angle /* rad */, float rear_angle /* rad */); // For Free mode
 	float GetFrontAngle();
 	void Process();
-	void EnableSteering(bool enable);
 
 private:
 	SteeringMode mode;

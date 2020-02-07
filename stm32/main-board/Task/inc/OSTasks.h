@@ -20,3 +20,4 @@
 #include "RemoteCalibTask.h"
 #include "ServoCalibTask.h"
 #include "SensorServoCalibTask.h"
+#include "MazeTestTask.h"

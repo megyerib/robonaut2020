@@ -92,7 +92,7 @@ private:
     Trace*          trace;
     WaitDistance*   delayDistance;
     //WaitTime*       delayTime;
-    Navigation*     navigation;
+    //Navigation*     navigation;
 
     Map*            map;
     TurnType        nextTurn;

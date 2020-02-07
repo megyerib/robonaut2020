@@ -61,7 +61,6 @@ public:
 protected:
 	explicit DmaUart(DMA_UART_CFG& cfg);
 
-private:
 	size_t rxBufIndex = 0;
 	DMA_UART_CFG& cfg;
 

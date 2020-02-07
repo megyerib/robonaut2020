@@ -19,7 +19,6 @@ ServoCalibTask* ServoCalibTask::Init()
 void ServoCalibTask::TaskInit()
 {
 	Steering* s = Steering::GetInstance();
-	s->EnableSteering(true);
 	s->SetMode(Free);
 }
 
@@ -30,7 +29,6 @@ void ServoCalibTask::TaskFunction()
 
 	static float frontAngle = 0;
 	static float rearAngle  = 0;
-	static float cmp = 0;
 
 	if (remote->GetMode() == RemMode1)
 	{
@@ -44,7 +42,4 @@ void ServoCalibTask::TaskFunction()
 	}
 
 	steering->SetAngleManual(frontAngle, rearAngle);
-	cmp = steering->GetFrontAngle();
-
-	UNUSED(cmp);
 }

@@ -19,13 +19,11 @@ Q1Task* Q1Task::Init()
 
 void Q1Task::TaskInit()
 {
-    car      = Car::GetInstance();
+    //car      = Car::GetInstance();
 	remote   = Remote::GetInstance();
 	motor    = Traction::GetInstance();
 
 	steering = Steering::GetInstance();
-
-	steering->EnableSteering(true);
 }
 
 void Q1Task::TaskFunction()
@@ -36,8 +34,8 @@ void Q1Task::TaskFunction()
 
 	if (mode == RemMode1)
 	{
-	    car->SetSteeringMode(SteeringMode::SingleLineFollow_Slow);
-		car->StateMachine();
+	    //car->SetSteeringMode(SteeringMode::SingleLineFollow_Slow);
+		//car->StateMachine();
 	}
 
 	if (mode == RemMode2)

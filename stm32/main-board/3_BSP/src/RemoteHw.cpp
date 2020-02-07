@@ -46,7 +46,18 @@ uint16_t RemoteHw::GetPulseWidth(RemoteHwChannel ch)
 	pulse[0] = edge[1] - edge[0];
 	pulse[1] = edge[2] - edge[1];
 
-	return (pulse[0] < pulse[1]) ? pulse[0] : pulse[1];
+	uint16_t ret = (pulse[0] < pulse[1]) ? pulse[0] : pulse[1];
+
+	if (ret > 2500) // Invalid value
+	{
+		ret = prev[ch];
+	}
+	else
+	{
+		prev[ch] = ret;
+	}
+
+	return ret;
 }
 
 void RemoteHw::InitGpio()

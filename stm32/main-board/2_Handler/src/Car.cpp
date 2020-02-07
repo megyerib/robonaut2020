@@ -66,7 +66,7 @@ Car::Car()
    // trace         = Trace::GetInstance();
     delayDistance = new WaitDistance();
     //delayTime     = new WaitTime();
-    navigation    = Navigation::GetInstance();
+    //navigation    = Navigation::GetInstance();
 
     map = Map::GetInstance();
     nextTurn = TurnType::NotSet;
@@ -76,7 +76,7 @@ Car::Car()
     carProp.speed            = encoder->GetSpeed();
     carProp.dist_travelled   = encoder->GetDistance();
     carProp.track            = lineSensor->GetTrackType();
-    carProp.position         = navigation->GetPosition();
+    //carProp.position         = navigation->GetPosition();
     carProp.front_distance   = distance->GetDistance(DistanceSensor::ToF_Front);
     carProp.wheel_mode       = SingleLineFollow_Slow;
     carProp.targetSpeed      = 0U;
@@ -439,7 +439,7 @@ void Car::UpdateProperties()
     carProp.speed           = encoder->GetSpeed();
     carProp.dist_travelled  = encoder->GetDistance();
     carProp.track           = lineSensor->GetTrackType();
-    carProp.position        = navigation->GetPosition();
+    //carProp.position        = navigation->GetPosition();
     carProp.front_distance  = distance->GetDistance(DistanceSensor::ToF_Front);
 }
 

@@ -19,23 +19,17 @@ Pd_Controller::Pd_Controller(float const Kp, float const Kd)
 
 void Pd_Controller::Process(float const processValue)
 {
-    derivative = loop.process_value - previous_line;
+    // e(t)
+    CalculateErrorValue(processValue);
 
-    loop.control_value = INTUITIVE_CONSTANT * (loop.process_value * kp + derivative * kd);
+    // d/dt e(t)
+    derivative = loop.error_value - previous_error;
 
-    previous_line = loop.process_value;
+    // u(t) = P * e(t) + D * d/dt e(t)
+    loop.control_value = kp * loop.error_value + kd * derivative;
 
-//    // e(t)
-//    CalculateErrorValue(processValue);
-//
-//    // d/dt e(t)
-//    derivative = loop.error_value - previous_error;
-//
-//    // u(t) = P * e(t) + D * d/dt e(t)
-//    loop.control_value = kp * loop.error_value + kd * derivative;
-//
-//    // Actualize.
-//    previous_error = loop.error_value;
+    // Actualize.
+    previous_error = loop.error_value;
 }
 
 void Pd_Controller::Set_D_Term(float const D)

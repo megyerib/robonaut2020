@@ -15,10 +15,14 @@
 #define SINGLE_RACE_DECEL_P     (0.0001f)
 #define SINGLE_RACE_DECEL_D     (0.0005f)
 
+//#define FRONT_OFFSET    (+0.374686956f)
+//#define REAR_OFFSET     (-0.102050692f)
+#define FRONT_OFFSET    (0.27954638f)
+#define REAR_OFFSET     (-0.151517391f)
+
 Steering::Steering()
 {
 	InitEnablePin();
-	EnableSteering(false);
 
 	front.servo      = new Servo(eTIM12, TIM_CHANNEL_2);
 	front.controller = new Pd_Controller(0.5f, 0.1f);
@@ -171,7 +175,7 @@ void Steering::Process()
 
 void Steering::SetFrontAngle(float angle /* rad */)
 {
-	float offset        = PI/2.0f;
+	float offset        = PI/2.0f + FRONT_OFFSET;
 	float scale         = 1.0f;
 	float servo_angle   = (angle + offset) * scale;
 
@@ -180,7 +184,7 @@ void Steering::SetFrontAngle(float angle /* rad */)
 
 void Steering::SetRearAngle(float angle /* rad */)
 {
-	float offset        = PI/2.0f;
+	float offset        = PI/2.0f + REAR_OFFSET;
 	float scale         = 1.0f;
 	float servo_angle   = (angle + offset) * scale;
 
@@ -195,11 +199,6 @@ float Steering::GetFrontAngle()
     angle = front.servo->GetSteerAngle() - offset;
 
     return angle;
-}
-
-void Steering::EnableSteering(bool enable)
-{
-	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_0, enable ? GPIO_PIN_RESET : GPIO_PIN_SET);
 }
 
 void Steering::InitEnablePin()

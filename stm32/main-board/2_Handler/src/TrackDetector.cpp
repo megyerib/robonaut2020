@@ -7,16 +7,12 @@
 #include "LsUartFront.h"
 #include "LsUartRear.h"
 #include "LastLineReader.h"
-
-#define LINE_CNT_FILTER_SIZE   4
+#include "LineGetterUart.h"
 
 TrackDetector::TrackDetector()
 {
-	DmaUart* uartFront = (DmaUart*) LsUartFront::GetInstance();
-	DmaUart* uartRear  = (DmaUart*) LsUartRear::GetInstance();;
-
-	frontProcessor = (Receiver*) new LastLineReader(uartFront, 100);
-	rearProcessor  = (Receiver*) new LastLineReader(uartRear,  100);
+	frontReceiver = LsUartFront::GetInstance();
+	rearReceiver  = LsUartRear ::GetInstance();
 }
 
 TrackDetector* TrackDetector::GetInstance()
@@ -35,9 +31,93 @@ TrackType TrackDetector::GetTrackType()
 	return trackType;
 }
 
-// TODO thread safety!!!
 float TrackDetector::GetFrontLine()
 {
+	return frontLinePos;
+}
+
+float TrackDetector::GetRearLine()
+{
+	return rearLinePos;
+}
+
+void TrackDetector::GetChosenOne(Line& line, LineDirection dir, float& prev)
+{
+	int16_t lineval_mm = 0;
+
+	switch (line.cnt)
+	{
+		case 0:
+		{
+			// prev = prev
+			break;
+		}
+		case 1:
+		{
+			lineval_mm = line.lines[0];
+			break;
+		}
+		case 2:
+		{
+			switch (dir)
+			{
+				case ld_Left:
+				{
+					lineval_mm = line.lines[0];
+					break;
+				}
+				case ld_Middle:
+				{
+					lineval_mm = line.lines[0];
+					break;
+				}
+				case ld_Right:
+				{
+					lineval_mm = line.lines[1];
+					break;
+				}
+				default:
+					break;
+			}
+
+			break;
+		}
+		case 3:
+		{
+			switch (dir)
+			{
+				case ld_Left:
+				{
+					lineval_mm = line.lines[0];
+					break;
+				}
+				case ld_Middle:
+				{
+					lineval_mm = line.lines[1];
+					break;
+				}
+				case ld_Right:
+				{
+					lineval_mm = line.lines[2];
+					break;
+				}
+				default:
+					break;
+			}
+
+			break;
+		}
+		default:
+			break;
+	}
+
+	prev = lineval_mm / 1000.0f;
+}
+
+float TrackDetector::GetFrontLine(LineDirection const dir)
+{
+	GetChosenOne(frontLine, dir, frontLinePos);
+
 	return frontLinePos;
 }
 
@@ -65,78 +145,63 @@ bool TrackDetector::IsFork(TrackType track)
     return track_is_fork;
 }
 
-void TrackDetector::GetFrontLineData()
+bool TrackDetector::GetLineData(Receiver& receiver, Line& line)
 {
 	uint8_t base64_buf[50];
 	size_t  base64_size;
+	bool ret = false;
 
-	frontProcessor->Receive(base64_buf, base64_size, 50);
+	receiver.Receive(base64_buf, base64_size, 50);
 
-	if (base64_size == 11)
+	while (base64_size > 0)
 	{
-		uint8_t decoded_buf[11];
-		size_t  decoded_size;
-
-		base64_decode(base64_buf, decoded_buf, base64_size, &decoded_size);
-
-		if (decoded_size == sizeof(Line))
+		if (base64_size == 11)
 		{
-			frontLine = *((Line*) decoded_buf);
+			uint8_t decoded_buf[11];
+			size_t  decoded_size;
+
+			base64_decode(base64_buf, decoded_buf, base64_size, &decoded_size);
+
+			if (decoded_size == sizeof(Line))
+			{
+				line = *((Line*) decoded_buf);
+				ret = true;
+				break;
+			}
 		}
+
+		receiver.Receive(base64_buf, base64_size, 50);
 	}
+
+	return ret;
 }
 
-void TrackDetector::GetRearLineData()
-{
-	uint8_t base64_buf[50];
-	size_t  base64_size;
-
-	rearProcessor->Receive(base64_buf, base64_size, 50);
-
-	if (base64_size == 11)
-	{
-		uint8_t decoded_buf[11];
-		size_t  decoded_size;
-
-		base64_decode(base64_buf, decoded_buf, base64_size, &decoded_size);
-
-		if (decoded_size == sizeof(Line))
-		{
-			rearLine = *((Line*) decoded_buf);
-		}
-	}
-}
 void TrackDetector::EvalFrontLine()
 {
-	// Set filtered line count
-	static int linecnts[4] = {0};
+	GetNearest(frontLine, frontLinePos);
 
-	for (int i = 0; i < 4; i++)
-	{
-		if (i == frontLine.cnt)
-		{
-			linecnts[i]++;
+	frontLineCnt = frontLine.cnt; // TODO filter
+}
 
-			if (linecnts[i] >= LINE_CNT_FILTER_SIZE)
-				frontLineCnt = i;
-		}
-		else
-		{
-			linecnts[i] = 0;
-		}
-	}
+void TrackDetector::EvalRearLine()
+{
+	GetNearest(rearLine, rearLinePos);
 
-	// Get nearest line
-	if (frontLine.cnt > 0)
+	rearLineCnt = rearLine.cnt; // TODO filter
+}
+
+void TrackDetector::GetNearest(Line& line, float& prev)
+{
+	if (line.cnt > 0)
 	{
 		static int16_t prevLine = 0;
 
-		int16_t minDiff = abs(frontLine.lines[0] - prevLine);
+		int16_t minDiff = abs(line.lines[0] - prevLine);
 		uint16_t minDiffIndex = 0;
 
-		for (int i = 1; i < frontLine.cnt; i++)
+		for (int i = 1; i < line.cnt; i++)
 		{
-			uint16_t diff = abs(frontLine.lines[i] - prevLine);
+			uint16_t diff = abs(line.lines[i] - prevLine);
 
 			if (diff < minDiff)
 			{
@@ -145,8 +210,8 @@ void TrackDetector::EvalFrontLine()
 			}
 		}
 
-		prevLine     = frontLine.lines[minDiffIndex];
-		frontLinePos = prevLine / 1000.0; // mm -> m
+		prevLine     = line.lines[minDiffIndex];
+		prev = prevLine / 1000.0; // mm -> m
 	}
 }
 
@@ -205,13 +270,22 @@ void TrackDetector::EvalTrackType()
 
 void TrackDetector::Process()
 {
+	uint16_t frontCnt = 0;
+	uint16_t rearCnt  = 0;
+
 	// Front
-	GetFrontLineData();
-	EvalFrontLine();
+	while (GetLineData(*frontReceiver, frontLine) == true)
+	{
+		EvalFrontLine();
+		frontCnt++;
+	}
 
 	// Rear
-	GetRearLineData();
-	// TODO EvalRearLine();
+	while (GetLineData(*rearReceiver, rearLine) == true)
+	{
+		EvalRearLine();
+		rearCnt++;
+	}
 
 	// Track type
 	EvalTrackType();

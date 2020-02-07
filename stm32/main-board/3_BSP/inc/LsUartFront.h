@@ -1,8 +1,8 @@
 #pragma once
 
-#include "DmaUart.h"
+#include "LineGetterUart.h"
 
-class LsUartFront : public DmaUart
+class LsUartFront : public LineGetterUart
 {
 public:
 	static LsUartFront* GetInstance();

@@ -4,6 +4,7 @@
 #include "Receiver.h"
 
 #define LINE_SAMPLING_CYCLE    5 /* ms */
+#define LINE_CNT_FILTER_SIZE   4
 
 typedef enum
 {
@@ -55,8 +56,8 @@ public:
 	float GetFrontLine(LineDirection const dir);
 
 private:
-	Receiver* frontProcessor;
-	Receiver* rearProcessor;
+	Receiver* frontReceiver;
+	Receiver* rearReceiver;
 
 	Line frontLine = {0};
 	Line rearLine = {0};
@@ -64,14 +65,16 @@ private:
 	float frontLinePos = 0;
 	uint16_t frontLineCnt = 0;
 
+	float rearLinePos = 0;
+	uint16_t rearLineCnt = 0;
+
 	TrackType trackType = Single;
 
 	TrackDetector();
-	void GetFrontLineData();
-	void GetRearLineData();
+	bool GetLineData(Receiver& receiver, Line& line);
 	void EvalFrontLine();
 	void EvalRearLine();
 	void EvalTrackType();
+	void GetNearest(Line& line, float& prev);
+	void GetChosenOne(Line& line, LineDirection dir, float& prev);
 };
-
-// TODO OS task
