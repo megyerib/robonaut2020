@@ -5,28 +5,38 @@ MazeDetectorSM::MazeDetectorSM(LineData& line) : line(line)
 
 }
 
+void MazeDetectorSM::Process()
+{
+	(this->*stateMatrix[state][line.type])();
+}
+
+TrackType MazeDetectorSM::GetTrackType()
+{
+	return type;
+}
+
 void MazeDetectorSM::RegFork2()
 {
 	state = td_2Fork;
-	type  = ForkLeft; // TODO Which one?
+	type  = ForkLeft;
 }
 
 void MazeDetectorSM::RegFork3()
 {
 	state = td_3Fork;
-	type  = ForkLeft; // TODO Which one?
+	type  = ForkLeft;
 }
 
 void MazeDetectorSM::RegJct2()
 {
-	state = td_3Junction;
+	state = td_2Junction;
 	type  = JunctionLeft;
 }
 
 void MazeDetectorSM::RegJct3()
 {
 	state = td_3Junction;
-	type  = JunctionBoth;
+	type  = JunctionLeft;
 }
 
 void MazeDetectorSM::Reg1()
@@ -44,4 +54,5 @@ void MazeDetectorSM::RegEnd()
 void MazeDetectorSM::RegExit()
 {
 	// TODO Internal state etc
+	state = td_1;
 }

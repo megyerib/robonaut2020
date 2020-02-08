@@ -18,9 +18,29 @@ typedef enum
     JunctionLeft,
     JunctionRight,
     DeadEnd,
-    CrossingPoint
+    CrossingPoint,
+
+	TrackTypeNum
 }
 TrackType;
+
+const char trackTypeNames[TrackTypeNum][15] =
+{
+	"-None",
+	"-Single",
+	"-Acceleration",
+	"-Braking",
+	"-Exit",
+	"-ExitReverse",
+	"-ForkBoth",
+	"-ForkLeft",
+	"-ForkRight",
+	"-JunctionBoth",
+	"-JunctionLeft",
+	"-JunctionRight",
+	"-DeadEnd",
+	"-CrossingPoint"
+};
 
 typedef enum
 {
@@ -34,6 +54,16 @@ typedef enum
 	lt_Num
 }
 LineType;
+
+const char lineTypeNames[lt_Num][8] =
+{
+	" 1",
+	" 2 near",
+	" 2 far",
+	" 3 near",
+	" 3 far",
+	" end"
+};
 
 typedef enum
 {
@@ -58,13 +88,15 @@ typedef struct
 
 	LineInput           input;           // Structure from the line receiver
 	float               pos;             // Latest position of the detected line
+	uint32_t            chosenLine;      // Line which we are currently following
 
-	uint16_t            filteredCnt;     //
-	uint16_t            prevCnt;         // Count of the previous line input
-	uint16_t            sameCntSamples;  //
+	uint32_t            filteredCnt;     //
+	uint32_t            prevCnt;         // Count of the previous line input
+	uint32_t            sameCntSamples;  //
 
 	LineType            type;            // 1, 2Near, 2Far, ...
 	TrackDetectorState  mazeState;       // State of the road signal detecting mazeState machine ()
 	TrackType           ret;             // This value will be returned
+	TrackType           prevTrackType;
 }
 LineData;

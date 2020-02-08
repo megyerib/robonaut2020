@@ -19,6 +19,7 @@
 typedef enum
 {
 	TestTrace = 0,
+	TrackDetectorTrace,
 
 	StringQueueNum
 }
@@ -26,7 +27,8 @@ STR_QUEUE_ID;
 
 const size_t stringQueueSize[] =
 {
-	[TestTrace] = 100
+	[TestTrace] = 100,
+	[TrackDetectorTrace] = 200,
 };
 
 class StringQueue : public Transmitter,

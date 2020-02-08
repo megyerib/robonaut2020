@@ -23,6 +23,8 @@ void MazeTestTask::TaskInit()
 	motor    = Traction::GetInstance();
 	steering = Steering::GetInstance();
 	track    = TrackDetector::GetInstance();
+
+	track->SetMode(Maze);
 }
 
 void MazeTestTask::TaskFunction()

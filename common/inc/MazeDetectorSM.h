@@ -34,14 +34,16 @@ private:
 	{
 		//                lt_1,       lt_2Near,   lt_2Far,    lt_3Near,   lt_3Far,    lt_End
 		[td_1        ] = {NONE______, GO_2_NEAR_, GO_2_FAR__, GO_3_NEAR_, GO_3_FAR__, REG_END___},
-		[td_2Near    ] = {REG_EXIT__, NONE______, REG_JCT_2_, ERROR_____, ERROR_____, ERROR_____},
-		[td_2Far     ] = {ERROR_____, REG_FORK_2, NONE______, ERROR_____, GO_3_FAR__, ERROR_____},
-		[td_3Near    ] = {ERROR_____, ERROR_____, ERROR_____, NONE______, REG_JCT_3_, ERROR_____},
-		[td_3Far     ] = {ERROR_____, ERROR_____, ERROR_____, REG_FORK_3, NONE______, ERROR_____},
-		[td_2Junction] = {REG_1_____, ERROR_____, NONE______, ERROR_____, ERROR_____, ERROR_____},
-		[td_3Junction] = {REG_1_____, ERROR_____, NONE______, ERROR_____, NONE______, ERROR_____},
-		[td_2Fork    ] = {REG_1_____, NONE______, REG_JCT_2_, NONE______, REG_JCT_3_, ERROR_____},
-		[td_3Fork    ] = {REG_1_____, NONE______, REG_JCT_2_, NONE______, REG_JCT_3_, ERROR_____},
+
+		[td_2Near    ] = {REG_EXIT__, NONE______, REG_FORK_2, GO_3_NEAR_, ERROR_____, ERROR_____},
+		[td_2Far     ] = {ERROR_____, REG_JCT_2_, NONE______, REG_JCT_2_, GO_3_FAR__, ERROR_____},
+		[td_3Near    ] = {ERROR_____, ERROR_____, ERROR_____, NONE______, REG_FORK_3, ERROR_____},
+		[td_3Far     ] = {ERROR_____, ERROR_____, GO_2_FAR__, REG_JCT_3_, NONE______, ERROR_____},
+
+		[td_2Junction] = {REG_1_____, NONE______, REG_FORK_2, NONE______, REG_FORK_3, ERROR_____},
+		[td_3Junction] = {REG_1_____, NONE______, REG_FORK_2, NONE______, REG_FORK_3, ERROR_____},
+		[td_2Fork    ] = {REG_1_____, ERROR_____, NONE______, ERROR_____, NONE______, ERROR_____},
+		[td_3Fork    ] = {REG_1_____, ERROR_____, NONE______, ERROR_____, NONE______, ERROR_____},
 		[td_End      ] = {REG_1_____, ERROR_____, ERROR_____, ERROR_____, ERROR_____, NONE______}
 	};
 
@@ -59,6 +61,6 @@ private:
 	void Go3Near(){state = td_3Near;}
 	void Go3Far() {state = td_3Far; }
 
-	void Error(){};
+	void Error(){Reg1();}
 	void None(){};
 };

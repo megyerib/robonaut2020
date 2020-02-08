@@ -1,6 +1,7 @@
 #pragma once
 
 #include "MazeDetectorSM.h"
+#include "StringQueue.h"
 
 #define LINE_SAMPLING_CYCLE    5 /* ms */
 #define LINE_CNT_FILTER_SIZE   3
@@ -15,7 +16,7 @@ typedef enum
 
 typedef enum
 {
-	//Maze,
+	Maze,
 	Speedrun
 }
 TrackMode;
@@ -38,12 +39,15 @@ public:
 	float GetFrontLine(LineDirection const dir);
 
 private:
+	Transmitter* trace;
+
 	TrackMode mode;
+
+	MazeDetectorSM frontStm;
+	MazeDetectorSM rearStm;
 
 	LineData front = {0};
 	LineData rear  = {0};
-
-	TrackType trackType = Single;
 
 	TrackDetector();
 
@@ -55,6 +59,7 @@ private:
 
 	// ---------------------------
 
+	void EvalLineType(LineData& line);
 	void GetNearest(LineData& line);
 	void GetChosenOne(LineData& line, LineDirection dir);
 };
