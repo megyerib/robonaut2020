@@ -15,7 +15,7 @@ void StddevEval::Feed(AdcMeasType meas[SENSOR_SIZE])
 	memcpy(data, meas, sizeof(data));
 }
 
-Line StddevEval::GetLine()
+LineInput StddevEval::GetLine()
 {
 	uint32_t filtered[SENSOR_SIZE];
 	uint32_t i;
@@ -23,7 +23,7 @@ Line StddevEval::GetLine()
 	uint32_t stdDev;
 	uint32_t lineCnt = 0;
 
-	Line ret;
+	LineInput ret;
 
 	// Filtering
 	magicDiff(data, filtered);

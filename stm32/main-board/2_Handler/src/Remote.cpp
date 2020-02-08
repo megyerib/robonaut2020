@@ -1,6 +1,6 @@
 #include "Remote.h"
 
-#define MODE_THRESHOLD  1500 /* us */
+#define MODE_THRESHOLD  1100 /* us */
 #define CALIB_THRESHOLD 50 /* us */
 #define ABS(x) (((x) < 0) ? -(x) : (x))
 

@@ -10,7 +10,7 @@ public:
 	StddevEval();
 
 	void Feed(AdcMeasType meas[SENSOR_SIZE]) override;
-	Line GetLine() override;
+	LineInput GetLine() override;
 
 private:
 	uint32_t max4_pos(int32_t arg1, int32_t arg2, int32_t arg3, int32_t arg4);

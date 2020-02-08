@@ -11,7 +11,7 @@ class Display
 public:
 	Display();
 	// Line structure -> Lighting LEDs on the sensor
-	void DisplayLinePos(Line l);
+	void DisplayLinePos(LineInput l);
 	void DisplayPattern(uint32_t pattern);
 	void Clear();
 

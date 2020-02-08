@@ -1,29 +1,9 @@
 #pragma once
 
-#include "Line.h"
-#include "Receiver.h"
+#include "MazeDetectorSM.h"
 
 #define LINE_SAMPLING_CYCLE    5 /* ms */
-#define LINE_CNT_FILTER_SIZE   4
-
-typedef enum
-{
-	None,
-	Single,
-	Acceleration,
-	Braking,
-    Exit,
-    ExitReverse,
-    ForkBoth,
-    ForkLeft,
-    ForkRight,
-    JunctionBoth,
-    JunctionLeft,
-    JunctionRight,
-    DeadEnd,
-    CrossingPoint
-}
-TrackType;
+#define LINE_CNT_FILTER_SIZE   3
 
 typedef enum
 {
@@ -39,6 +19,8 @@ typedef enum
 	Speedrun
 }
 TrackMode;
+
+
 
 class TrackDetector
 {
@@ -56,25 +38,23 @@ public:
 	float GetFrontLine(LineDirection const dir);
 
 private:
-	Receiver* frontReceiver;
-	Receiver* rearReceiver;
+	TrackMode mode;
 
-	Line frontLine = {0};
-	Line rearLine = {0};
-
-	float frontLinePos = 0;
-	uint16_t frontLineCnt = 0;
-
-	float rearLinePos = 0;
-	uint16_t rearLineCnt = 0;
+	LineData front = {0};
+	LineData rear  = {0};
 
 	TrackType trackType = Single;
 
 	TrackDetector();
-	bool GetLineData(Receiver& receiver, Line& line);
-	void EvalFrontLine();
-	void EvalRearLine();
-	void EvalTrackType();
-	void GetNearest(Line& line, float& prev);
-	void GetChosenOne(Line& line, LineDirection dir, float& prev);
+
+	// Process:
+	bool GetLineData(LineData& line);
+	void FilterCnt(LineData& line);
+
+	void EvalRaceTrackType();
+
+	// ---------------------------
+
+	void GetNearest(LineData& line);
+	void GetChosenOne(LineData& line, LineDirection dir);
 };

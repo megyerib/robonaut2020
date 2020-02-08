@@ -18,12 +18,12 @@ Comm* Comm::GetInstance()
 	return &instance;
 }
 
-void Comm::SendLine(Line* l)
+void Comm::SendLine(LineInput* l)
 {
 	uint8_t buf[OUTPUT_DATA_SIZE];
 	size_t buflen = 0;
 
-	base64_encode((uint8_t*)l, buf, sizeof(Line), &buflen);
+	base64_encode((uint8_t*)l, buf, sizeof(LineInput), &buflen);
 
 	buf[buflen] = '\n';
 	buflen++;

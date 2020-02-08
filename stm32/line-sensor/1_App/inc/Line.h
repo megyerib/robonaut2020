@@ -10,4 +10,4 @@ typedef struct
     uint8_t cnt;
     uint8_t cross;
 }
-Line;
+LineInput;

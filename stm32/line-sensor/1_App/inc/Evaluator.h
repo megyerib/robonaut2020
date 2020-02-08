@@ -10,5 +10,5 @@ public:
 	virtual void Feed(AdcMeasType meas[SENSOR_SIZE]) = 0;
 
 	// Get the actual evaluated line
-	virtual Line GetLine() = 0;
+	virtual LineInput GetLine() = 0;
 };

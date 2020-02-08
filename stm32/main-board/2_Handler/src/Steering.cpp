@@ -3,15 +3,19 @@
 
 #define SINGLE_SLOW_P   (15.0f)
 #define SINGLE_SLOW_D   (3.0f)
+
 #define SINGLE_FAST_P   (0.001f)
 #define SINGLE_FAST_D   (0.003f)
 
 #define SINGLE_RACE_TURN_P      (4.0f)
 #define SINGLE_RACE_TURN_D      (6.0f)
+
 #define SINGLE_RACE_ACCEL_P     (0.0001f)
 #define SINGLE_RACE_ACCEL_D     (0.0005f)
+
 #define SINGLE_RACE_STRAIGHT_P  (0.01f)
 #define SINGLE_RACE_STRAIGHT_D  (1.2f)
+
 #define SINGLE_RACE_DECEL_P     (0.0001f)
 #define SINGLE_RACE_DECEL_D     (0.0005f)
 

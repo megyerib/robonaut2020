@@ -11,8 +11,8 @@
 
 TrackDetector::TrackDetector()
 {
-	frontReceiver = LsUartFront::GetInstance();
-	rearReceiver  = LsUartRear ::GetInstance();
+	front.receiver = LsUartFront::GetInstance();
+	rear.receiver  = LsUartRear ::GetInstance();
 }
 
 TrackDetector* TrackDetector::GetInstance()
@@ -23,7 +23,7 @@ TrackDetector* TrackDetector::GetInstance()
 
 void TrackDetector::SetMode(TrackMode mode)
 {
-
+	this->mode = mode;
 }
 
 TrackType TrackDetector::GetTrackType()
@@ -33,19 +33,19 @@ TrackType TrackDetector::GetTrackType()
 
 float TrackDetector::GetFrontLine()
 {
-	return frontLinePos;
+	return front.pos;
 }
 
 float TrackDetector::GetRearLine()
 {
-	return rearLinePos;
+	return rear.pos;
 }
 
-void TrackDetector::GetChosenOne(Line& line, LineDirection dir, float& prev)
+void TrackDetector::GetChosenOne(LineData& line, LineDirection dir)
 {
 	int16_t lineval_mm = 0;
 
-	switch (line.cnt)
+	switch (line.input.cnt)
 	{
 		case 0:
 		{
@@ -54,7 +54,7 @@ void TrackDetector::GetChosenOne(Line& line, LineDirection dir, float& prev)
 		}
 		case 1:
 		{
-			lineval_mm = line.lines[0];
+			lineval_mm = line.input.lines[0];
 			break;
 		}
 		case 2:
@@ -63,17 +63,17 @@ void TrackDetector::GetChosenOne(Line& line, LineDirection dir, float& prev)
 			{
 				case ld_Left:
 				{
-					lineval_mm = line.lines[0];
+					lineval_mm = line.input.lines[0];
 					break;
 				}
 				case ld_Middle:
 				{
-					lineval_mm = line.lines[0];
+					lineval_mm = line.input.lines[0];
 					break;
 				}
 				case ld_Right:
 				{
-					lineval_mm = line.lines[1];
+					lineval_mm = line.input.lines[1];
 					break;
 				}
 				default:
@@ -88,17 +88,17 @@ void TrackDetector::GetChosenOne(Line& line, LineDirection dir, float& prev)
 			{
 				case ld_Left:
 				{
-					lineval_mm = line.lines[0];
+					lineval_mm = line.input.lines[0];
 					break;
 				}
 				case ld_Middle:
 				{
-					lineval_mm = line.lines[1];
+					lineval_mm = line.input.lines[1];
 					break;
 				}
 				case ld_Right:
 				{
-					lineval_mm = line.lines[2];
+					lineval_mm = line.input.lines[2];
 					break;
 				}
 				default:
@@ -111,14 +111,14 @@ void TrackDetector::GetChosenOne(Line& line, LineDirection dir, float& prev)
 			break;
 	}
 
-	prev = lineval_mm / 1000.0f;
+	line.pos = lineval_mm / 1000.0f;
 }
 
 float TrackDetector::GetFrontLine(LineDirection const dir)
 {
-	GetChosenOne(frontLine, dir, frontLinePos);
+	GetChosenOne(front, dir);
 
-	return frontLinePos;
+	return front.pos;
 }
 
 bool TrackDetector::IsJunction(TrackType track)
@@ -145,13 +145,13 @@ bool TrackDetector::IsFork(TrackType track)
     return track_is_fork;
 }
 
-bool TrackDetector::GetLineData(Receiver& receiver, Line& line)
+bool TrackDetector::GetLineData(LineData& line)
 {
 	uint8_t base64_buf[50];
 	size_t  base64_size;
 	bool ret = false;
 
-	receiver.Receive(base64_buf, base64_size, 50);
+	line.receiver->Receive(base64_buf, base64_size, 50);
 
 	while (base64_size > 0)
 	{
@@ -162,46 +162,32 @@ bool TrackDetector::GetLineData(Receiver& receiver, Line& line)
 
 			base64_decode(base64_buf, decoded_buf, base64_size, &decoded_size);
 
-			if (decoded_size == sizeof(Line))
+			if (decoded_size == sizeof(LineInput))
 			{
-				line = *((Line*) decoded_buf);
+				line.input = *((LineInput*) decoded_buf);
 				ret = true;
 				break;
 			}
 		}
 
-		receiver.Receive(base64_buf, base64_size, 50);
+		line.receiver->Receive(base64_buf, base64_size, 50);
 	}
 
 	return ret;
 }
 
-void TrackDetector::EvalFrontLine()
+void TrackDetector::GetNearest(LineData& line)
 {
-	GetNearest(frontLine, frontLinePos);
-
-	frontLineCnt = frontLine.cnt; // TODO filter
-}
-
-void TrackDetector::EvalRearLine()
-{
-	GetNearest(rearLine, rearLinePos);
-
-	rearLineCnt = rearLine.cnt; // TODO filter
-}
-
-void TrackDetector::GetNearest(Line& line, float& prev)
-{
-	if (line.cnt > 0)
+	if (line.input.cnt > 0)
 	{
 		static int16_t prevLine = 0;
 
-		int16_t minDiff = abs(line.lines[0] - prevLine);
+		int16_t minDiff = abs(line.input.lines[0] - prevLine);
 		uint16_t minDiffIndex = 0;
 
-		for (int i = 1; i < line.cnt; i++)
+		for (int i = 1; i < line.input.cnt; i++)
 		{
-			uint16_t diff = abs(line.lines[i] - prevLine);
+			uint16_t diff = abs(line.input.lines[i] - prevLine);
 
 			if (diff < minDiff)
 			{
@@ -210,12 +196,30 @@ void TrackDetector::GetNearest(Line& line, float& prev)
 			}
 		}
 
-		prevLine     = line.lines[minDiffIndex];
-		prev = prevLine / 1000.0; // mm -> m
+		prevLine     = line.input.lines[minDiffIndex];
+		line.pos     = prevLine / 1000.0; // mm -> m
 	}
 }
 
-void TrackDetector::EvalTrackType()
+void TrackDetector::FilterCnt(LineData& line)
+{
+	if (line.prevCnt == line.input.cnt)
+	{
+		line.sameCntSamples++;
+
+		if (line.sameCntSamples >= LINE_CNT_FILTER_SIZE)
+		{
+			line.filteredCnt = line.input.cnt;
+		}
+	}
+	else
+	{
+		line.prevCnt = line.input.cnt;
+		line.sameCntSamples = 1;
+	}
+}
+
+void TrackDetector::EvalRaceTrackType()
 {
 	static enum {slow, accel, fast, brake} state = slow;
 	static WaitDistance wait;
@@ -225,7 +229,7 @@ void TrackDetector::EvalTrackType()
 	{
 		case slow:
 		{
-			if (frontLineCnt == 3)
+			if (front.filteredCnt == 3)
 			{
 				wait.Wait_m(1.1);
 				state = accel;
@@ -236,7 +240,7 @@ void TrackDetector::EvalTrackType()
 		}
 		case accel:
 		{
-			if (frontLineCnt == 1 && wait.IsExpired())
+			if (front.filteredCnt == 1 && wait.IsExpired())
 			{
 				state = fast;
 				trackType = TrackType::Single;
@@ -246,7 +250,7 @@ void TrackDetector::EvalTrackType()
 		}
 		case fast:
 		{
-			if (frontLineCnt == 3)
+			if (front.filteredCnt == 3)
 			{
 				wait.Wait_m(3.1);
 				state = brake;
@@ -257,7 +261,7 @@ void TrackDetector::EvalTrackType()
 		}
 		case brake:
 		{
-			if (frontLineCnt == 1 && wait.IsExpired())
+			if (front.filteredCnt == 1 && wait.IsExpired())
 			{
 				state = slow;
 				trackType = TrackType::Single;
@@ -274,19 +278,23 @@ void TrackDetector::Process()
 	uint16_t rearCnt  = 0;
 
 	// Front
-	while (GetLineData(*frontReceiver, frontLine) == true)
+	while (GetLineData(front) == true)
 	{
-		EvalFrontLine();
+		FilterCnt(front);
+		GetNearest(front);
+
 		frontCnt++;
 	}
 
 	// Rear
-	while (GetLineData(*rearReceiver, rearLine) == true)
+	while (GetLineData(front) == true)
 	{
-		EvalRearLine();
+		FilterCnt(rear);
+		GetNearest(rear);
+
 		rearCnt++;
 	}
 
 	// Track type
-	EvalTrackType();
+	EvalRaceTrackType();
 }

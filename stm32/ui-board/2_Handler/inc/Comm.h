@@ -7,7 +7,7 @@ class Comm
 {
 public:
 	static Comm* GetInstance();
-	void SendLine(Line* l);
+	void SendLine(LineInput* l);
 
 private:
 	Comm();

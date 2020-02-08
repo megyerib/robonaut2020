@@ -20,7 +20,7 @@ void LineDetectorLoop::Run()
 	Comm* comm = Comm::GetInstance();
 
 	AdcMeasType measurements[SENSOR_SIZE];
-	Line l;
+	LineInput l;
 
 	while (1)
 	{

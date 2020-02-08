@@ -37,7 +37,8 @@ void MazeTestTask::TaskFunction()
 
 		Follow();
 	}
-	else
+
+	if (mode == RemMode2)
 	{
 		RcRun();
 	}

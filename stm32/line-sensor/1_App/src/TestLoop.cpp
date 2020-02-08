@@ -40,7 +40,7 @@ void TestLoop::RunLineTest()
 	SensorDriver sensors;
 	Display      display;
 
-	Line l;
+	LineInput l;
 	l.cnt = 1;
 	l.lines[0] = -150;
 
