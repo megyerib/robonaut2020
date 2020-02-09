@@ -4,6 +4,8 @@
 #include <SensorCfg.h>
 
 #define THRESHOLD         200
+#define BLACK_TRESHOLD   1500
+#define CROSS_BLACK_NUM    10
 
 StddevEval::StddevEval()
 {
@@ -49,8 +51,18 @@ LineInput StddevEval::GetLine()
 	// Count
 	ret.cnt = lineCnt > MAXLINES ? MAXLINES : lineCnt;
 
-	// TODO Cross
-	ret.cross = 0;
+	// Cross
+	uint32_t blackcnt = 0;
+
+	for (int i = 0; i < SENSOR_SIZE; i++)
+	{
+		if (data[i] >= BLACK_TRESHOLD)
+		{
+			blackcnt++;
+		}
+	}
+
+	ret.cross = (blackcnt >= CROSS_BLACK_NUM) ? 1 : 0;
 
 	// Return
 	return ret;

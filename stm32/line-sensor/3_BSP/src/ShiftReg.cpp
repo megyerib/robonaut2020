@@ -1,6 +1,6 @@
-#include "../inc/ShiftReg.h"
+#include "ShiftReg.h"
 
-#include "../inc/Spi.h"
+#include "Spi.h"
 #include "stm32f0xx_hal.h"
 
 

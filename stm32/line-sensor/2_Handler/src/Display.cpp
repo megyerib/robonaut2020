@@ -7,7 +7,7 @@ Display::Display() : leds(LED_OE, LED_LE)
 	Clear();
 }
 
-void Display::DisplayLinePos(Line l)
+void Display::DisplayLinePos(LineInput l)
 {
 	uint32_t ledval = 0, i, ledpos = 0;
 
@@ -16,6 +16,11 @@ void Display::DisplayLinePos(Line l)
 		ledpos = mmToLedPos(l.lines[i]);
 
 		ledval |= 0b11 << ledpos;
+	}
+
+	if (l.cross)
+	{
+		ledval = 0xFFFFFFFF;
 	}
 
 	DisplayPattern(ledval);
@@ -34,9 +39,7 @@ void Display::DisplayPattern(uint32_t pattern)
 
 uint8_t Display::mmToLedPos(int16_t mm)
 {
-    uint8_t ledPos = (MID_IR_POS_MM - mm) / IR_DIST_MM;
-
-    return ledPos;
+    return (MID_IR_POS_MM - mm) / IR_DIST_MM;
 }
 
 void Display::Clear()
