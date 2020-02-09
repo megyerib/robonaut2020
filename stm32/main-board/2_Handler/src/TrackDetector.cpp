@@ -304,6 +304,9 @@ void TrackDetector::Process()
 	// Rear
 	while (GetLineData(rear) == true)
 	{
+		FilterCnt(rear);
+		GetNearest(rear);
+
 		rearCnt++;
 	}
 }
