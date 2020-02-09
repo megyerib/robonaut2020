@@ -133,7 +133,7 @@ bool TrackDetector::IsJunction(TrackType track)
 {
     bool track_is_junction = false;
 
-    if ((track == TrackType::JunctionBoth) || (track == TrackType::JunctionLeft) || (track == TrackType::JunctionRight))
+    if ((track == TrackType::Junction3) || (track == TrackType::Junction2))
     {
         track_is_junction = true;
     }
@@ -145,7 +145,7 @@ bool TrackDetector::IsFork(TrackType track)
 {
     bool track_is_fork = false;
 
-    if ((track == TrackType::ForkBoth) || (track == TrackType::ForkLeft) || (track == TrackType::ForkRight))
+    if ((track == TrackType::Fork3) || (track == TrackType::Fork2))
     {
         track_is_fork = true;
     }

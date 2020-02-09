@@ -18,25 +18,25 @@ TrackType MazeDetectorSM::GetTrackType()
 void MazeDetectorSM::RegFork2()
 {
 	state = td_2Fork;
-	type  = ForkLeft;
+	type  = Fork2;
 }
 
 void MazeDetectorSM::RegFork3()
 {
 	state = td_3Fork;
-	type  = ForkLeft;
+	type  = Fork3;
 }
 
 void MazeDetectorSM::RegJct2()
 {
 	state = td_2Junction;
-	type  = JunctionLeft;
+	type  = Junction2;
 }
 
 void MazeDetectorSM::RegJct3()
 {
 	state = td_3Junction;
-	type  = JunctionLeft;
+	type  = Junction3;
 }
 
 void MazeDetectorSM::Reg1()

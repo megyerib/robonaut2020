@@ -286,6 +286,7 @@ void Car::BasicLabyrinth_StateMachine()     // TODO check MapTask
             break;
         case la_Exit:
             Maneuver_ChangeLane();
+            break;
         case la_End:
             carProp.state = sp_Wait;
             break;
@@ -320,6 +321,7 @@ void Car::Race_StateMachine()
         case la_Exit:
             // normal or opposite exit maneuver
             if ("successful maneuver"){     carProp.state = la_End; }
+            break;
         case la_End:
             carProp.state = sp_Wait;
             break;

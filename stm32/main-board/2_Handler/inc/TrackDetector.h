@@ -8,14 +8,6 @@
 
 typedef enum
 {
-    ld_NoLine,
-    ld_Left,
-    ld_Middle,
-    ld_Right
-} LineDirection;
-
-typedef enum
-{
 	Maze,
 	Speedrun
 }

@@ -11,12 +11,10 @@ typedef enum
 	Braking,
     Exit,
     ExitReverse,
-    ForkBoth,
-    ForkLeft,
-    ForkRight,
-    JunctionBoth,
-    JunctionLeft,
-    JunctionRight,
+    Fork3,
+    Fork2,
+    Junction3,
+    Junction2,
     DeadEnd,
     CrossingPoint,
 
@@ -32,12 +30,10 @@ const char trackTypeNames[TrackTypeNum][15] =
 	"-Braking",
 	"-Exit",
 	"-ExitReverse",
-	"-ForkBoth",
-	"-ForkLeft",
-	"-ForkRight",
-	"-JunctionBoth",
-	"-JunctionLeft",
-	"-JunctionRight",
+	"-Fork3",
+	"-Fork2",
+	"-Junction3",
+	"-Junction2",
 	"-DeadEnd",
 	"-CrossingPoint"
 };
@@ -81,6 +77,14 @@ typedef enum
 	td_Num
 }
 TrackDetectorState;
+
+typedef enum
+{
+    ld_NoLine,
+    ld_Left,
+    ld_Middle,
+    ld_Right
+} LineDirection;
 
 typedef struct
 {
