@@ -86,6 +86,10 @@ void ToF_I2c::ConfigureGpio()
 
 void ToF_I2c::DeInit()
 {
+    SET_BIT(handle->Instance->CR1,   I2C_CR1_SWRST);
+    HAL_Delay(2);
+    CLEAR_BIT(handle->Instance->CR1, I2C_CR1_SWRST);
+
     __HAL_RCC_I2C1_CLK_DISABLE();
 
     HAL_NVIC_DisableIRQ(I2C1_EV_IRQn);

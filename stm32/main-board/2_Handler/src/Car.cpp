@@ -1,25 +1,28 @@
 #include "Car.h"
 
-#define OVERTAKE_SEGMENT       (8U)    /* Overtake can be done starting from this segment */
+#define MAZE_FORWARD_SPEED          ( 0.14f)  /*   % */ //!< Speed used in the labyrinth when the robot is over a Single line.
+#define MAZE_REVERSE_SPEED          (-0.11f)  /*   % */ //!< Speed used for reverse maneuver.
+#define MAZE_EXIT_WAIT_DIST         ( 0.20f)  /*   m */ //!< Distance the robot will make to leave the labyrinth, before searching for the speedrun line.
+#define MAZE_EXIT_WHEEL_ANGLE       ( 0.52f)  /* rad */ //!< The angles of the servos, while leaving the labyrinth.
+#define MAZE_EXIT_DIST_LIMIT        ( 0.70f)  /*   m */ //!< The distance how many meters can the robot drive while searching for the speedrun line.
 
-#define MAZE_FORWARD_SPEED          ( 0.14f)  /* % */
-#define MAZE_REVERSE_SPEED          (-0.11f)  /* % */
+#define CAR_FOLLOW_DISTANCE         ( 0.60f)  /* m */
+#define CAR_FOLLOW_MIN_APPROX       ( 0.40f)  /* m */
+#define CAR_FOLLOW_MAX_SPEED        ( 0.15f)  /* % */
+#define CAR_FOLLOW_REV_SPEED        (-0.10f)  /* % */
 
-#define CAR_FOLLOW_DISTANCE         (0.6f)    /* m */
-#define CAR_FOLLOW_MIN_APPROX       (0.4f)    /* m */
-#define CAR_FOLLOW_MAX_SPEED        (0.15f)   /* % */
-#define CAR_FOLLOW_REV_SPEED        (-0.1f)   /* % */
+#define OVERTAKE_SEGMENT            (    8U)  /* Overtake can be done starting from this segment */
 
-#define CAR_SPEED_STRAIGHT          (0.22f)   /* % */
-#define CAR_SPEED_DECEL             (0.19)    /* % */
-#define CAR_SPEED_TURN              (0.16f)   /* % */
-#define CAR_SPEED_ACCEL             (0.19f)   /* % */
+#define CAR_SPEED_STRAIGHT          ( 0.22f)   /* % */
+#define CAR_SPEED_DECEL             ( 0.19f)   /* % */
+#define CAR_SPEED_TURN              ( 0.16f)   /* % */
+#define CAR_SPEED_ACCEL             ( 0.19f)   /* % */
 
-#define CAR_WAIT_BEFORE_BRAKING     (1.0f)    /* m */
-#define CAR_WAIT_BEFORE_ACCEL       (0.3f)    /* m */
+#define CAR_WAIT_BEFORE_BRAKING     ( 1.00f)   /* m */
+#define CAR_WAIT_BEFORE_ACCEL       ( 0.30f)   /* m */
 
-#define CAR_DIST_CTRL_P             (0.1f)
-#define CAR_DIST_CTRL_D             (0.02f)
+#define CAR_DIST_CTRL_P             ( 0.10f)
+#define CAR_DIST_CTRL_D             ( 0.02f)
 
 Car* Car::GetInstance()
 {
@@ -51,6 +54,19 @@ void Car::StateMachine()
 void Car::SetSteeringMode(SteeringMode mode)
 {
     wheels->SetMode(mode);
+}
+
+void Car::Reset_To_State(RaceState state)   // TODO test
+{
+    carProp.state = state;
+}
+
+void Car::Reset_To_FailedOvertake()         // TODO test
+{
+    carProp.state  = RaceState::la_Straight;
+    actLap         = Lap::Follow_Two;
+    segmentCounter = OVERTAKE_SEGMENT;
+    carProp.targetSpeed = CAR_SPEED_STRAIGHT;
 }
 
 Car::Car()
@@ -101,8 +117,8 @@ void Car::CheckDeadmanSwitch()
 {
     if (remote->GetValue(RemoteChannel::ThrottleCh) < 0.1f)
     {
-        carProp.state = sp_Stop;
-        carProp.speed = 0.0f;
+        carProp.state       = sp_Stop;
+        carProp.targetSpeed = 0.0f;
     }
     else
     {
@@ -285,10 +301,12 @@ void Car::BasicLabyrinth_StateMachine()     // TODO check MapTask
             if (lineSensor->IsJunction(carProp.track)){    carProp.state = la_Junction;    }
             break;
         case la_Exit:
-            Maneuver_ChangeLane();
+            if (map->shouldExitMaze() == true){     Maneuver_ChangeLane();                  }
+            else{                                   carProp.state = RaceState::la_Straight; }
             break;
         case la_End:
             carProp.state = sp_Wait;
+            carProp.targetSpeed = 0U;   // TODO remove just for test
             break;
         default:
             break;  // Not a valid labyrinth state.
@@ -346,7 +364,10 @@ void Car::Race_StateMachine()
 
 void Car::Minimal_StateMachine()
 {
-
+    // TODO
+    // laby
+    // transition
+    // race
 }
 
 void Car::Maneuver_Reverse()    // TODO end feature.
@@ -392,33 +413,41 @@ void Car::Maneuver_ChangeLane()     // TODO end feature
 {
     switch (switchState)
     {
+        case LineSwitch_SM::PrepareForLaneChanging:
+        {
+            delayDistance->Wait_m(MAZE_EXIT_WAIT_DIST);
+            wheels->SetMode(SteeringMode::Free);
+            switchState = LineSwitch_SM::LeaveLine;
+            break;
+        }
         case LineSwitch_SM::LeaveLine:
         {
-            // Start distance measure
-            // Adjust speed
-            // Line
-            if (carProp.track == TrackType::Exit)
+            carProp.targetSpeed = MAZE_FORWARD_SPEED;
+
+            if (carProp.track == TrackType::Exit){              wheels->SetAngleManual(MAZE_EXIT_WHEEL_ANGLE,                      0);  }
+            else if (carProp.track == TrackType::ExitReverse){  wheels->SetAngleManual(-MAZE_EXIT_WHEEL_ANGLE, MAZE_EXIT_WHEEL_ANGLE);  }
+            else {} // NOP
+
+            if (delayDistance->IsExpired() == true)
             {
-                // Turn right
-                switchState = LineSwitch_SM::SearchLine;
-            }
-            if (carProp.track == TrackType::ExitReverse)
-            {
-                // Turn left
-                switchState = LineSwitch_SM::SearchLine;
+                delayDistance->Wait_m(MAZE_EXIT_DIST_LIMIT);
+                switchState = LineSwitch_SM::SearchLineOnRight;
             }
             break;
         }
-        case LineSwitch_SM::SearchLine:
+        case LineSwitch_SM::SearchLineOnLeft:       // For more fancy exit reverse maneuver.
+        case LineSwitch_SM::SearchLineOnRight:
         {
-            // Go straight
-            // Line
+            carProp.targetSpeed = MAZE_FORWARD_SPEED;
+            wheels->SetAngleManual(0, 0);
+
             if (carProp.track == TrackType::Single)
             {
+                wheels->SetMode(SteeringMode::SingleLineFollow_Slow);
                 switchState = LineSwitch_SM::LineFound;
             }
 
-            if ("distance finished")
+            if (delayDistance->IsExpired() == true)
             {
                 switchState = LineSwitch_SM::NoLineFound;
             }
@@ -431,9 +460,12 @@ void Car::Maneuver_ChangeLane()     // TODO end feature
     }
 }
 
-void Car::Maneuver_Overtake()
+void Car::Maneuver_Overtake()   // TODO end feature.
 {
-
+    // TODO
+    // Steer left.
+    // Speed up to overtake.
+    // Steer right.
 }
 
 void Car::UpdateProperties()

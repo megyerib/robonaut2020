@@ -52,8 +52,10 @@ typedef enum
 
 typedef enum
 {
-    LeaveLine = 0,
-    SearchLine,
+    PrepareForLaneChanging = 0,
+    LeaveLine,
+    SearchLineOnRight,
+    SearchLineOnLeft,
     LineFound,
     NoLineFound
 } LineSwitch_SM;
@@ -114,6 +116,8 @@ public:
     static Car* GetInstance();
     void StateMachine();
     void SetSteeringMode(SteeringMode mode);
+    void Reset_To_State(RaceState state);
+    void Reset_To_FailedOvertake();
 
 private:
     Car();
