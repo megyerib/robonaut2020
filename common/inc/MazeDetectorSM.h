@@ -22,13 +22,17 @@ class MazeDetectorSM
 {
 public:
 	MazeDetectorSM(LineData& line);
+
 	void Process();
-	TrackType GetTrackType();
+
+	TrackType GetTrackType(){return type;}
+	LineDirection GetLineDirection(){return dir;}
 
 private:
 	LineData&          line;
 	TrackDetectorState state = td_1;
 	TrackType          type  = Single;
+	LineDirection      dir   = ld_Middle;
 
 	void (MazeDetectorSM::*stateMatrix[td_Num][lt_Num])() =
 	{

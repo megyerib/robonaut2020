@@ -92,15 +92,15 @@ typedef struct
 
 	LineInput           input;           // Structure from the line receiver
 	float               pos;             // Latest position of the detected line
-	uint32_t            chosenLine;      // Line which we are currently following
+	uint32_t            chosenIndex;     // Line which we are currently following
 
 	uint32_t            filteredCnt;     //
 	uint32_t            prevCnt;         // Count of the previous line input
 	uint32_t            sameCntSamples;  //
 
-	LineType            type;            // 1, 2Near, 2Far, ...
+	LineType            lType;           // 1, 2Near, 2Far, ...
 	TrackDetectorState  mazeState;       // State of the road signal detecting mazeState machine ()
-	TrackType           ret;             // This value will be returned
-	TrackType           prevTrackType;
+	TrackType           tType;           // This value will be returned
+	LineDirection       lDir;            // Left, Middle, Right
 }
 LineData;

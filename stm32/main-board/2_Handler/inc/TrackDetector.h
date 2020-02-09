@@ -13,22 +13,21 @@ typedef enum
 }
 TrackMode;
 
-
-
 class TrackDetector
 {
 public:
 	static TrackDetector* GetInstance();
 	void Process(); // For the OS task
 
-	void SetMode(TrackMode mode);
-	TrackType GetTrackType();
-	float GetFrontLine(); /* m */
-	float GetRearLine(); /* m */
+	void SetMode(TrackMode mode){this->mode = mode;}
+	TrackType GetTrackType(){return front.tType;}
+	LineDirection GetLineDirection(){return front.lDir;}
+	float GetFrontLine(){return front.pos;} /* m */
+	float GetRearLine(){return rear.pos;} /* m */
+	float GetFrontLine(LineDirection const dir);
 
 	bool IsJunction(TrackType const track);
 	bool IsFork(TrackType track);
-	float GetFrontLine(LineDirection const dir);
 
 private:
 	Transmitter* trace;
@@ -36,7 +35,6 @@ private:
 	TrackMode mode;
 
 	MazeDetectorSM frontStm;
-	MazeDetectorSM rearStm;
 
 	LineData front = {0};
 	LineData rear  = {0};
