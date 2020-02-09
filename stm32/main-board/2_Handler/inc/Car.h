@@ -11,13 +11,13 @@
 #include "Navigation.h"
 
 #include "Timepiece.h"
-#include "Trace.h"
+#include "StringQueue.h"
 #include "WaitDistance.h"
 #include "WaitTime.h"
 #include "Map.h"
 #include "Pid_Controller.h"
 
-#define USE_RADIO_STARTER      (1U)    /* 0 = with radio, 1 = can start without radio */
+#define USE_RADIO_STARTER      (0U)    /* 0 = with radio, 1 = can start without radio */
 #define USE_DEADMAN_SWITCH     (1U)    /* 0 = no remote,  1 = starts/stops with remote */
 #define USE_MINIMAL_STRATEGY   (1U)    /* 0 = algorithms, 1 = basic drive */
 
@@ -91,10 +91,10 @@ private:
     TrackDetector*  lineSensor;
     Distance*       distance;
     Timepiece*      clock;
-    Trace*          trace;
+    Transmitter*    trace;
     WaitDistance*   delayDistance;
     //WaitTime*       delayTime;
-    //Navigation*     navigation;
+    Navigation*     navigation;
 
     Map*            map;
     TurnType        nextTurn;
@@ -122,6 +122,7 @@ public:
 private:
     Car();
 
+    void ChangeState(RaceState const State);
     void CheckDeadmanSwitch();
 
     void BasicDrive_StateMachine();

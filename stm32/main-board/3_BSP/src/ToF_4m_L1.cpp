@@ -2,13 +2,6 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
-#define FREE3_LED_Pin       GPIO_PIN_3
-#define FREE3_LED_GPIO_Port GPIOB
-#define FREE2_Pin           GPIO_PIN_4
-#define FREE2_GPIO_Port     GPIOB
-#define FREE1_Pin           GPIO_PIN_5
-#define FREE1_GPIO_Port     GPIOB
-
 TOF_L1::TOF_L1()
 {
     i2c = ToF_I2c::GetInstance();

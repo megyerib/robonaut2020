@@ -5,6 +5,8 @@
 #include "Timepiece.h"
 #include "Navigation.h"
 
+#include "StringQueue.h"
+
 #define MAP_SAMPLING_PERIOD    50 /* ms */      /* TODO check tasks */
 
 #define RANDOM_STRATEGY_ON      (          0U)    /* 0 = use route planning, 1 = turn randomly. */
@@ -59,6 +61,7 @@ private:
     Encoder*       encoder;
     TrackDetector* trackDetect;
     Timepiece*     clock;
+    Transmitter*    trace;
 
     Segment      segments[32];
     uint8_t      foundSegmentCount;
@@ -90,6 +93,7 @@ public:
     TurnType WhichWayToTurn();
     bool isDecisionMade();
     bool shouldExitMaze();
+    MapState GetState();
 
 private:
 

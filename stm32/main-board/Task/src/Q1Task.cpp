@@ -1,7 +1,7 @@
 #include "Q1Task.h"
 #include "TaskPrio.h"
 
-#define CYCLE_TIME 20 /* Remote reading only */
+#define CYCLE_TIME 10 /* Remote reading only */
 
 #define RC_THROTTLE_THRESHOLD    (0.1f)
 #define RC_THROTTLE_FUN_FACTOR   (0.4f)
@@ -19,10 +19,9 @@ Q1Task* Q1Task::Init()
 
 void Q1Task::TaskInit()
 {
-    //car      = Car::GetInstance();
+    car      = Car::GetInstance();
 	remote   = Remote::GetInstance();
 	motor    = Traction::GetInstance();
-
 	steering = Steering::GetInstance();
 }
 
@@ -34,8 +33,8 @@ void Q1Task::TaskFunction()
 
 	if (mode == RemMode1)
 	{
-	    //car->SetSteeringMode(SteeringMode::SingleLineFollow_Slow);
-		//car->StateMachine();
+	    car->SetSteeringMode(SteeringMode::SingleLineFollow_Slow);
+		car->StateMachine();
 	}
 
 	if (mode == RemMode2)

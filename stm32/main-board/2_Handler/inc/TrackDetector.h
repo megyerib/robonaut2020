@@ -28,6 +28,7 @@ public:
 
 	bool IsJunction(TrackType const track);
 	bool IsFork(TrackType track);
+	LineDirection GetLineDir();
 
 private:
 	Transmitter* trace;

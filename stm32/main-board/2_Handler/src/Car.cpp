@@ -37,9 +37,9 @@ void Car::StateMachine()
     UpdateProperties();
 
     // Test
-    //BasicDrive_StateMachine();
-    Follow_StateMachine();
-    //BasicLabyrinth_StateMachine();
+    // BasicDrive_StateMachine();
+    // Follow_StateMachine();
+    BasicLabyrinth_StateMachine();
 
     // Race
 #if USE_MINIMAL_STRATEGY == 1U
@@ -58,12 +58,12 @@ void Car::SetSteeringMode(SteeringMode mode)
 
 void Car::Reset_To_State(RaceState state)   // TODO test
 {
-    carProp.state = state;
+    ChangeState(state);
 }
 
 void Car::Reset_To_FailedOvertake()         // TODO test
 {
-    carProp.state  = RaceState::la_Straight;
+    ChangeState(RaceState::la_Straight);
     actLap         = Lap::Follow_Two;
     segmentCounter = OVERTAKE_SEGMENT;
     carProp.targetSpeed = CAR_SPEED_STRAIGHT;
@@ -79,20 +79,20 @@ Car::Car()
     lineSensor    = TrackDetector::GetInstance();
     distance      = Distance::GetInstance();
     clock         = Timepiece::GetInstance();
-   // trace         = Trace::GetInstance();
+    trace         = StringQueue::GetInstance(Race);
     delayDistance = new WaitDistance();
     //delayTime     = new WaitTime();
-    //navigation    = Navigation::GetInstance();
+    navigation    = Navigation::GetInstance();
 
     map = Map::GetInstance();
     nextTurn = TurnType::NotSet;
 
-    recoverState             = sp_Wait;
-    carProp.state            = sp_Wait;
+    recoverState             = la_Idle;
+    carProp.state            = la_Idle;
     carProp.speed            = encoder->GetSpeed();
     carProp.dist_travelled   = encoder->GetDistance();
     carProp.track            = lineSensor->GetTrackType();
-    //carProp.position         = navigation->GetPosition();
+    carProp.position         = navigation->GetPosition();
     carProp.front_distance   = distance->GetDistance(DistanceSensor::ToF_Front);
     carProp.wheel_mode       = SingleLineFollow_Slow;
     carProp.targetSpeed      = 0U;
@@ -113,11 +113,17 @@ Car::Car()
     prescaler = 0;
 }
 
+void Car::ChangeState(RaceState const State)
+{
+    carProp.state = State;
+    recoverState  = State;
+}
+
 void Car::CheckDeadmanSwitch()
 {
     if (remote->GetValue(RemoteChannel::ThrottleCh) < 0.1f)
     {
-        carProp.state       = sp_Stop;
+        carProp.state       = RaceState::la_End;
         carProp.targetSpeed = 0.0f;
     }
     else
@@ -176,7 +182,7 @@ void Car::BasicDrive_StateMachine()
         case sp_Turn:
         {
             // Speed
-            motor->SetDutyCycle(CAR_SPEED_TURN);
+            ///motor->SetDutyCycle(CAR_SPEED_TURN);
 
             // Direction
             //wheels->SetLine(lineSensor->GetFrontLine(), 0);
@@ -186,7 +192,7 @@ void Car::BasicDrive_StateMachine()
             {
                 recoverState  = sp_Accelerate;
                 carProp.state = sp_Accelerate;
-                motor->SetDutyCycle(CAR_SPEED_STRAIGHT - 0.02f);
+                ///motor->SetDutyCycle(CAR_SPEED_STRAIGHT - 0.02f);
                 wheels->SetMode(SingleLine_Race_Accel);
                 delayDistance->Wait_m(CAR_WAIT_BEFORE_ACCEL);
                 //delayTime->Wait_ms(500);
@@ -215,7 +221,7 @@ void Car::BasicDrive_StateMachine()
         }
         case sp_Stop:
         {
-            motor->SetDutyCycle(0.0f);
+           /// motor->SetDutyCycle(0.0f);
             //wheels->SetLine(lineSensor->GetFrontLine(), 0);
             break;
         }
@@ -255,11 +261,21 @@ void Car::Follow_StateMachine()
 
 void Car::BasicLabyrinth_StateMachine()     // TODO check MapTask
 {
+    //uint8_t  traceString[20];
+    //uint16_t lenght;
+   // lenght = sprintf(traceString, "%d", carProp.state);
+   // trace->Transmit(traceString, lenght);
+
     switch (carProp.state)
     {
         case la_Idle:
         {
-            if ((USE_RADIO_STARTER == 0) || (radio->GetState() == Go)){ carProp.state = la_Straight; }
+            if ((USE_RADIO_STARTER == 0) || (radio->GetState() == Go))
+            {
+                lineSensor->SetMode(Maze);
+                ChangeState(la_Straight);
+                trace->Transmit("la_Straight", 11);
+            }
             break;
         }
         case la_Straight:
@@ -268,9 +284,9 @@ void Car::BasicLabyrinth_StateMachine()     // TODO check MapTask
             //carProp.lineFollow_Rear  = lineSensor->GetRearLine(LineDirection::ld_Middle);
             carProp.targetSpeed      = MAZE_FORWARD_SPEED;
 
-            if ((lineSensor->IsJunction(carProp.track)) || (lineSensor->IsFork(carProp.track))){        carProp.state = la_Junction;    }
-            else if ((carProp.track == TrackType::Exit) || (carProp.track == TrackType::ExitReverse)){  carProp.state = la_Exit;        }
-            else if (carProp.track == TrackType::DeadEnd){                                              carProp.state = la_Reverse;     }
+            if ((lineSensor->IsJunction(carProp.track)) || (lineSensor->IsFork(carProp.track))){        ChangeState(la_Junction);    trace->Transmit("la_Junction", 11);  }
+            else if ((carProp.track == TrackType::Exit) || (carProp.track == TrackType::ExitReverse)){  ChangeState(la_Exit);        trace->Transmit("la_Exit", 7);       }
+            else if (carProp.track == TrackType::DeadEnd){                                              ChangeState(la_Reverse);     trace->Transmit("la_Reverse", 10);   }
             else {}
             break;
         }
@@ -283,7 +299,8 @@ void Car::BasicLabyrinth_StateMachine()     // TODO check MapTask
             if (map->isDecisionMade() == true)
             {
                 nextTurn = map->WhichWayToTurn();
-                carProp.state = la_Turn;
+                ChangeState(la_Turn);
+                trace->Transmit("la_Turn", 7);
             }
             break;
         }
@@ -293,19 +310,20 @@ void Car::BasicLabyrinth_StateMachine()     // TODO check MapTask
             //carProp.lineFollow_Rear  = lineSensor->GetRearLine(SelectLineDirection(nextTurn));
             carProp.targetSpeed      = MAZE_FORWARD_SPEED - 0.015f;
 
-            if (carProp.track == TrackType::Single){  carProp.state = la_Straight;    }
+            if (carProp.track == TrackType::Single){  ChangeState(la_Straight);          trace->Transmit("la_Straight", 11);    }
             break;
         }
         case la_Reverse:
             Maneuver_Reverse();
-            if (lineSensor->IsJunction(carProp.track)){    carProp.state = la_Junction;    }
+            if (lineSensor->IsJunction(carProp.track)){    ChangeState(la_Junction);     trace->Transmit("la_Junction", 11);    }
             break;
         case la_Exit:
             if (map->shouldExitMaze() == true){     Maneuver_ChangeLane();                  }
-            else{                                   carProp.state = RaceState::la_Straight; }
+            else{                                   ChangeState(la_Straight);     trace->Transmit("la_Straight", 11); }
             break;
         case la_End:
-            carProp.state = sp_Wait;
+            //ChangeState(sp_Wait);
+            // trace->Transmit("sp_Wait", 7);
             carProp.targetSpeed = 0U;   // TODO remove just for test
             break;
         default:
@@ -400,7 +418,7 @@ void Car::Maneuver_Reverse()    // TODO end feature.
                     nextTurn = TurnType::Left;
                 }
 
-                carProp.state = la_Turn;
+                ChangeState(la_Turn);
             }
             break;
         }
@@ -453,8 +471,8 @@ void Car::Maneuver_ChangeLane()     // TODO end feature
             }
             break;
         }
-        case LineSwitch_SM::LineFound:     carProp.state = RaceState::la_End; /* sp_Follow; */   break;
-        case LineSwitch_SM::NoLineFound:   carProp.state = RaceState::la_End;      break;
+        case LineSwitch_SM::LineFound:     ChangeState(la_End); /* sp_Follow; */   break;
+        case LineSwitch_SM::NoLineFound:   ChangeState(la_End);      break;
         default:
             break;
     }
@@ -473,7 +491,7 @@ void Car::UpdateProperties()
     carProp.speed           = encoder->GetSpeed();
     carProp.dist_travelled  = encoder->GetDistance();
     carProp.track           = lineSensor->GetTrackType();
-    //carProp.position        = navigation->GetPosition();
+    carProp.position        = navigation->GetPosition();
     carProp.front_distance  = distance->GetDistance(DistanceSensor::ToF_Front);
 }
 

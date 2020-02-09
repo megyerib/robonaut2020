@@ -8,6 +8,8 @@ public:
     static INERT_I2C* GetInstance();
     I2C_HandleTypeDef* GetHandle();
 
+    void Reset();
+
 private:
     static I2C_HandleTypeDef hi2c;
     static bool configured;
@@ -16,4 +18,5 @@ private:
     void Init();
     void ConfigureHandle();
     void ConfigureGpio();
+    void DeInit();
 };

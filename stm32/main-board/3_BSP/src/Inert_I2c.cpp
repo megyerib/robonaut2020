@@ -15,6 +15,12 @@ I2C_HandleTypeDef* INERT_I2C::GetHandle()
     return &hi2c;
 }
 
+void INERT_I2C::Reset()
+{
+    DeInit();
+    Init();
+}
+
 INERT_I2C::INERT_I2C()
 {
     if (configured == false)
@@ -31,9 +37,9 @@ void INERT_I2C::Init()
     __HAL_RCC_I2C3_CLK_ENABLE();
 
     // I2C3 interrupt Init
-    HAL_NVIC_SetPriority(I2C3_EV_IRQn, 5, 1);
+    HAL_NVIC_SetPriority(I2C3_EV_IRQn, 6, 1);
     HAL_NVIC_EnableIRQ(I2C3_EV_IRQn);
-    HAL_NVIC_SetPriority(I2C3_ER_IRQn, 5, 1);
+    HAL_NVIC_SetPriority(I2C3_ER_IRQn, 6, 1);
     HAL_NVIC_EnableIRQ(I2C3_ER_IRQn);
 
     ConfigureHandle();
@@ -82,4 +88,23 @@ void INERT_I2C::ConfigureGpio()
     GPIO_InitStruct.Speed       = GPIO_SPEED_FREQ_VERY_HIGH;
     GPIO_InitStruct.Alternate   = GPIO_AF4_I2C3;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+}
+
+void INERT_I2C::DeInit()
+{
+    SET_BIT(hi2c.Instance->CR1,   I2C_CR1_SWRST);
+    HAL_Delay(2);
+    CLEAR_BIT(hi2c.Instance->CR1, I2C_CR1_SWRST);
+
+    __HAL_RCC_I2C3_CLK_DISABLE();
+
+    HAL_NVIC_DisableIRQ(I2C3_EV_IRQn);
+    HAL_NVIC_DisableIRQ(I2C3_ER_IRQn);
+
+    HAL_GPIO_DeInit(GPIOC, GPIO_PIN_9);
+    HAL_GPIO_DeInit(GPIOA, GPIO_PIN_8);
+
+    HAL_I2C_DeInit(&hi2c);
+
+    hi2c = {0};
 }
