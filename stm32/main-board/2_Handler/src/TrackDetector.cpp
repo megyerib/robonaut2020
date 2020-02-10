@@ -267,9 +267,9 @@ void TrackDetector::Process()
 	// Front
 	while (GetLineData(front) == true)
 	{
-		/*// Change trace
+		// Change trace
 		LineType  prevLineType = front.lType;
-		TrackType prevTrackType = front.tType;*/
+		TrackType prevTrackType = front.tType;
 
 		FilterCnt(front);
 		GetNearest(front);
@@ -287,7 +287,7 @@ void TrackDetector::Process()
 		}
 
 		// Change trace
-		/*if (prevLineType != front.lType)
+		if (prevLineType != front.lType)
 		{
 			const char* name = lineTypeNames[front.lType];
 			trace->Transmit(name, strlen(name));
@@ -296,7 +296,7 @@ void TrackDetector::Process()
 		{
 			const char* name = trackTypeNames[front.tType];
 			trace->Transmit(name, strlen(name));
-		}*/
+		}
 
 		frontCnt++;
 	}

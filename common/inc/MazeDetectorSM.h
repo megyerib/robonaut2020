@@ -2,6 +2,9 @@
 
 #include "TrackDetectorTypes.h"
 
+// TODO remove
+#include "StringQueue.h"
+
 #define P(x) &MazeDetectorSM::x
 
 #define REG_FORK_2 &MazeDetectorSM::RegFork2
@@ -34,6 +37,14 @@ private:
 	TrackType          type  = Single;
 	LineDirection      dir   = ld_Middle;
 
+	Transmitter*       trace;
+
+	float       sectionStart = 0.0f;
+	float     prevSectionLen = 0.0f;
+
+	uint32_t   doubleStripes = 0;
+	uint32_t       lineIndex = 0;
+
 	void (MazeDetectorSM::*stateMatrix[td_Num][lt_Num])() =
 	{
 		//                lt_1,       lt_2Near,   lt_2Far,    lt_3Near,   lt_3Far,    lt_End
@@ -51,6 +62,8 @@ private:
 		[td_End      ] = {REG_1_____, ERROR_____, ERROR_____, ERROR_____, ERROR_____, NONE______}
 	};
 
+	void NewSection();
+
 	void RegFork2();
 	void RegFork3();
 	void RegJct2();
@@ -58,12 +71,12 @@ private:
 	void Reg1();
 	void RegEnd();
 
-	void RegExit(); // More difficult...
+	void Go2Near();
+	void Go2Far();
+	void Go3Near();
+	void Go3Far();
 
-	void Go2Near(){state = td_2Near;}
-	void Go2Far() {state = td_2Far; }
-	void Go3Near(){state = td_3Near;}
-	void Go3Far() {state = td_3Far; }
+	void RegExit(); // More difficult...
 
 	void Error(){Reg1();}
 	void None(){};
