@@ -4,8 +4,8 @@
 #define SINGLE_SLOW_P   (15.0f)
 #define SINGLE_SLOW_D   (3.0f)
 
-#define SINGLE_FAST_P   (0.001f)
-#define SINGLE_FAST_D   (0.003f)
+#define SINGLE_FAST_P   (20.0f)
+#define SINGLE_FAST_D   (200.000f)
 
 #define SINGLE_RACE_TURN_P      (4.0f)
 #define SINGLE_RACE_TURN_D      (6.0f)
@@ -22,7 +22,7 @@
 //#define FRONT_OFFSET    (+0.374686956f)
 //#define REAR_OFFSET     (-0.102050692f)
 #define FRONT_OFFSET    (0.27954638f)
-#define REAR_OFFSET     (-0.151517391f)
+#define REAR_OFFSET     (-0.351517391f)
 
 Steering::Steering()
 {
@@ -56,6 +56,10 @@ void Steering::SetMode(SteeringMode mode)
     switch (mode)
     {
         case DualLineFollow_Slow:
+        {
+           rear.controller->Set_P_Term(SINGLE_SLOW_P);
+           rear.controller->Set_D_Term(SINGLE_SLOW_D);
+        }
         case SingleLineFollow_Slow:
         {
             front.controller->Set_P_Term(SINGLE_SLOW_P);
@@ -150,10 +154,10 @@ void Steering::Process()
     	case DualLine_Race_Straight:
     	{
             front.controller->Process(front.line);
-            //rear.controller->Process(rear.line);
+            rear.controller->Process(rear.line);
 
             SetFrontAngle(front.controller->GetControlValue());
-            SetRearAngle(front.controller->GetControlValue() / 2.0f);
+            SetRearAngle(rear.controller->GetControlValue());
     	    break;
     	}
     	case DualLineFollow_Fast:
