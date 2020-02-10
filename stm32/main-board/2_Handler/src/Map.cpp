@@ -35,7 +35,7 @@ void Map::Process()
                 else
                 {
                     state = MapState::OverRoadSign;
-                    trace->Transmit("__MAP: OverRoadSign", 19);
+                   // trace->Transmit("__MAP: OverRoadSign", 19);
                 }
             }
             break;
@@ -52,7 +52,7 @@ void Map::Process()
             DecideNextTurn();
             decisionMade = true;
             state = MapState::OverRoadSign;
-            trace->Transmit("__MAP: OverRoadSign", 19);
+           // trace->Transmit("__MAP: OverRoadSign", 19);
             break;
         }
         default:
@@ -174,6 +174,10 @@ TurnType Map::RollDiceOnTurn()
         trace->Transmit("__MAP: NoTurn", 13);
     }
 
+    // ALways right
+    turn = TurnType::Right;
+    trace->Transmit("__MAP: Force Right", 18);
+
     return turn;
 }
 
@@ -202,7 +206,7 @@ bool Map::IsCrosspoint()
         ((trackDetect->IsFork(actualTrackType) == true) || (actualTrackType == TrackType::Single) == true))
     {
         crosspointFound = true;
-        trace->Transmit("__MAP: CrossPoint", 17);
+      //  trace->Transmit("__MAP: CrossPoint", 17);
     }
 
     if (prevTrackType == TrackType::Single
@@ -210,7 +214,7 @@ bool Map::IsCrosspoint()
         (trackDetect->IsFork(actualTrackType) == true))
     {
         crosspointFound = true;
-        trace->Transmit("__MAP: CrossPoint", 17);
+      //  trace->Transmit("__MAP: CrossPoint", 17);
     }
 
     // The crossing point is the middle of the junction. This is the position registered to the segment.

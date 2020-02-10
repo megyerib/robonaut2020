@@ -1,11 +1,11 @@
 #include "Steering.h"
 #include "Defines.h"
 
-#define SINGLE_SLOW_P   (15.0f)
-#define SINGLE_SLOW_D   (3.0f)
+#define SINGLE_SLOW_P   ( 20.0f)
+#define SINGLE_SLOW_D   (200.0f)
 
-#define SINGLE_FAST_P   (20.0f)
-#define SINGLE_FAST_D   (200.000f)
+#define SINGLE_FAST_P   ( 20.0f)
+#define SINGLE_FAST_D   (200.0f)
 
 #define SINGLE_RACE_TURN_P      (4.0f)
 #define SINGLE_RACE_TURN_D      (6.0f)
