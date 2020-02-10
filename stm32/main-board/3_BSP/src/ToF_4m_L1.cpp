@@ -31,7 +31,7 @@ TOF_L1::TOF_L1(uint8_t             const Addr,
     InitXsdnGpio();
 
     // TODO: For the I2C bus
-    HAL_GPIO_WritePin(GPIOC, TOF_XSDN3_Pin, GPIO_PIN_SET);
+    //HAL_GPIO_WritePin(GPIOC, TOF_XSDN3_Pin, GPIO_PIN_SET);
 
     Dev->I2cDevAddr      = Addr;
     Dev->I2cHandle       = i2c->GetHandle();
@@ -116,10 +116,10 @@ void TOF_L1::InitXsdnGpio()
     __HAL_RCC_GPIOC_CLK_ENABLE();
 
     // Configure GPIO pin Output Level
-    HAL_GPIO_WritePin(GPIOC, TOF_FRONT_XSDN_Pin|TOF_XSDN2_Pin|TOF_XSDN3_Pin, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(GPIOC, TOF_FRONT_XSDN_Pin|TOF_XSDN2_Pin, GPIO_PIN_RESET);
 
     // Configure GPIO pins : PCPin PCPin PCPin PCPin
-    GPIO_InitStruct.Pin     = TOF_FRONT_XSDN_Pin|TOF_XSDN2_Pin|TOF_XSDN3_Pin;
+    GPIO_InitStruct.Pin     = TOF_FRONT_XSDN_Pin|TOF_XSDN2_Pin;
     GPIO_InitStruct.Mode    = GPIO_MODE_OUTPUT_PP;
     GPIO_InitStruct.Pull    = GPIO_NOPULL;
     GPIO_InitStruct.Speed   = GPIO_SPEED_FREQ_LOW;

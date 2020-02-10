@@ -33,4 +33,7 @@ public:
 
 private:
 	Distance();
+
+	void InitPower();
+	void PowerEnable(bool en);
 };

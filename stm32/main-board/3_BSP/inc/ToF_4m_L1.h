@@ -11,8 +11,6 @@
 #define TOF_FRONT_XSDN_Port GPIOC
 #define TOF_XSDN2_Pin       GPIO_PIN_13
 #define TOF_XSDN2_Port      GPIOC
-#define TOF_XSDN3_Pin       GPIO_PIN_14
-#define TOF_XSDN3_Port      GPIOC
 
 #define FREE3_LED_Pin       GPIO_PIN_3
 #define FREE3_LED_GPIO_Port GPIOB

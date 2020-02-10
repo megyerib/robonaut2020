@@ -2,6 +2,9 @@
 #include "Defines.h"
 #include "StringQueue.h"
 
+#define TOF_POWER_EN_Pin       GPIO_PIN_14
+#define TOF_POWER_EN_Port      GPIOC
+
 Distance* Distance::GetInstance()
 {
     static Distance instance;
@@ -44,7 +47,9 @@ void Distance::Process()
 
 Distance::Distance()
 {
-    srv_front = new Servo(eTIM8, TIM_CHANNEL_1);
+	InitPower();
+
+	srv_front = new Servo(eTIM8, TIM_CHANNEL_1);
     srv_front->Enable();
 
     tof_front = new TOF_L1(0x20,
@@ -55,4 +60,29 @@ Distance::Distance()
     tof_front->Init();
 
     SetFrontServo(1.57f);
+}
+
+void Distance::InitPower()
+{
+	GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+	// GPIO Ports Clock Enable
+	__HAL_RCC_GPIOC_CLK_ENABLE();
+
+	// Configure GPIO pin Output Level
+	HAL_GPIO_WritePin(GPIOC, TOF_POWER_EN_Pin, GPIO_PIN_RESET);
+
+	// Configure GPIO pins : PCPin PCPin PCPin PCPin
+	GPIO_InitStruct.Pin     = TOF_POWER_EN_Pin;
+	GPIO_InitStruct.Mode    = GPIO_MODE_OUTPUT_PP;
+	GPIO_InitStruct.Pull    = GPIO_NOPULL;
+	GPIO_InitStruct.Speed   = GPIO_SPEED_FREQ_LOW;
+	HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+	HAL_GPIO_WritePin(GPIOC, TOF_POWER_EN_Pin, GPIO_PIN_SET);
+}
+
+void PowerEnable(bool en)
+{
+	HAL_GPIO_WritePin(GPIOC, TOF_POWER_EN_Pin, en ? GPIO_PIN_SET : GPIO_PIN_RESET);
 }
