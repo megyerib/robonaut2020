@@ -25,6 +25,7 @@ public:
 	float GetFrontLine(){return front.pos;} /* m */
 	float GetRearLine(){return rear.pos;} /* m */
 	float GetFrontLine(LineDirection const dir);
+	float GetRearLine(LineDirection const dir);     // TODO pls make it
 
 	bool IsJunction(TrackType const track);
 	bool IsFork(TrackType track);

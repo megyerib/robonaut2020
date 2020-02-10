@@ -2,6 +2,8 @@
 
 #define MAZE_FORWARD_SPEED          ( 0.14f)  /*   % */ //!< Speed used in the labyrinth when the robot is over a Single line.
 #define MAZE_REVERSE_SPEED          (-0.11f)  /*   % */ //!< Speed used for reverse maneuver.
+#define MAZE_REVERSE_P              ( 15.0f)
+#define MAZE_REVERSE_D              (  3.0f)
 #define MAZE_EXIT_WAIT_DIST         ( 0.20f)  /*   m */ //!< Distance the robot will make to leave the labyrinth, before searching for the speedrun line.
 #define MAZE_EXIT_WHEEL_ANGLE       ( 0.52f)  /* rad */ //!< The angles of the servos, while leaving the labyrinth.
 #define MAZE_EXIT_DIST_LIMIT        ( 0.70f)  /*   m */ //!< The distance how many meters can the robot drive while searching for the speedrun line.
@@ -103,7 +105,7 @@ Car::Car()
     segmentCounter  = 0U;
 
     switchState     = LineSwitch_SM::LeaveLine;
-    reversingState  = Reversing_SM::Reversing;
+    reversingState  = Reversing_SM::PrepareForReversing;
 
     wheels->SetMode(carProp.wheel_mode);
 
@@ -390,35 +392,59 @@ void Car::Minimal_StateMachine()
 
 void Car::Maneuver_Reverse()    // TODO end feature.
 {
-    carProp.lineFollow_Front = lineSensor->GetFrontLine(LineDirection::ld_Middle);
-    //carProp.lineFollow_Rear  = lineSensor->GetRearLine(LineDirection::ld_Middle);
-    carProp.targetSpeed      = MAZE_REVERSE_SPEED;
-
     switch (reversingState) // combinations: fork -> single; junction -> single || fork
     {
+        case Reversing_SM::PrepareForReversing:
+        {
+            wheels->SetMode(SteeringMode::DualLineFollow_Slow);
+            carProp.lineFollow_Front = lineSensor->GetFrontLine();
+            carProp.lineFollow_Rear  = lineSensor->GetRearLine();
+
+            //carProp.targetSpeed = 0;
+            reversingState = Reversing_SM::Reversing;
+            trace->Transmit("___REV: Reversing started.", 26);
+            break;
+        }
         case Reversing_SM::Reversing:
         {
+            wheels->SetMode(SteeringMode::DualLineFollow_Slow);
+            carProp.lineFollow_Front = 0;
+            carProp.lineFollow_Rear  = lineSensor->GetRearLine();
+            carProp.targetSpeed      = MAZE_REVERSE_SPEED;
+
             if ((lineSensor->IsFork(carProp.track)) || (lineSensor->IsJunction(carProp.track)))
             {
                 reversingState = Reversing_SM::JunctionFound;
+                trace->Transmit("___REV: Junction Found.", 23);
             }
             break;
         }
         case Reversing_SM::JunctionFound:
         {
-            if ((carProp.track == TrackType::Single) || (lineSensor->IsFork(carProp.track)))
+            // Dummy decision not to turn to the dead end again. Assumption: turn left means the left most line
+            if (nextTurn == TurnType::Left)
             {
-                // TODO dummy decision not to turn to the dead end again. Assumption: turn left means the left most line
-                if (nextTurn == TurnType::Left)
-                {
-                    nextTurn = TurnType::Right;
-                }
-                else
-                {
-                    nextTurn = TurnType::Left;
-                }
+                nextTurn = TurnType::Right;
+                carProp.lineFollow_Front = lineSensor->GetFrontLine(LineDirection::ld_Right);
+                //carProp.lineFollow_Rear  = lineSensor->GetRearLine(LineDirection::ld_Middle);
+            }
+            else
+            {
+                nextTurn = TurnType::Left;
+                carProp.lineFollow_Front = lineSensor->GetFrontLine(LineDirection::ld_Left);
+                //carProp.lineFollow_Rear  = lineSensor->GetRearLine(LineDirection::ld_Middle);
+            }
 
-                ChangeState(la_Turn);
+            carProp.targetSpeed      = MAZE_FORWARD_SPEED;
+
+            if (carProp.track == TrackType::Single)
+            {
+
+                wheels->SetMode(SteeringMode::SingleLineFollow_Slow);
+                ChangeState(la_Straight);
+                // Reset state machine for next time
+                reversingState = Reversing_SM::Reversing;
+                trace->Transmit("___REV: Reversing maneuver is finished", 38);
             }
             break;
         }

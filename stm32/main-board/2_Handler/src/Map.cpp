@@ -114,7 +114,7 @@ Map::Map()
 
 void Map::DecideNextTurn()
 {
-    if (RANDOM_STRATEGY_ON == false)
+    if (RANDOM_STRATEGY_ON == true)
     {
         // TODO Labyrinth algorithm
         // Add new segments
@@ -157,7 +157,7 @@ TurnType Map::RollDiceOnTurn()
 
     turn = TurnType::NoTurn;
 
-    randomNumber = navigation->GetRandomNumber() + (clock->GetTime() % 10);
+    randomNumber = /*navigation->GetRandomNumber() + */(clock->GetTime() % 255);
     if (randomNumber <= 85)
     {
         turn = TurnType::Left;

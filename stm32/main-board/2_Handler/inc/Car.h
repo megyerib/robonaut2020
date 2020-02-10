@@ -62,7 +62,8 @@ typedef enum
 
 typedef enum
 {
-    Reversing = 0,
+    PrepareForReversing = 0,
+    Reversing,
     JunctionFound
 } Reversing_SM;
 
