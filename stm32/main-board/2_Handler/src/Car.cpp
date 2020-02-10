@@ -7,6 +7,7 @@
 #define MAZE_EXIT_WAIT_DIST         ( 0.20f)  /*   m */ //!< Distance the robot will make to leave the labyrinth, before searching for the speedrun line.
 #define MAZE_EXIT_WHEEL_ANGLE       ( 0.52f)  /* rad */ //!< The angles of the servos, while leaving the labyrinth.
 #define MAZE_EXIT_DIST_LIMIT        ( 0.70f)  /*   m */ //!< The distance how many meters can the robot drive while searching for the speedrun line.
+#define MAZE_EXIT_SPEED             ( 0.12f)  /*   % */
 
 #define CAR_FOLLOW_DISTANCE         ( 0.60f)  /* m */
 #define CAR_FOLLOW_MIN_APPROX       ( 0.40f)  /* m */
@@ -104,6 +105,7 @@ Car::Car()
     actLap          = Lap::InvalidLap;
     segmentCounter  = 0U;
 
+    exitType        = TrackType::None;
     switchState     = LineSwitch_SM::LeaveLine;
     reversingState  = Reversing_SM::PrepareForReversing;
 
@@ -261,13 +263,8 @@ void Car::Follow_StateMachine()
     distance->SetFrontServo(wheels->GetFrontAngle()/2);
 }
 
-void Car::BasicLabyrinth_StateMachine()     // TODO check MapTask
+void Car::BasicLabyrinth_StateMachine()
 {
-    //uint8_t  traceString[20];
-    //uint16_t lenght;
-   // lenght = sprintf(traceString, "%d", carProp.state);
-   // trace->Transmit(traceString, lenght);
-
     switch (carProp.state)
     {
         case la_Idle:
@@ -324,7 +321,7 @@ void Car::BasicLabyrinth_StateMachine()     // TODO check MapTask
             Maneuver_Reverse();
             break;
         case la_Exit:
-            if (map->shouldExitMaze() == true){     Maneuver_ChangeLane();                  }
+            if (map->shouldExitMaze() == true){     /*Maneuver_ChangeLane();*/              }   // Q1
             else{                                   ChangeState(la_Straight);     trace->Transmit("la_Straight", 11); }
             break;
         case la_End:
@@ -339,62 +336,16 @@ void Car::BasicLabyrinth_StateMachine()     // TODO check MapTask
 
 void Car::Race_StateMachine()
 {
-    switch (carProp.state)
-    {
-        case la_Idle:
-            if ((USE_RADIO_STARTER == 1) && (radio->GetState() == Go)){ carProp.state = la_Straight; }
-            break;
-        case la_Straight:
-            if ("Junction"){        carProp.state = la_Junction;    }
-            else if ("Exit"){       carProp.state = la_Exit;        }
-            else if ("dead end"){   carProp.state = la_Reverse;     }
-            else {}
-            break;
-        case la_Junction:
-            if ("decision made"){   carProp.state = la_Turn;    }
-            break;
-        case la_Turn:
-            if ("left the junction"){  carProp.state = la_Straight;    }
-            break;
-        case la_Reverse:
-            // maneuver
-            if ("reached the junction"){    carProp.state = la_Junction;    }
-            break;
-        case la_Exit:
-            // normal or opposite exit maneuver
-            if ("successful maneuver"){     carProp.state = la_End; }
-            break;
-        case la_End:
-            carProp.state = sp_Wait;
-            break;
-        case sp_Wait:
-            carProp.state = sp_Follow;
-            break;
-        case sp_Follow:
-            // Follow state machine
-            if ("in proper segment"){   carProp.state = sp_Overtake;    }
-            break;
-        case sp_Overtake:
-            // maneuver
-            if ("maneuver success"){    carProp.state = sp_Straight;    }
-            else if ("fail"){           carProp.state = sp_Follow;      }
-            else {}
-            break;
-        // TODO
-        default:
-            break;
-    }
+
 }
 
 void Car::Minimal_StateMachine()
 {
-    // TODO
-    // laby
-    // transition
-    // race
+    BasicLabyrinth_StateMachine();
+    BasicDrive_StateMachine();
 }
 
-void Car::Maneuver_Reverse()    // TODO end feature.
+void Car::Maneuver_Reverse()
 {
     switch (reversingState) // combinations: fork -> single; junction -> single || fork
     {
@@ -462,18 +413,35 @@ void Car::Maneuver_ChangeLane()     // TODO end feature
     {
         case LineSwitch_SM::PrepareForLaneChanging:
         {
-            delayDistance->Wait_m(MAZE_EXIT_WAIT_DIST);
+            exitType = carProp.track;
             wheels->SetMode(SteeringMode::Free);
-            switchState = LineSwitch_SM::LeaveLine;
+
+            if (exitType == TrackType::Exit)
+            {
+                delayDistance->Wait_m(MAZE_EXIT_WAIT_DIST);
+                switchState = LineSwitch_SM::LeaveLine;
+            }
+            else if (exitType == TrackType::ExitReverse)
+            {
+                delayDistance->Wait_m(MAZE_EXIT_WAIT_DIST);
+                switchState = LineSwitch_SM::Y_part1;
+            }
+            else {} // Invalid state
             break;
         }
+        case LineSwitch_SM::Y_part1:
+            //TODO
+            switchState = LineSwitch_SM::Y_part2;
+            break;
+        case LineSwitch_SM::Y_part2:
+            //TODO
+            switchState = LineSwitch_SM::LineFound;
+            break;
         case LineSwitch_SM::LeaveLine:
         {
-            carProp.targetSpeed = MAZE_FORWARD_SPEED;
-
-            if (carProp.track == TrackType::Exit){              wheels->SetAngleManual(MAZE_EXIT_WHEEL_ANGLE,                      0);  }
-            else if (carProp.track == TrackType::ExitReverse){  wheels->SetAngleManual(-MAZE_EXIT_WHEEL_ANGLE, MAZE_EXIT_WHEEL_ANGLE);  }
-            else {} // NOP
+            wheels->SetMode(SteeringMode::Free);
+            wheels->SetAngleManual(MAZE_EXIT_WHEEL_ANGLE, MAZE_EXIT_WHEEL_ANGLE);
+            carProp.targetSpeed = MAZE_EXIT_SPEED;
 
             if (delayDistance->IsExpired() == true)
             {
@@ -482,11 +450,11 @@ void Car::Maneuver_ChangeLane()     // TODO end feature
             }
             break;
         }
-        case LineSwitch_SM::SearchLineOnLeft:       // For more fancy exit reverse maneuver.
         case LineSwitch_SM::SearchLineOnRight:
         {
-            carProp.targetSpeed = MAZE_FORWARD_SPEED;
-            wheels->SetAngleManual(0, 0);
+            wheels->SetMode(SteeringMode::Free);
+            wheels->SetAngleManual(MAZE_EXIT_WHEEL_ANGLE, MAZE_EXIT_WHEEL_ANGLE);
+            carProp.targetSpeed = MAZE_EXIT_SPEED;
 
             if (carProp.track == TrackType::Single)
             {
@@ -500,8 +468,8 @@ void Car::Maneuver_ChangeLane()     // TODO end feature
             }
             break;
         }
-        case LineSwitch_SM::LineFound:     ChangeState(la_End); /* sp_Follow; */   break;
-        case LineSwitch_SM::NoLineFound:   ChangeState(la_End);      break;
+        case LineSwitch_SM::LineFound:     ChangeState(la_End); /* sp_Follow; */  switchState = LineSwitch_SM::PrepareForLaneChanging;   break;
+        case LineSwitch_SM::NoLineFound:   ChangeState(la_End);     switchState = LineSwitch_SM::PrepareForLaneChanging;      break;
         default:
             break;
     }

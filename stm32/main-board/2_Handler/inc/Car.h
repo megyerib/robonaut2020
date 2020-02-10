@@ -53,9 +53,10 @@ typedef enum
 typedef enum
 {
     PrepareForLaneChanging = 0,
+    Y_part1,
+    Y_part2,
     LeaveLine,
     SearchLineOnRight,
-    SearchLineOnLeft,
     LineFound,
     NoLineFound
 } LineSwitch_SM;
@@ -106,6 +107,7 @@ private:
     Lap             actLap;
     uint8_t         segmentCounter;
 
+    TrackType       exitType;
     LineSwitch_SM   switchState;
     Reversing_SM    reversingState;
 
