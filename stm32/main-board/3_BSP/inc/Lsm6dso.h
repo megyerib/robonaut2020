@@ -51,6 +51,7 @@ private:    // I2C interface
 
 private:    // LSM6DSO components
     static stmdev_ctx_t device;
+    bool initSuccess;
 
     axis3bit16_t    data_raw_acceleration;
     axis3bit16_t    data_raw_angular_rate;
@@ -58,12 +59,14 @@ private:    // LSM6DSO components
     float           acceleration_mg[3];
     float           angular_rate_mdps[3];
     float           temperature_degC;
-    uint8_t         whoamI, rst;
+    uint8_t         whoamI;
+    uint8_t         rst;
     uint8_t         tx_buffer[1000];
 
+// Platform dependent functions.
     static int32_t platform_write(void *handle, uint8_t reg, uint8_t *bufp, uint16_t len);
     static int32_t platform_read (void *handle, uint8_t reg, uint8_t *bufp, uint16_t len);
-    static void    tx_com        ( uint8_t *tx_buffer, uint16_t len );
+    static void    tx_com        (uint8_t *tx_buffer, uint16_t len);
     static void    platform_init (void);
 
 private:

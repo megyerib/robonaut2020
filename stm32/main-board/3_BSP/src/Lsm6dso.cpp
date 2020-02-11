@@ -4,6 +4,7 @@
 #include "task.h"
 #include "stm32f4xx_hal_def.h"
 
+
 stmdev_ctx_t LSM6DSO::device;
 
 LSM6DSO::LSM6DSO()
@@ -12,6 +13,8 @@ LSM6DSO::LSM6DSO()
 
     address        = OWN_ADDR;
     controlRegAddr = CONTROL_REG_ADDR;
+
+    initSuccess = false;
 }
 
 void LSM6DSO::Init()
@@ -24,47 +27,70 @@ void LSM6DSO::Init()
     // Init test platform.
     platform_init();
 
-    uint8_t pData[5];
-    HAL_I2C_Mem_Read((I2C_HandleTypeDef*)device.handle, 0xD5, 0x0F, 1, pData, 1, HAL_MAX_DELAY);   // ST = 0x6C
+    uint8_t pData[5] = {0};
+    HAL_I2C_Mem_Read(i2c->GetHandle(), 0xD5, 0x0F, 1, pData, 1, HAL_MAX_DELAY);   // ST = 0x6C
 
     // Check device ID.
-    while (whoamI != LSM6DSO_ID)
+    //whoamI = 0;
+    lsm6dso_device_id_get(&device, &whoamI);
+    HAL_Delay(2);
+    if (whoamI == LSM6DSO_ID)
     {
-        lsm6dso_device_id_get(&device, &whoamI);
-        vTaskDelay(10);
-    }
+        // Restore default configuration.
+        lsm6dso_reset_set(&device, PROPERTY_ENABLE);
+        do
+        {
+            lsm6dso_reset_get(&device, &rst);
+        }
+        while (rst);
 
-    // Restore default configuration.
-    lsm6dso_reset_set(&device, PROPERTY_ENABLE);
-    do
+        // Disable I3C interface
+        lsm6dso_i3c_disable_set(&device, LSM6DSO_I3C_DISABLE);
+
+        // Enable Block Data Update
+        lsm6dso_block_data_update_set(&device, PROPERTY_ENABLE);
+
+        // Set Output Data Rate
+        lsm6dso_xl_data_rate_set(&device, LSM6DSO_XL_ODR_833Hz);
+        lsm6dso_gy_data_rate_set(&device, LSM6DSO_GY_ODR_833Hz);
+
+        // Set full scale
+        lsm6dso_xl_full_scale_set(&device, LSM6DSO_4g);
+        lsm6dso_gy_full_scale_set(&device, LSM6DSO_500dps);
+
+        // Configure filtering chain(No aux interface)
+        // Accelerometer - LPF1 + LPF2 path
+        lsm6dso_xl_hp_path_on_out_set(&device, LSM6DSO_LP_ODR_DIV_100);
+        lsm6dso_xl_filter_lp2_set(&device, PROPERTY_ENABLE);
+
+        initSuccess = true;
+    }
+    else
     {
-        lsm6dso_reset_get(&device, &rst);
+        initSuccess = false;
     }
-    while (rst);
-
-    // Disable I3C interface
-    lsm6dso_i3c_disable_set(&device, LSM6DSO_I3C_DISABLE);
-
-    // Enable Block Data Update
-    lsm6dso_block_data_update_set(&device, PROPERTY_ENABLE);
-
-    // Set Output Data Rate
-    lsm6dso_xl_data_rate_set(&device, LSM6DSO_XL_ODR_12Hz5);
-    lsm6dso_gy_data_rate_set(&device, LSM6DSO_GY_ODR_12Hz5);
-
-    // Set full scale
-    lsm6dso_xl_full_scale_set(&device, LSM6DSO_2g);
-    lsm6dso_gy_full_scale_set(&device, LSM6DSO_2000dps);
-
-    // Configure filtering chain(No aux interface)
-    // Accelerometer - LPF1 + LPF2 path
-    lsm6dso_xl_hp_path_on_out_set(&device, LSM6DSO_LP_ODR_DIV_100);
-    lsm6dso_xl_filter_lp2_set(&device, PROPERTY_ENABLE);
 }
 
 void LSM6DSO::Process()
 {
     uint8_t reg;
+    GPIO_PinState pinState = GPIO_PIN_RESET;
+
+    //whoamI = 0;
+    lsm6dso_device_id_get(&device, &whoamI);
+    if ((whoamI == LSM6DSO_ID) && (initSuccess == true))
+    {
+
+    }
+    else
+    {
+        //led->TurnOff();
+        if (initSuccess == false)
+        {
+           // i2c->Reset();
+           Init();
+        }
+    }
 
     // Read output only if new xl value is available
     lsm6dso_xl_flag_data_ready_get(&device, &reg);
@@ -76,6 +102,7 @@ void LSM6DSO::Process()
       acceleration_mg[0] = lsm6dso_from_fs2_to_mg(data_raw_acceleration.i16bit[0]);
       acceleration_mg[1] = lsm6dso_from_fs2_to_mg(data_raw_acceleration.i16bit[1]);
       acceleration_mg[2] = lsm6dso_from_fs2_to_mg(data_raw_acceleration.i16bit[2]);
+      pinState = GPIO_PIN_SET;
     }
 
     lsm6dso_gy_flag_data_ready_get(&device, &reg);
@@ -87,6 +114,7 @@ void LSM6DSO::Process()
       angular_rate_mdps[0] = lsm6dso_from_fs2000_to_mdps(data_raw_angular_rate.i16bit[0]);
       angular_rate_mdps[1] = lsm6dso_from_fs2000_to_mdps(data_raw_angular_rate.i16bit[1]);
       angular_rate_mdps[2] = lsm6dso_from_fs2000_to_mdps(data_raw_angular_rate.i16bit[2]);
+      pinState = GPIO_PIN_SET;
     }
 
     lsm6dso_temp_flag_data_ready_get(&device, &reg);
@@ -96,7 +124,10 @@ void LSM6DSO::Process()
       memset(data_raw_temperature.u8bit, 0x00, sizeof(int16_t));
       lsm6dso_temperature_raw_get(&device, data_raw_temperature.u8bit);
       temperature_degC = lsm6dso_from_lsb_to_celsius(data_raw_temperature.i16bit);
+      pinState = GPIO_PIN_SET;
     }
+
+    //led->SetState(pinState);
 }
 
 float LSM6DSO::GetAngular_mdps(Axis const t)
