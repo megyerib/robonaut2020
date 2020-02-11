@@ -12,6 +12,8 @@
 
 #define NEAR_FAR_THRESHOLD_MM    70
 
+#define DEBUG_TRACK               0
+
 TrackDetector::TrackDetector() :
 	frontStm(front)
 {
@@ -261,15 +263,18 @@ void TrackDetector::EvalRaceTrackType()
 
 void TrackDetector::Process()
 {
+#if DEBUG_TRACK
 	uint16_t frontCnt = 0;
 	uint16_t rearCnt  = 0;
+#endif
 
 	// Front
 	while (GetLineData(front) == true)
 	{
-		// Change trace
+#if DEBUG_TRACK		// Change trace
 		LineType  prevLineType = front.lType;
 		TrackType prevTrackType = front.tType;
+#endif
 
 		FilterCnt(front);
 		GetNearest(front);
@@ -286,7 +291,7 @@ void TrackDetector::Process()
 			EvalRaceTrackType();
 		}
 
-		// Change trace
+#if DEBUG_TRACK // Change trace
 		if (prevLineType != front.lType)
 		{
 			const char* name = lineTypeNames[front.lType];
@@ -299,6 +304,7 @@ void TrackDetector::Process()
 		}
 
 		frontCnt++;
+#endif
 	}
 
 	// Rear
@@ -307,7 +313,9 @@ void TrackDetector::Process()
 		FilterCnt(rear);
 		GetNearest(rear);
 
+#if DEBUG_TRACK
 		rearCnt++;
+#endif
 	}
 }
 
