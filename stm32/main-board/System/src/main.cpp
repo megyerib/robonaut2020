@@ -21,9 +21,9 @@ int main(void)
 
 	//Q1Task         :: Init();
 	//TestTask       :: Init();
-	//ServoCalibTask :: Init();
+	ServoCalibTask :: Init();
 	//SensorServoCalibTask :: Init();
-	MazeTestTask   :: Init();
+	//MazeTestTask   :: Init();
 
 	system->OsStart();
 

@@ -8,7 +8,10 @@
 
 MazeTestTask::MazeTestTask() : CyclicTask((char*)"MazeTest", CYCLE_TIME, MAIN_TASK_PRIO, 256)
 {
-
+	remote   = Remote::GetInstance();
+	motor    = Traction::GetInstance();
+	steering = Steering::GetInstance();
+	track    = TrackDetector::GetInstance();
 }
 
 MazeTestTask* MazeTestTask::Init()
@@ -19,12 +22,7 @@ MazeTestTask* MazeTestTask::Init()
 
 void MazeTestTask::TaskInit()
 {
-	remote   = Remote::GetInstance();
-	motor    = Traction::GetInstance();
-	steering = Steering::GetInstance();
-	track    = TrackDetector::GetInstance();
-
-	track->SetMode(Maze);
+	track->SetMode(Speedrun);
 }
 
 void MazeTestTask::TaskFunction()

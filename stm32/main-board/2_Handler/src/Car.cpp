@@ -41,8 +41,8 @@ void Car::StateMachine()
 
     // Test
     // BasicDrive_StateMachine();
-    // Follow_StateMachine();
-    BasicLabyrinth_StateMachine();
+    Follow_StateMachine();
+    // BasicLabyrinth_StateMachine();
 
     // Race
 #if USE_MINIMAL_STRATEGY == 1U
@@ -259,8 +259,8 @@ void Car::Follow_StateMachine()
     }
 
     // Sensor Direction.
-    wheels->SetLine(lineSensor->GetFrontLine(), 0);
-    distance->SetFrontServo(wheels->GetFrontAngle()/2);
+    carProp.lineFollow_Front = lineSensor->GetFrontLine();
+    distance->SetFrontServo(wheels->GetFrontAngle()/2); // TODO Add to carProp
 }
 
 void Car::BasicLabyrinth_StateMachine()

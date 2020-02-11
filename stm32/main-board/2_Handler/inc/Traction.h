@@ -29,7 +29,7 @@ private:
 
 	//float targetSpeed;
 	float targetDutyCycle;
-	TractionMode mode;
+	TractionMode mode = tmodeAccel;
 
 	Traction();
 

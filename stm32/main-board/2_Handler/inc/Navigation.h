@@ -28,10 +28,10 @@ private:
     Encoder* enc;
 
     Position position;
-    float d_s;
-    float d_psi;
-    float prev_enc;
-    float prev_angular;
+    float d_s = 0;
+    float d_psi = 0;
+    float prev_enc = 0;
+    float prev_angular = 0;
 
 public:
     static Navigation* GetInstance();

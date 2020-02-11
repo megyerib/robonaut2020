@@ -2,7 +2,7 @@
 #include <string.h>
 #include "FreeRTOS.h"
 #include "task.h"
-#include "stm32f4xx_hal_def.h"
+#include "stm32f4xx_hal.h"
 
 
 stmdev_ctx_t LSM6DSO::device;
@@ -127,6 +127,7 @@ void LSM6DSO::Process()
       pinState = GPIO_PIN_SET;
     }
 
+    UNUSED(pinState);
     //led->SetState(pinState);
 }
 

@@ -22,6 +22,7 @@ typedef enum
 	TrackDetectorTrace,
 	Race,
 	MapModule,
+	ServoCalib,
 
 	StringQueueNum
 }
@@ -32,7 +33,8 @@ const size_t stringQueueSize[] =
 	[TestTrace] = 100,
 	[TrackDetectorTrace] = 200,
 	[Race] = 200,
-	[MapModule] = 200
+	[MapModule] = 200,
+	[ServoCalib] = 200
 };
 
 class StringQueue : public Transmitter,

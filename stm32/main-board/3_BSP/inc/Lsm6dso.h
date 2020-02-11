@@ -58,9 +58,9 @@ private:    // LSM6DSO components
     axis1bit16_t    data_raw_temperature;
     float           acceleration_mg[3];
     float           angular_rate_mdps[3];
-    float           temperature_degC;
-    uint8_t         whoamI;
-    uint8_t         rst;
+    float           temperature_degC = 0;
+    uint8_t         whoamI = 0;
+    uint8_t         rst = 0;
     uint8_t         tx_buffer[1000];
 
 // Platform dependent functions.
