@@ -186,7 +186,7 @@ void Car::BasicLabyrinth_StateMachine()
             break;
         case la_End:
             //ChangeState(sp_Wait);
-            // trace->Transmit("sp_Wait", 7);
+            trace->Transmit("Labyrinth is over. sp_Follow", 28);
             // speedRunStarted = true;
             // map->TurnOff();          // TODO don'T forget to activate for the race
             carProp.targetSpeed = 0U;   // TODO remove just for test
@@ -205,60 +205,86 @@ void Car::BaseRace_StateMachine()
             Follow_StateMachine();
 
             // Transitions
-            if ((segmentCounter == OVERTAKE_SEGMENT) && (tryOvertake == true)){ carProp.state = sp_Overtake; }  // Overtake is allowed and in the right segment.
-            if (lapFinished == true){   followLapCnt++;             lapFinished = false;    }   // Count the rounds.
-            if (followLapCnt == 2){     carProp.state = sp_Lap1;    followLapCnt = 0;    }      // Must switch to Lap1 after 2 rounds.
+            if ((segmentCounter == OVERTAKE_SEGMENT) && (tryOvertake == true))  // Overtake is allowed and in the right segment.
+            {
+                carProp.state = sp_Overtake;
+                trace->Transmit("sp_Overtake", 11);
+            }
+            if (lapFinished == true)                                            // Count the rounds.
+            {
+                followLapCnt++;
+                lapFinished = false;
+                trace->Transmit("Follow lap one completed", 24);
+            }
+            if (followLapCnt == 2)                                              // Must switch to Lap1 after 2 rounds.
+            {
+                carProp.state = sp_Lap1;
+                followLapCnt  = 0;
+                trace->Transmit("sp_Lap1", 7);
+            }
             break;
         }
         case sp_Overtake:
         {
             Maneuver_Overtake();
 
-            if ("success"){     carProp.state = sp_Chase;   }
-            else{               carProp.state = sp_Follow;  }
+            if ("success1"){     carProp.state = sp_Chase;          trace->Transmit("sp_Chase", 8);            }
+            else if ("success2"){carProp.state = sp_PrepareForLaps; trace->Transmit("sp_PrepareForLaps", 7);   }
+            else{                carProp.state = sp_Follow;         trace->Transmit("sp_Follow", 9);           }
             break;
         }
         case sp_Chase:
         {
             carProp.sensorServoAngle = wheels->GetFrontAngle()/2;
             // Transitions
-            if ("safety car found"){    carProp.state = sp_Follow;  }                           // Behind the safety car again.
-            if (lapFinished == true){   followLapCnt++;             lapFinished = false;    }   // Count the rounds.
-            if (followLapCnt == 2){     carProp.state = sp_Lap1;    followLapCnt = 0;       }   // Must switch to Lap1 after 2 rounds.
+            if ("safety car found")                 // Behind the safety car again.
+            {
+                carProp.state = sp_Follow;
+                trace->Transmit("sp_Follow", 9);
+            }
+            if (lapFinished == true)                // Count the rounds.
+            {
+                followLapCnt++;
+                lapFinished = false;
+                trace->Transmit("Follow lap one completed", 24);
+            }
+            if (followLapCnt == 2)                  // Must switch to Lap1 after 2 rounds.
+            {
+                carProp.state = sp_Lap1;
+                followLapCnt  = 0;
+                trace->Transmit("sp_Lap1", 7);
+            }
             break;
         }
         case sp_PrepareForLaps:
         {
-
-            if (lapFinished == true){   carProp.state = sp_Lap1;    lapFinished = false;    }
+            if (lapFinished == true){   carProp.state = sp_Lap1;    lapFinished = false;   trace->Transmit("sp_Lap1", 7); }
             break;
         }
         case sp_Lap1:
         {
-
-            if (lapFinished == true){   carProp.state = sp_Lap2;    lapFinished = false;    }
+            if (lapFinished == true){   carProp.state = sp_Lap2;    lapFinished = false;   trace->Transmit("sp_Lap2", 7); }
             break;
         }
         case sp_Lap2:
         {
-
-            if (lapFinished == true){   carProp.state = sp_Lap3;    lapFinished = false;    }
+            if (lapFinished == true){   carProp.state = sp_Lap3;    lapFinished = false;   trace->Transmit("sp_Lap3", 7); }
             break;
         }
         case sp_Lap3:
         {
-
             if (lapFinished == true)
             {
                 carProp.state = sp_Stop;
                 lapFinished = false;
                 delayDistance->Wait_m(2);
+                trace->Transmit("sp_Stop", 7);
             }
             break;
         }
         case sp_Stop:
         {
-            if (delayDistance->IsExpired() == true){    carProp.targetSpeed = 0;    }
+            if (delayDistance->IsExpired() == true){    carProp.targetSpeed = 0;    trace->Transmit("RACE IS OVER!", 13);    }
             break;
         }
         default:
@@ -275,47 +301,51 @@ void Car::RoadSegment_StateMachine()
     {
         case RoadSegment_SM::rs_Straight:
         {
-            carProp.wheel_mode(SteeringMode::SingleLine_Race_Straight);    // PD parameters
+            carProp.wheel_mode = SteeringMode::SingleLine_Race_Straight;    // PD parameters
             carProp.targetSpeed = CAR_SPEED_STRAIGHT;
 
             if (lineSensor->GetTrackType() == TrackType::Braking)
             {
                 delayDistance->Wait_m(CAR_WAIT_BEFORE_BRAKING);
                 ChangeRoadSegment(RoadSegment_SM::rs_Decelerate);
+                trace->Transmit("...rs_Decelerate", 16);
             }
             break;
         }
         case RoadSegment_SM::rs_Decelerate:
         {
-            carProp.wheel_mode(SteeringMode::SingleLine_Race_Decel);
+            carProp.wheel_mode= SteeringMode::SingleLine_Race_Decel;
             carProp.targetSpeed = CAR_SPEED_DECEL;
 
             if (delayDistance->IsExpired() == true)
             {
                 ChangeRoadSegment(RoadSegment_SM::rs_Turn);
+                trace->Transmit("...rs_Turn", 10);
             }
             break;
         }
         case RoadSegment_SM::rs_Turn:
         {
-            carProp.wheel_mode(SteeringMode::SingleLine_Race_Turn);
+            carProp.wheel_mode = SteeringMode::SingleLine_Race_Turn;
             carProp.targetSpeed = CAR_SPEED_TURN;
 
             if (lineSensor->GetTrackType() == TrackType::Acceleration)
             {
                 delayDistance->Wait_m(CAR_WAIT_BEFORE_ACCEL);
                 ChangeRoadSegment(RoadSegment_SM::rs_Accelerate);
+                trace->Transmit("...rs_Accelerate", 16);
             }
             break;
         }
         case RoadSegment_SM::rs_Accelerate:
         {
-            carProp.wheel_mode(SteeringMode::SingleLine_Race_Accel);
+            carProp.wheel_mode = SteeringMode::SingleLine_Race_Accel;
             carProp.targetSpeed = CAR_SPEED_ACCEL;
 
             if (delayDistance->IsExpired() == true)
             {
                 ChangeRoadSegment(RoadSegment_SM::rs_Straight);
+                trace->Transmit("...rs_Straight", 14);
             }
             break;
         }
