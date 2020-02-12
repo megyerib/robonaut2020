@@ -79,6 +79,7 @@ typedef struct
     float        targetSpeed;
     float        lineFollow_Front;
     float        lineFollow_Rear;
+    float        sensorServoAngle;
 } CarProperties;
 
 class Car
@@ -103,6 +104,7 @@ private:
     CarProperties   carProp;
     RaceState       recoverState;
 
+    bool            speedRunStarted;
     RoadSegment_SM  roadSegment;
     uint8_t         segmentCounter;
     bool            lapFinished;

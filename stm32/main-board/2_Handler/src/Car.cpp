@@ -1,7 +1,7 @@
 #include "Car.h"
 
 #define MAZE_FORWARD_SPEED          ( 0.17f)  /*   % */ //!< Speed used in the labyrinth when the robot is over a Single line.
-#define MAZE_REVERSE_SPEED          (-0.15f)  /*   % */ //!< Speed used for reverse maneuver.
+#define MAZE_REVERSE_SPEED          (-0.14f)  /*   % */ //!< Speed used for reverse maneuver.
 #define MAZE_REVERSE_P              ( 20.0f)
 #define MAZE_REVERSE_D              (200.0f)
 #define MAZE_EXIT_WAIT_DIST         ( 0.20f)  /*   m */ //!< Distance the robot will make to leave the labyrinth, before searching for the speedrun line.
@@ -17,12 +17,12 @@
 #define OVERTAKE_SEGMENT            (    7U)  /* Overtake can be done starting from this segment */
 #define SEGMENT_COUNT               (   16U)  /* Total number of the segments */
 
-#define CAR_SPEED_STRAIGHT          ( 0.22f)   /* % */
-#define CAR_SPEED_DECEL             ( 0.19f)   /* % */
+#define CAR_SPEED_STRAIGHT          ( 0.18f)   /* % */
+#define CAR_SPEED_DECEL             ( 0.17f)   /* % */
 #define CAR_SPEED_TURN              ( 0.16f)   /* % */
-#define CAR_SPEED_ACCEL             ( 0.19f)   /* % */
+#define CAR_SPEED_ACCEL             ( 0.17f)   /* % */
 
-#define CAR_WAIT_BEFORE_BRAKING     ( 1.00f)   /* m */
+#define CAR_WAIT_BEFORE_BRAKING     ( 2.00f)   /* m */
 #define CAR_WAIT_BEFORE_ACCEL       ( 0.30f)   /* m */
 
 #define CAR_DIST_CTRL_P             ( 0.10f)
@@ -102,7 +102,9 @@ Car::Car()
     carProp.targetSpeed      = 0U;
     carProp.lineFollow_Front = lineSensor->GetFrontLine();
     carProp.lineFollow_Rear  = 0U;
+    carProp.sensorServoAngle = 0U;
 
+    speedRunStarted = false;
     roadSegment     = RoadSegment_SM::rs_Straight;
     segmentCounter  = 0U;
     lapFinished     = false;
@@ -185,6 +187,8 @@ void Car::BasicLabyrinth_StateMachine()
         case la_End:
             //ChangeState(sp_Wait);
             // trace->Transmit("sp_Wait", 7);
+            // speedRunStarted = true;
+            // map->TurnOff();          // TODO don'T forget to activate for the race
             carProp.targetSpeed = 0U;   // TODO remove just for test
             break;
         default:
@@ -201,23 +205,26 @@ void Car::BaseRace_StateMachine()
             Follow_StateMachine();
 
             // Transitions
-            if (tryOvertake == true){ carProp.state = sp_Overtake; }                          // Overtake is allowed and in the right segment.
-            if (lapFinished == true){ followLapCnt++;             lapFinished = false;    }   // Count the rounds.
-            if (followLapCnt == 2){   carProp.state = sp_Lap1;     }                          // Must switch to Lap1 after 2 rounds.
+            if ((segmentCounter == OVERTAKE_SEGMENT) && (tryOvertake == true)){ carProp.state = sp_Overtake; }  // Overtake is allowed and in the right segment.
+            if (lapFinished == true){   followLapCnt++;             lapFinished = false;    }   // Count the rounds.
+            if (followLapCnt == 2){     carProp.state = sp_Lap1;    followLapCnt = 0;    }      // Must switch to Lap1 after 2 rounds.
             break;
         }
         case sp_Overtake:
         {
+            Maneuver_Overtake();
+
             if ("success"){     carProp.state = sp_Chase;   }
             else{               carProp.state = sp_Follow;  }
             break;
         }
         case sp_Chase:
         {
+            carProp.sensorServoAngle = wheels->GetFrontAngle()/2;
             // Transitions
-            if ("safety car found"){  carProp.state = sp_Follow;  }                           // Behind the safety car again.
-            if (lapFinished == true){ followLapCnt++;             lapFinished = false;    }   // Count the rounds.
-            if (followLapCnt == 2){   carProp.state = sp_Lap1;    }                           // Must switch to Lap1 after 2 rounds.
+            if ("safety car found"){    carProp.state = sp_Follow;  }                           // Behind the safety car again.
+            if (lapFinished == true){   followLapCnt++;             lapFinished = false;    }   // Count the rounds.
+            if (followLapCnt == 2){     carProp.state = sp_Lap1;    followLapCnt = 0;       }   // Must switch to Lap1 after 2 rounds.
             break;
         }
         case sp_PrepareForLaps:
@@ -257,31 +264,32 @@ void Car::BaseRace_StateMachine()
         default:
             break;
     }
-
-    //RoadSegment_StateMachine(); TODO find place
 }
 
 void Car::RoadSegment_StateMachine()
 {
-    // line follow
+    carProp.lineFollow_Front = lineSensor->GetFrontLine(LineDirection::ld_Middle);
+    //carProp.lineFollow_Rear  = lineSensor->GetRearLine(LineDirection::ld_Middle);
+
     switch (roadSegment)
     {
         case RoadSegment_SM::rs_Straight:
         {
-            // PD parameters
-            // target speed
+            carProp.wheel_mode(SteeringMode::SingleLine_Race_Straight);    // PD parameters
+            carProp.targetSpeed = CAR_SPEED_STRAIGHT;
 
             if (lineSensor->GetTrackType() == TrackType::Braking)
             {
-                delayDistance->Wait_m(1.0f);
+                delayDistance->Wait_m(CAR_WAIT_BEFORE_BRAKING);
                 ChangeRoadSegment(RoadSegment_SM::rs_Decelerate);
             }
             break;
         }
         case RoadSegment_SM::rs_Decelerate:
         {
-            // PD parameters
-            // target speed
+            carProp.wheel_mode(SteeringMode::SingleLine_Race_Decel);
+            carProp.targetSpeed = CAR_SPEED_DECEL;
+
             if (delayDistance->IsExpired() == true)
             {
                 ChangeRoadSegment(RoadSegment_SM::rs_Turn);
@@ -290,19 +298,21 @@ void Car::RoadSegment_StateMachine()
         }
         case RoadSegment_SM::rs_Turn:
         {
-            // PD parameters
-            // target speed
+            carProp.wheel_mode(SteeringMode::SingleLine_Race_Turn);
+            carProp.targetSpeed = CAR_SPEED_TURN;
+
             if (lineSensor->GetTrackType() == TrackType::Acceleration)
             {
-                delayDistance->Wait_m(0.1f);
+                delayDistance->Wait_m(CAR_WAIT_BEFORE_ACCEL);
                 ChangeRoadSegment(RoadSegment_SM::rs_Accelerate);
             }
             break;
         }
         case RoadSegment_SM::rs_Accelerate:
         {
-            // PD parameters
-            // target speed
+            carProp.wheel_mode(SteeringMode::SingleLine_Race_Accel);
+            carProp.targetSpeed = CAR_SPEED_ACCEL;
+
             if (delayDistance->IsExpired() == true)
             {
                 ChangeRoadSegment(RoadSegment_SM::rs_Straight);
@@ -338,14 +348,23 @@ void Car::Follow_StateMachine()
 
     // Sensor Direction.
     carProp.lineFollow_Front = lineSensor->GetFrontLine(LineDirection::ld_Middle);
-    distance->SetFrontServo(wheels->GetFrontAngle()/2);
+    carProp.sensorServoAngle =  wheels->GetFrontAngle()/2;
 }
 
 void Car::Minimal_StateMachine()
 {
-    BasicLabyrinth_StateMachine();
+    if (speedRunStarted == true)
+    {
+        RoadSegment_StateMachine();
+    }
+    else
+    {
+        BasicLabyrinth_StateMachine();
+    }
+
     BaseRace_StateMachine();
 }
+
 
 void Car::Race_StateMachine()
 {
@@ -353,13 +372,14 @@ void Car::Race_StateMachine()
     // Advanced speed run
 }
 
+
 void Car::Maneuver_Reverse()
 {
     switch (reversingState) // combinations: fork -> single; junction -> single || fork
     {
         case Reversing_SM::PrepareForReversing:
         {
-            wheels->SetMode(SteeringMode::DualLineFollow_Slow);
+            carProp.wheel_mode = SteeringMode::DualLineFollow_Slow;
             carProp.lineFollow_Front = lineSensor->GetFrontLine();
             carProp.lineFollow_Rear  = lineSensor->GetRearLine();
 
@@ -370,7 +390,7 @@ void Car::Maneuver_Reverse()
         }
         case Reversing_SM::Reversing:
         {
-            wheels->SetMode(SteeringMode::DualLineFollow_Slow);
+            carProp.wheel_mode = SteeringMode::DualLineFollow_Slow;
             carProp.lineFollow_Front = 0;
             carProp.lineFollow_Rear  = lineSensor->GetRearLine();
             carProp.targetSpeed      = MAZE_REVERSE_SPEED;
@@ -384,7 +404,7 @@ void Car::Maneuver_Reverse()
         }
         case Reversing_SM::JunctionFound:
         {
-            wheels->SetMode(SteeringMode::SingleLineFollow_Slow);
+            carProp.wheel_mode = SteeringMode::SingleLineFollow_Slow;
 
             // Dummy decision not to turn to the dead end again. Assumption: turn left means the left most line
             if (nextTurn == TurnType::Left)
@@ -415,6 +435,7 @@ void Car::Maneuver_Reverse()
     }
 }
 
+
 void Car::Maneuver_ChangeLane()     // TODO end feature
 {
     switch (switchState)
@@ -422,7 +443,7 @@ void Car::Maneuver_ChangeLane()     // TODO end feature
         case LineSwitch_SM::PrepareForLaneChanging:
         {
             exitType = carProp.track;
-            wheels->SetMode(SteeringMode::Free);
+            carProp.wheel_mode = SteeringMode::Free;
 
             if (exitType == TrackType::Exit)
             {
@@ -447,6 +468,7 @@ void Car::Maneuver_ChangeLane()     // TODO end feature
             break;
         case LineSwitch_SM::LeaveLine:
         {
+            // Special case. Mode is changed manually.
             wheels->SetMode(SteeringMode::Free);
             wheels->SetAngleManual(MAZE_EXIT_WHEEL_ANGLE, MAZE_EXIT_WHEEL_ANGLE);
             carProp.targetSpeed = MAZE_EXIT_SPEED;
@@ -466,7 +488,7 @@ void Car::Maneuver_ChangeLane()     // TODO end feature
 
             if (carProp.track == TrackType::Single)
             {
-                wheels->SetMode(SteeringMode::SingleLineFollow_Slow);
+                carProp.wheel_mode = SteeringMode::SingleLineFollow_Slow;
                 switchState = LineSwitch_SM::LineFound;
             }
 
@@ -503,6 +525,7 @@ void Car::CheckDeadmanSwitch()
     }
 }
 
+
 void Car::UpdateProperties()
 {
     carProp.speed           = encoder->GetSpeed();
@@ -515,7 +538,11 @@ void Car::UpdateProperties()
 void Car::Actuate()
 {
     motor->SetDutyCycle(carProp.targetSpeed);
+    wheels->SetMode(carProp.wheel_mode);
     wheels->SetLine(carProp.lineFollow_Front, carProp.lineFollow_Rear);
+
+    if (speedRunStarted == true){   distance->SetFrontServo(carProp.sensorServoAngle); }
+    else{                           distance->SetFrontServo(0);   }
 }
 
 void Car::ChangeState(RaceState const State)
