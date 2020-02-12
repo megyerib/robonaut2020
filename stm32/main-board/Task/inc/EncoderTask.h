@@ -9,7 +9,7 @@ public:
 	static EncoderTask* Init();
 
 private:
-	Encoder* encoder;
+	Encoder* encoder = nullptr;
 
 	EncoderTask();
 

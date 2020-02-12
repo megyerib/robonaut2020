@@ -15,10 +15,10 @@ public:
 private:
 	Q1Task();
 
-	Car*      car;
-	Remote*   remote;
-	Traction* motor;
-	Steering* steering;
+	Car*      car       = nullptr;
+	Remote*   remote    = nullptr;
+	Traction* motor     = nullptr;
+	Steering* steering  = nullptr;
 
 	void TaskInit() override;
 	void TaskFunction() override;

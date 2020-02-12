@@ -6,7 +6,7 @@
 class TestTask : public CyclicTask
 {
 private:
-	Transmitter* msgQueue;
+	Transmitter* msgQueue = nullptr;
 
 	TestTask();
 

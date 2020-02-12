@@ -14,5 +14,5 @@ private:
 	void TaskInit() override;
 	void TaskFunction() override;
 
-	Transmitter* trace;
+	Transmitter* trace = nullptr;
 };

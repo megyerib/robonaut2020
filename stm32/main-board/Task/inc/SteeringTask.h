@@ -5,7 +5,7 @@
 
 class SteeringTask : public CyclicTask
 {
-	Steering* steering;
+	Steering* steering = nullptr;
 
 	SteeringTask();
 

@@ -19,10 +19,10 @@ public:
 	static MazeTestTask* Init();
 
 private:
-	Remote*        remote;
-	Traction*      motor;
-	Steering*      steering;
-	TrackDetector* track;
+	Remote*        remote    = nullptr;
+	Traction*      motor     = nullptr;
+	Steering*      steering  = nullptr;
+	TrackDetector* track     = nullptr;
 
 	void RcRun();
 	void Follow();

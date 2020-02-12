@@ -5,7 +5,7 @@
 
 class NavigationTask : public CyclicTask
 {
-    Navigation* navigation;
+    Navigation* navigation = nullptr;
 
     NavigationTask();
 

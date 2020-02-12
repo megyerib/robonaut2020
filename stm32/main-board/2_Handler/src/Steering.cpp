@@ -140,7 +140,6 @@ void Steering::Process()
     {
 		case Off:
 		{
-		    // TODO servo enable pins.
 			front.servo->Disable();
 			rear.servo->Disable();
 			break;

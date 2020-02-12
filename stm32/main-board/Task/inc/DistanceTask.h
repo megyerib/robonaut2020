@@ -5,7 +5,7 @@
 
 class DistanceTask : public CyclicTask
 {
-    Distance* distance;
+    Distance* distance = nullptr;
 
     DistanceTask();
 

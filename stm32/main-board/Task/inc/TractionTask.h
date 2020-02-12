@@ -5,7 +5,7 @@
 
 class TractionTask : public CyclicTask
 {
-	Traction* controller;
+	Traction* controller = nullptr;
 
 	TractionTask();
 

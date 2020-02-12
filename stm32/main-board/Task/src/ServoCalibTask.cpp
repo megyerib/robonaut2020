@@ -10,7 +10,7 @@
 
 ServoCalibTask::ServoCalibTask() : CyclicTask((char*)"Servo calibration", 25, MAIN_TASK_PRIO, 256)
 {
-	//trace = StringQueue::GetInstance(ServoCalib);
+
 }
 
 ServoCalibTask* ServoCalibTask::Init()
@@ -21,6 +21,8 @@ ServoCalibTask* ServoCalibTask::Init()
 
 void ServoCalibTask::TaskInit()
 {
+	trace = StringQueue::GetInstance(ServoCalib);
+
 	Steering* s = Steering::GetInstance();
 	s->SetMode(Free);
 }
@@ -59,7 +61,7 @@ void ServoCalibTask::TaskFunction()
 
 	steering->SetAngleManual(frontAngle, rearAngle);
 
-	Trace::Print(trace, "%d;%d", (int)(frontAngle*1000), (int)(rearAngle*1000));
+	//Trace::Print(trace, "%d;%d", (int)(frontAngle*1000), (int)(rearAngle*1000));
 
 
 

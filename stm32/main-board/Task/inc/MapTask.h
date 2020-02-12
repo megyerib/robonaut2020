@@ -9,7 +9,7 @@ public:
     static MapTask* Init();
 
 private:
-    Map* map;
+    Map* map = nullptr;
 
     MapTask();
 

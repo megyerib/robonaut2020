@@ -13,8 +13,8 @@
 class CyclicTask
 {
 private:
-	TaskHandle_t handle;
-	uint16_t period;
+	TaskHandle_t handle = nullptr;
+	uint16_t period = 0;
 
 	void TaskLoop();
 	static void TaskFunctionAdapter(void* p);

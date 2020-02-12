@@ -5,7 +5,7 @@
 
 class TrackTask : public CyclicTask
 {
-	TrackDetector* detector;
+	TrackDetector* detector = nullptr;
 
 	TrackTask();
 

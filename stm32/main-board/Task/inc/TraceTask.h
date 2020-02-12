@@ -5,7 +5,7 @@
 
 class TraceTask : public CyclicTask
 {
-	Trace* trace;
+	Trace* trace = nullptr;
 
 	TraceTask();
 
