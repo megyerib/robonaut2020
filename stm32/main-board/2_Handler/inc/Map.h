@@ -88,6 +88,8 @@ private:
     Position     actualPosition;
     uint32_t     actualDistance;
 
+    uint8_t      magic;
+
 public:
     static Map* GetInstance();
 

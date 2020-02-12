@@ -127,6 +127,8 @@ Map::Map()
     timeOrigo               = clock->GetTime();
     actualPosition          = navigation->GetPosition();
     actualDistance          = encoder->GetDistance();
+
+    magic                   = 0;
 }
 
 void Map::DecideNextTurn()
@@ -174,7 +176,7 @@ TurnType Map::RollDiceOnTurn()
 
     turn = TurnType::NoTurn;
 
-    randomNumber = /*navigation->GetRandomNumber() + */(clock->GetTime() % 255);
+    randomNumber = ( ((int)(encoder->GetDistance() * 10000) + (clock->GetTime()) ) % 255);
     if (randomNumber <= 85)
     {
         turn = TurnType::Left;
@@ -191,9 +193,13 @@ TurnType Map::RollDiceOnTurn()
         trace->Transmit("__MAP: NoTurn", 13);
     }
 
-    // ALways right
-    turn = TurnType::Right;
-    trace->Transmit("__MAP: Force Right", 18);
+    // Magic
+    if (magic <= 15)
+    {
+        turn = TurnType::Right;
+        trace->Transmit("__MAP: Force Right", 18);
+        magic++;
+    }
 
     return turn;
 }
