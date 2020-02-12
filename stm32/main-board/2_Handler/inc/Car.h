@@ -71,7 +71,7 @@ typedef struct
 {
     RaceState    state;
     float        speed;
-    uint32_t     dist_travelled;
+    float        dist_travelled;
     TrackType    track;
     Position     position;
     float        front_distance;

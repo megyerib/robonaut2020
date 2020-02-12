@@ -36,14 +36,12 @@ Car* Car::GetInstance()
 
 void Car::StateMachine()
 {
-    CheckDeadmanSwitch();
-
     UpdateProperties();
 
     // Test
     // BasicDrive_StateMachine();
-    //Follow_StateMachine();
-    BasicLabyrinth_StateMachine();
+    Follow_StateMachine();
+    //BasicLabyrinth_StateMachine();
 
     // Race
 #if USE_MINIMAL_STRATEGY == 1U
@@ -51,6 +49,8 @@ void Car::StateMachine()
 #else
     RaceStateMachine();
 #endif
+
+    CheckDeadmanSwitch();
 
     Actuate();
 }
@@ -362,7 +362,7 @@ void Car::Follow_StateMachine()
     }
     else if (carProp.front_distance < CAR_FOLLOW_MIN_APPROX)
     {
-        if (carProp.speed > 0)
+        if (carProp.speed > 0.1f)
         {
             carProp.targetSpeed = CAR_FOLLOW_REV_SPEED;
         }

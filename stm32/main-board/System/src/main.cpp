@@ -13,7 +13,7 @@ int main(void)
 	TractionTask   :: Init();
 	SteeringTask   :: Init();
 	EncoderTask    :: Init();
-	//DistanceTask   :: Init();
+	DistanceTask   :: Init();
 	TraceTask      :: Init();
 	NavigationTask :: Init();
 	MapTask        :: Init();

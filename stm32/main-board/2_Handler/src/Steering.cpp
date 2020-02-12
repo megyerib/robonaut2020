@@ -19,10 +19,8 @@
 #define SINGLE_RACE_DECEL_P     ( 20.0f)
 #define SINGLE_RACE_DECEL_D     (200.0f)
 
-//#define FRONT_OFFSET    (0.27954638f)
-//#define REAR_OFFSET     (-0.351517391f)
-#define FRONT_OFFSET    ( 0.620f)
-#define REAR_OFFSET     (-0.098f)
+#define FRONT_OFFSET    ( 0.135f)
+#define REAR_OFFSET     (-0.558f)
 
 
 Steering::Steering()
