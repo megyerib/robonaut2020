@@ -31,17 +31,17 @@ void Q1Task::TaskFunction()
 	float      steerAngle = remote->GetValue(SteeringCh);
 	RemoteMode mode       = remote->GetMode();
 
-	if (mode == RemMode1)
+	//if (mode == RemMode1)
 	{
 	    car->SetSteeringMode(SteeringMode::SingleLineFollow_Slow);
 		car->StateMachine();
 	}
 
-	if (mode == RemMode2)
-	{
-	    steering->SetMode(Free);
-		RcRun(throttle, steerAngle);
-	}
+//	if (mode == RemMode2)
+//	{
+//	    steering->SetMode(Free);
+//		RcRun(throttle, steerAngle);
+//	}
 }
 
 void Q1Task::RcRun(float throttle, float steerAngle)
