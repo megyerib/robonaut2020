@@ -8,55 +8,58 @@ Map* Map::GetInstance()
 
 void Map::Process()
 {
-    prevTrackType   = actualTrackType;
-    actualTrackType = trackDetect->GetTrackType();
-    IsCarOverRoadsign();
-
-    timeElapsed = clock->GetTime() - timeOrigo;
-
-    actualPosition = navigation->GetPosition();
-    actualDistance = encoder->GetDistance();
-
-    switch (state)
+    if (active == true)
     {
-        case MapState::Drive:
-        {
-            decisionMade = false;
+        prevTrackType   = actualTrackType;
+        actualTrackType = trackDetect->GetTrackType();
+        IsCarOverRoadsign();
 
-            if (overRoadsign == true)
+        timeElapsed = clock->GetTime() - timeOrigo;
+
+        actualPosition = navigation->GetPosition();
+        actualDistance = encoder->GetDistance();
+
+        switch (state)
+        {
+            case MapState::Drive:
             {
-                if ((IsCrosspoint() == true)                    ||
-                    (actualTrackType == TrackType::Exit)        ||
-                    (actualTrackType == TrackType::ExitReverse))
+                decisionMade = false;
+
+                if (overRoadsign == true)
                 {
-                    state = MapState::Decision;
-                    trace->Transmit("__MAP: Decision", 15);
+                    if ((IsCrosspoint() == true)                    ||
+                        (actualTrackType == TrackType::Exit)        ||
+                        (actualTrackType == TrackType::ExitReverse))
+                    {
+                        state = MapState::Decision;
+                        trace->Transmit("__MAP: Decision", 15);
+                    }
+                    else
+                    {
+                        state = MapState::OverRoadSign;
+                        trace->Transmit("__MAP: OverRoadSign", 19);
+                    }
                 }
-                else
-                {
-                    state = MapState::OverRoadSign;
-                    trace->Transmit("__MAP: OverRoadSign", 19);
-                }
+                break;
             }
-            break;
+            case MapState::OverRoadSign:
+            {
+                if (IsCrosspoint() == true){        state = MapState::Decision;     trace->Transmit("__MAP: Decision", 15);     }
+                else if (overRoadsign == false){    state = MapState::Drive;        trace->Transmit("__MAP: Drive",    12);     }
+                else {}
+                break;
+            }
+            case MapState::Decision:
+            {
+                DecideNextTurn();
+                decisionMade = true;
+                state = MapState::OverRoadSign;
+                trace->Transmit("__MAP: OverRoadSign", 19);
+                break;
+            }
+            default:
+                break;
         }
-        case MapState::OverRoadSign:
-        {
-            if (IsCrosspoint() == true){        state = MapState::Decision;     trace->Transmit("__MAP: Decision", 15);     }
-            else if (overRoadsign == false){    state = MapState::Drive;        trace->Transmit("__MAP: Drive",    12);     }
-            else {}
-            break;
-        }
-        case MapState::Decision:
-        {
-            DecideNextTurn();
-            decisionMade = true;
-            state = MapState::OverRoadSign;
-            trace->Transmit("__MAP: OverRoadSign", 19);
-            break;
-        }
-        default:
-            break;
     }
 }
 
@@ -80,6 +83,18 @@ MapState Map::GetState()
     return state;
 }
 
+
+void Map::TurnOn()
+{
+    active = true;
+}
+
+void Map::TurnOff()
+{
+    active = false;
+}
+
+
 Map::Map()
 {
     encoder                 = Encoder::GetInstance();
@@ -87,6 +102,8 @@ Map::Map()
     clock                   = Timepiece::GetInstance();
     navigation              = Navigation::GetInstance();
     trace                   = StringQueue::GetInstance(MapModule);
+
+    active                  = true;
 
     segments[32]            = {0U};
     foundSegmentCount       = 0U;

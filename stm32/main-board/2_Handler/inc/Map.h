@@ -63,6 +63,8 @@ private:
     Timepiece*     clock;
     Transmitter*   trace;
 
+    bool         active;
+
     Segment      segments[32];
     uint8_t      foundSegmentCount;
     uint8_t      discovSegmentCount;
@@ -95,6 +97,9 @@ public:
     bool IsCrosspoint();
     bool shouldExitMaze();
     MapState GetState();
+
+    void TurnOn();
+    void TurnOff();
 
 private:
 
