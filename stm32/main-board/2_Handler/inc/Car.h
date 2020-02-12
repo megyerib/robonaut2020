@@ -33,22 +33,21 @@ typedef enum
     sp_Wait,    // For test
     sp_Follow,
     sp_Overtake,
-    sp_Straight,
-    sp_Decelerate,
-    sp_Turn,
-    sp_Accelerate,
+    sp_Chase,
+    sp_PrepareForLaps,
+    sp_Lap1,
+    sp_Lap2,
+    sp_Lap3,
     sp_Stop
 } RaceState;
 
 typedef enum
 {
-    InvalidLap = 0,
-    Follow_One,
-    Follow_Two,
-    Lap_One,
-    Lap_Two,
-    Lap_Three,
-} Lap;
+    rs_Straight,
+    rs_Decelerate,
+    rs_Turn,
+    rs_Accelerate,
+} RoadSegment_SM;
 
 typedef enum
 {
@@ -104,8 +103,11 @@ private:
     CarProperties   carProp;
     RaceState       recoverState;
 
-    Lap             actLap;
+    RoadSegment_SM  roadSegment;
     uint8_t         segmentCounter;
+    bool            lapFinished;
+    uint8_t         followLapCnt;
+    bool            tryOvertake;
 
     TrackType       exitType;
     LineSwitch_SM   switchState;
@@ -125,21 +127,23 @@ public:
 private:
     Car();
 
-    void ChangeState(RaceState const State);
-    void CheckDeadmanSwitch();
-
-    void BasicDrive_StateMachine();
-    void Follow_StateMachine();
     void BasicLabyrinth_StateMachine();
-    void Race_StateMachine();
+    void BaseRace_StateMachine();
+    void RoadSegment_StateMachine();
+    void Follow_StateMachine();
     void Minimal_StateMachine();
+    void Race_StateMachine();
 
     void Maneuver_Reverse();
     void Maneuver_ChangeLane();
     void Maneuver_Overtake();
 
+    void CheckDeadmanSwitch();
     void UpdateProperties();
     void Actuate();
+
+    void ChangeState(RaceState const State);
+    void ChangeRoadSegment(RoadSegment_SM const Segment);
 
     LineDirection SelectLineDirection(TurnType const turn);
     int prescaler;
