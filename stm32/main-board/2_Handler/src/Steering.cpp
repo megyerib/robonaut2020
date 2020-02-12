@@ -21,8 +21,8 @@
 
 //#define FRONT_OFFSET    (0.27954638f)
 //#define REAR_OFFSET     (-0.351517391f)
-#define FRONT_OFFSET    (0.0f)
-#define REAR_OFFSET     (0.0f)
+#define FRONT_OFFSET    ( 0.620f)
+#define REAR_OFFSET     (-0.098f)
 
 
 Steering::Steering()
@@ -60,6 +60,9 @@ void Steering::SetMode(SteeringMode mode)
         {
            rear.controller->Set_P_Term(SINGLE_SLOW_P);
            rear.controller->Set_D_Term(SINGLE_SLOW_D);
+           front.controller->Set_P_Term(SINGLE_SLOW_P);
+           front.controller->Set_D_Term(SINGLE_SLOW_D);
+           break;
         }
         case SingleLineFollow_Slow:
         {
