@@ -10,7 +10,7 @@
 
 ServoCalibTask::ServoCalibTask() : CyclicTask((char*)"Servo calibration", 25, MAIN_TASK_PRIO, 256)
 {
-	trace = StringQueue::GetInstance(ServoCalib);
+	//trace = StringQueue::GetInstance(ServoCalib);
 }
 
 ServoCalibTask* ServoCalibTask::Init()

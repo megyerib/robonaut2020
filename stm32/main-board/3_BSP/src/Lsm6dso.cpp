@@ -73,6 +73,7 @@ void LSM6DSO::Init()
 
 void LSM6DSO::Process()
 {
+    return;
     uint8_t reg;
     GPIO_PinState pinState = GPIO_PIN_RESET;
 
@@ -88,7 +89,7 @@ void LSM6DSO::Process()
         if (initSuccess == false)
         {
            // i2c->Reset();
-           Init();
+          // Init();
         }
     }
 

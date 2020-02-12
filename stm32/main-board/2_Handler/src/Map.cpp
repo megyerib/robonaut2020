@@ -35,7 +35,7 @@ void Map::Process()
                 else
                 {
                     state = MapState::OverRoadSign;
-                   // trace->Transmit("__MAP: OverRoadSign", 19);
+                    trace->Transmit("__MAP: OverRoadSign", 19);
                 }
             }
             break;
@@ -52,7 +52,7 @@ void Map::Process()
             DecideNextTurn();
             decisionMade = true;
             state = MapState::OverRoadSign;
-           // trace->Transmit("__MAP: OverRoadSign", 19);
+            trace->Transmit("__MAP: OverRoadSign", 19);
             break;
         }
         default:
@@ -127,26 +127,26 @@ void Map::DecideNextTurn()
     {
         nextTurn = RollDiceOnTurn();
 
-        if (timeElapsed > TIME_GIVE_UP)
-        {
-            shouldExit = true;
-
-            switch (actualTrackType)
-            {
-                case TrackType::Exit:
-                {
-                    nextTurn = TurnType::ExitRight;
-                    break;
-                }
-                case TrackType::ExitReverse:
-                {
-                    nextTurn = TurnType::ExitLeft;
-                    break;
-                }
-                default:
-                    break;
-            }
-        }
+//        if (timeElapsed > TIME_GIVE_UP)       // TODO for exit maneuver
+//        {
+//            shouldExit = true;
+//
+//            switch (actualTrackType)
+//            {
+//                case TrackType::Exit:
+//                {
+//                    nextTurn = TurnType::ExitRight;
+//                    break;
+//                }
+//                case TrackType::ExitReverse:
+//                {
+//                    nextTurn = TurnType::ExitLeft;
+//                    break;
+//                }
+//                default:
+//                    break;
+//            }
+//        }
     }
 }
 
@@ -206,7 +206,7 @@ bool Map::IsCrosspoint()
         ((trackDetect->IsFork(actualTrackType) == true) || (actualTrackType == TrackType::Single) == true))
     {
         crosspointFound = true;
-      //  trace->Transmit("__MAP: CrossPoint", 17);
+        trace->Transmit("__MAP: CrossPoint", 17);
     }
 
     if (prevTrackType == TrackType::Single
@@ -214,7 +214,7 @@ bool Map::IsCrosspoint()
         (trackDetect->IsFork(actualTrackType) == true))
     {
         crosspointFound = true;
-      //  trace->Transmit("__MAP: CrossPoint", 17);
+        trace->Transmit("__MAP: CrossPoint", 17);
     }
 
     // The crossing point is the middle of the junction. This is the position registered to the segment.

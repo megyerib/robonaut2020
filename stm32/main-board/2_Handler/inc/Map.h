@@ -7,7 +7,7 @@
 
 #include "StringQueue.h"
 
-#define MAP_SAMPLING_PERIOD    50 /* ms */      /* TODO check tasks */
+#define MAP_SAMPLING_PERIOD    10 /* ms */      /* TODO check tasks */
 
 #define RANDOM_STRATEGY_ON      (          0U)    /* 0 = use route planning, 1 = turn randomly. */
 #define EPSILON                 (      0.001f)    /* Compare margin for floats. */
@@ -61,7 +61,7 @@ private:
     Encoder*       encoder;
     TrackDetector* trackDetect;
     Timepiece*     clock;
-    Transmitter*    trace;
+    Transmitter*   trace;
 
     Segment      segments[32];
     uint8_t      foundSegmentCount;
@@ -92,6 +92,7 @@ public:
     void Process();
     TurnType WhichWayToTurn();
     bool isDecisionMade();
+    bool IsCrosspoint();
     bool shouldExitMaze();
     MapState GetState();
 
@@ -103,7 +104,6 @@ private:
 
     TurnType RollDiceOnTurn();
     void IsCarOverRoadsign();
-    bool IsCrosspoint();
 
 
     bool cmpf(float const a, float const b, float const epsilon)

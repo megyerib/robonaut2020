@@ -13,15 +13,16 @@ int main(void)
 	TractionTask   :: Init();
 	SteeringTask   :: Init();
 	EncoderTask    :: Init();
-	DistanceTask   :: Init();
+	//DistanceTask   :: Init();
 	TraceTask      :: Init();
-	//NavigationTask :: Init();
+	NavigationTask :: Init();
+	MapTask        :: Init();
 
 	// Application tasks
 
-	//Q1Task         :: Init();
+	Q1Task         :: Init();
 	//TestTask       :: Init();
-	ServoCalibTask :: Init();
+	//ServoCalibTask :: Init();
 	//SensorServoCalibTask :: Init();
 	//MazeTestTask   :: Init();
 

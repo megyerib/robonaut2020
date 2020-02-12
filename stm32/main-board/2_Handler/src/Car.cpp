@@ -42,8 +42,8 @@ void Car::StateMachine()
 
     // Test
     // BasicDrive_StateMachine();
-    Follow_StateMachine();
-    // BasicLabyrinth_StateMachine();
+    //Follow_StateMachine();
+    BasicLabyrinth_StateMachine();
 
     // Race
 #if USE_MINIMAL_STRATEGY == 1U
@@ -155,7 +155,7 @@ void Car::BasicLabyrinth_StateMachine()
 
             if (map->isDecisionMade() == true)
             {
-                delayDistance->Wait_m(0.60f);
+                delayDistance->Wait_m(0.80f);
                 nextTurn = map->WhichWayToTurn();
                 ChangeState(la_Turn);
                 trace->Transmit("la_Turn", 7);
@@ -407,7 +407,7 @@ void Car::Maneuver_Reverse()
             trace->Transmit("_____REV: Reversing maneuver is finished", 40);
             ChangeState(la_Turn);
             trace->Transmit("la_Turn", 7);
-            delayDistance->Wait_m(0.60f);
+            delayDistance->Wait_m(0.80f);
             break;
         }
         default:
