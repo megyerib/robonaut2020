@@ -40,8 +40,8 @@ void Car::StateMachine()
 
     // Test
     // BasicDrive_StateMachine();
-    Follow_StateMachine();
-    //BasicLabyrinth_StateMachine();
+    //Follow_StateMachine();
+    BasicLabyrinth_StateMachine();
 
     // Race
 #if USE_MINIMAL_STRATEGY == 1U
@@ -186,7 +186,7 @@ void Car::BasicLabyrinth_StateMachine()
             break;
         case la_End:
             //ChangeState(sp_Wait);
-            trace->Transmit("Labyrinth is over. sp_Follow", 28);
+            //trace->Transmit("Labyrinth is over. sp_Follow", 28);
             // speedRunStarted = true;
             // map->TurnOff();          // TODO don'T forget to activate for the race
             carProp.targetSpeed = 0U;   // TODO remove just for test

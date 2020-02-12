@@ -19,7 +19,7 @@
 #define SINGLE_RACE_DECEL_P     ( 20.0f)
 #define SINGLE_RACE_DECEL_D     (200.0f)
 
-#define FRONT_OFFSET    ( 0.135f)
+#define FRONT_OFFSET    ( 0.111f)
 #define REAR_OFFSET     (-0.558f)
 
 

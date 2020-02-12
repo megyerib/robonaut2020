@@ -45,16 +45,16 @@ void Map::Process()
             case MapState::OverRoadSign:
             {
                 if (IsCrosspoint() == true){        state = MapState::Decision;     trace->Transmit("__MAP: Decision", 15);     }
-                else if (overRoadsign == false){    state = MapState::Drive;        trace->Transmit("__MAP: Drive",    12);     }
+                else if (overRoadsign == false){    state = MapState::Drive;        trace->Transmit("__MAP: Drive",    12);     decisionMade = false; }
                 else {}
                 break;
             }
             case MapState::Decision:
             {
                 DecideNextTurn();
-                decisionMade = true;
                 state = MapState::OverRoadSign;
                 trace->Transmit("__MAP: OverRoadSign", 19);
+                decisionMade = true;
                 break;
             }
             default:

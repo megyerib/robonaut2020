@@ -1,7 +1,7 @@
 #include "Q1Task.h"
 #include "TaskPrio.h"
 
-#define CYCLE_TIME 10 /* Remote reading only */
+#define CYCLE_TIME 16 /* Remote reading only */
 
 #define RC_THROTTLE_THRESHOLD    (0.1f)
 #define RC_THROTTLE_FUN_FACTOR   (0.4f)

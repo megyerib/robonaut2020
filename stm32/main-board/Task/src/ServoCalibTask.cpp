@@ -61,7 +61,7 @@ void ServoCalibTask::TaskFunction()
 
 	steering->SetAngleManual(frontAngle, rearAngle);
 
-	//Trace::Print(trace, "%d;%d", (int)(frontAngle*1000), (int)(rearAngle*1000));
+	Trace::Print(trace, "%d;%d", (int)(frontAngle*1000), (int)(rearAngle*1000));
 
 
 
