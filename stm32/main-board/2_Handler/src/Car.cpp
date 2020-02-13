@@ -18,10 +18,10 @@
 #define OVERTAKE_SEGMENT            (    7U)  /* Overtake can be done starting from this segment */
 #define SEGMENT_COUNT               (   16U)  /* Total number of the segments */
 
-#define CAR_SPEED_STRAIGHT          ( 0.18f)   /* % */
-#define CAR_SPEED_DECEL             ( 0.17f)   /* % */
-#define CAR_SPEED_TURN              ( 0.16f)   /* % */
-#define CAR_SPEED_ACCEL             ( 0.17f)   /* % */
+#define CAR_SPEED_STRAIGHT          ( 0.20f)   /* % */
+#define CAR_SPEED_DECEL             ( 0.18f)   /* % */
+#define CAR_SPEED_TURN              ( 0.17f)   /* % */
+#define CAR_SPEED_ACCEL             ( 0.18f)   /* % */
 
 #define CAR_WAIT_BEFORE_BRAKING     ( 2.00f)   /* m */
 #define CAR_WAIT_BEFORE_ACCEL       ( 0.30f)   /* m */
@@ -215,7 +215,7 @@ void Car::BaseRace_StateMachine()
             // Transitions
             if ((segmentCounter == OVERTAKE_SEGMENT) && (tryOvertake == true))  // Overtake is allowed and in the right segment.
             {
-                carProp.state = sp_Overtake;
+                ChangeState(sp_Overtake);
                 trace->Transmit("sp_Overtake", 11);
             }
             if (lapFinished == true)                                            // Count the rounds.
@@ -226,7 +226,7 @@ void Car::BaseRace_StateMachine()
             }
             if (followLapCnt == 2)                                              // Must switch to Lap1 after 2 rounds.
             {
-                carProp.state = sp_Lap1;
+                ChangeState(sp_Lap1);
                 followLapCnt  = 0;
                 trace->Transmit("sp_Lap1", 7);
             }
@@ -236,9 +236,9 @@ void Car::BaseRace_StateMachine()
         {
             Maneuver_Overtake();
 
-            if ("success1"){     carProp.state = sp_Chase;          trace->Transmit("sp_Chase", 8);            }
-            else if ("success2"){carProp.state = sp_PrepareForLaps; trace->Transmit("sp_PrepareForLaps", 7);   }
-            else{                carProp.state = sp_Follow;         trace->Transmit("sp_Follow", 9);           }
+            if ("success1"){        ChangeState(sp_Chase);          trace->Transmit("sp_Chase", 8);            }
+            else if ("success2"){   ChangeState(sp_PrepareForLaps); trace->Transmit("sp_PrepareForLaps", 7);   }
+            else{                   ChangeState(sp_Follow);         trace->Transmit("sp_Follow", 9);           }
             break;
         }
         case sp_Chase:
@@ -247,7 +247,7 @@ void Car::BaseRace_StateMachine()
             // Transitions
             if ("safety car found")                 // Behind the safety car again.
             {
-                carProp.state = sp_Follow;
+                ChangeState(sp_Follow);
                 trace->Transmit("sp_Follow", 9);
             }
             if (lapFinished == true)                // Count the rounds.
@@ -258,7 +258,7 @@ void Car::BaseRace_StateMachine()
             }
             if (followLapCnt == 2)                  // Must switch to Lap1 after 2 rounds.
             {
-                carProp.state = sp_Lap1;
+                ChangeState(sp_Lap1);
                 followLapCnt  = 0;
                 trace->Transmit("sp_Lap1", 7);
             }
@@ -266,24 +266,24 @@ void Car::BaseRace_StateMachine()
         }
         case sp_PrepareForLaps:
         {
-            if (lapFinished == true){   carProp.state = sp_Lap1;    lapFinished = false;   trace->Transmit("sp_Lap1", 7); }
+            if (lapFinished == true){   ChangeState(sp_Lap1);    lapFinished = false;   trace->Transmit("sp_Lap1", 7); }
             break;
         }
         case sp_Lap1:
         {
-            if (lapFinished == true){   carProp.state = sp_Lap2;    lapFinished = false;   trace->Transmit("sp_Lap2", 7); }
+            if (lapFinished == true){   ChangeState(sp_Lap2);    lapFinished = false;   trace->Transmit("sp_Lap2", 7); }
             break;
         }
         case sp_Lap2:
         {
-            if (lapFinished == true){   carProp.state = sp_Lap3;    lapFinished = false;   trace->Transmit("sp_Lap3", 7); }
+            if (lapFinished == true){   ChangeState(sp_Lap3);    lapFinished = false;   trace->Transmit("sp_Lap3", 7); }
             break;
         }
         case sp_Lap3:
         {
             if (lapFinished == true)
             {
-                carProp.state = sp_Stop;
+                ChangeState(sp_Stop);
                 lapFinished = false;
                 delayDistance->Wait_m(2);
                 trace->Transmit("sp_Stop", 7);
@@ -304,25 +304,6 @@ void Car::RoadSegment_StateMachine()
 {
     carProp.lineFollow_Front = lineSensor->GetFrontLine(LineDirection::ld_Middle);
     //carProp.lineFollow_Rear  = lineSensor->GetRearLine(LineDirection::ld_Middle);
-
-    {
-        static RoadSegment_SM prevRoadSegment;
-
-        const char segmentNames[4][15] =
-        {
-            "Straight",
-            "Decelerate",
-            "Turn",
-            "Accelerate"
-        };
-
-        if (prevRoadSegment != roadSegment)
-        {
-            Trace::Print(trace, segmentNames[roadSegment]);
-        }
-
-        prevRoadSegment = roadSegment;
-    }
 
     switch (roadSegment)
     {
@@ -570,11 +551,18 @@ void Car::CheckDeadmanSwitch()
 {
     if (remote->GetValue(RemoteChannel::ThrottleCh) < 0.1f)
     {
+        // No throttle
         carProp.state       = RaceState::la_End;
         carProp.targetSpeed = 0.0f;
     }
     else
     {
+        // Throttle
+        if (carProp.state != recoverState)
+        {
+            Trace::Print(trace, "Dead-man switch recovered state");
+        }
+
         carProp.state = recoverState;
     }
 }
@@ -612,10 +600,32 @@ void Car::ChangeRoadSegment(RoadSegment_SM const Segment)
     {
         lapFinished = false;
         segmentCounter++;
+
+        switch (segmentCounter)
+        {
+            case 1:     trace->Transmit("SP segment: 1",  13);   break;
+            case 2:     trace->Transmit("SP segment: 2",  13);   break;
+            case 3:     trace->Transmit("SP segment: 3",  13);   break;
+            case 4:     trace->Transmit("SP segment: 4",  13);   break;
+            case 5:     trace->Transmit("SP segment: 5",  13);   break;
+            case 6:     trace->Transmit("SP segment: 6",  13);   break;
+            case 7:     trace->Transmit("SP segment: 7",  13);   break;
+            case 8:     trace->Transmit("SP segment: 8",  13);   break;
+            case 9:     trace->Transmit("SP segment: 9",  13);   break;
+            case 10:    trace->Transmit("SP segment: 10", 14);   break;
+            case 11:    trace->Transmit("SP segment: 11", 14);   break;
+            case 12:    trace->Transmit("SP segment: 12", 14);   break;
+            case 13:    trace->Transmit("SP segment: 13", 14);   break;
+            case 14:    trace->Transmit("SP segment: 14", 14);   break;
+            case 15:    trace->Transmit("SP segment: 15", 14);   break;
+            default:
+                break;
+        }
     }
     else
     {
         lapFinished = true;
+        trace->Transmit("SP segment: 0",  13);
         segmentCounter = 0;
     }
 }

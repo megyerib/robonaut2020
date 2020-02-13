@@ -14,7 +14,7 @@
 #define SINGLE_RACE_ACCEL_D     (200.0f)
 
 #define SINGLE_RACE_STRAIGHT_P  ( 20.0f)
-#define SINGLE_RACE_STRAIGHT_D  (200.0f)
+#define SINGLE_RACE_STRAIGHT_D  (100.0f)
 
 #define SINGLE_RACE_DECEL_P     ( 20.0f)
 #define SINGLE_RACE_DECEL_D     (200.0f)
