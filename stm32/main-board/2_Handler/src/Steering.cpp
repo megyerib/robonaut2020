@@ -144,6 +144,10 @@ void Steering::Process()
 		}
     	case SingleLineFollow_Slow:
     	case SingleLineFollow_Fast:
+    	case SingleLine_Race_Straight:
+    	case SingleLine_Race_Decel:
+    	case SingleLine_Race_Accel:
+    	case SingleLine_Race_Turn:
         {
             front.controller->Process(front.line);
 

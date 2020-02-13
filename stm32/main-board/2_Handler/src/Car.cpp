@@ -1,4 +1,5 @@
 #include "Car.h"
+#include "Trace.h"
 
 #define MAZE_FORWARD_SPEED          ( 0.17f)  /*   % */ //!< Speed used in the labyrinth when the robot is over a Single line.
 #define MAZE_REVERSE_SPEED          (-0.14f)  /*   % */ //!< Speed used for reverse maneuver.
@@ -41,11 +42,11 @@ void Car::StateMachine()
     // Test
     // BasicDrive_StateMachine();
     //Follow_StateMachine();
-    BasicLabyrinth_StateMachine();
+    //BasicLabyrinth_StateMachine();
 
     // Race
 #if USE_MINIMAL_STRATEGY == 1U
-    //Minimal_StateMachine();
+    Minimal_StateMachine();
 #else
     RaceStateMachine();
 #endif
@@ -91,8 +92,8 @@ Car::Car()
     map = Map::GetInstance();
     nextTurn = TurnType::Right;
 
-    recoverState             = la_Idle;
-    carProp.state            = la_Idle;
+    recoverState             = sp_Lap1; // la_Idle;   // race starts with la_Idle
+    carProp.state            = sp_Lap1; // la_Idle;   // race starts with la_Idle
     carProp.speed            = encoder->GetSpeed();
     carProp.dist_travelled   = encoder->GetDistance();
     carProp.track            = lineSensor->GetTrackType();
@@ -104,7 +105,7 @@ Car::Car()
     carProp.lineFollow_Rear  = 0U;
     carProp.sensorServoAngle = 0U;
 
-    speedRunStarted = false;
+    speedRunStarted = true;     //false;
     roadSegment     = RoadSegment_SM::rs_Straight;
     segmentCounter  = 0U;
     lapFinished     = false;
@@ -112,7 +113,7 @@ Car::Car()
     tryOvertake     = false;
 
     exitType        = TrackType::None;
-    switchState     = LineSwitch_SM::LeaveLine;
+    switchState     = LineSwitch_SM::PrepareForLaneChanging;
     reversingState  = Reversing_SM::PrepareForReversing;
 
     wheels->SetMode(carProp.wheel_mode);
@@ -121,6 +122,9 @@ Car::Car()
     dist_ctrl->SetSetpoint(CAR_FOLLOW_DISTANCE);
 
     prescaler = 0;
+
+    map->TurnOff();     // remove
+    lineSensor->SetMode(Speedrun); // Move to the end of the wait before speedrun
 }
 
 void Car::BasicLabyrinth_StateMachine()
@@ -300,6 +304,25 @@ void Car::RoadSegment_StateMachine()
 {
     carProp.lineFollow_Front = lineSensor->GetFrontLine(LineDirection::ld_Middle);
     //carProp.lineFollow_Rear  = lineSensor->GetRearLine(LineDirection::ld_Middle);
+
+    {
+        static RoadSegment_SM prevRoadSegment;
+
+        const char segmentNames[4][15] =
+        {
+            "Straight",
+            "Decelerate",
+            "Turn",
+            "Accelerate"
+        };
+
+        if (prevRoadSegment != roadSegment)
+        {
+            Trace::Print(trace, segmentNames[roadSegment]);
+        }
+
+        prevRoadSegment = roadSegment;
+    }
 
     switch (roadSegment)
     {
