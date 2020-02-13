@@ -92,8 +92,8 @@ Car::Car()
     map = Map::GetInstance();
     nextTurn = TurnType::Right;
 
-    recoverState             = sp_Lap1; // la_Idle;   // race starts with la_Idle
-    carProp.state            = sp_Lap1; // la_Idle;   // race starts with la_Idle
+    recoverState             = sp_Follow; // la_Idle;   // race starts with la_Idle
+    carProp.state            = sp_Follow; // la_Idle;   // race starts with la_Idle
     carProp.speed            = encoder->GetSpeed();
     carProp.dist_travelled   = encoder->GetDistance();
     carProp.track            = lineSensor->GetTrackType();
@@ -596,7 +596,7 @@ void Car::ChangeRoadSegment(RoadSegment_SM const Segment)
 {
     roadSegment = Segment;
 
-    if (segmentCounter < SEGMENT_COUNT)
+    if (segmentCounter < SEGMENT_COUNT - 1)
     {
         lapFinished = false;
         segmentCounter++;
