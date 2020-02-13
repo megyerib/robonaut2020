@@ -9,6 +9,7 @@ public:
 
 	void DisplayImage(MATRIX_IMG& img);
 	void DisplayInt(int num);
+	void Clear();
 
 	static void Refresh();
 

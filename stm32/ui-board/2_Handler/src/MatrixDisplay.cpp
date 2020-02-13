@@ -69,6 +69,11 @@ void MatrixDisplay::DisplayInt(int num)
 	imgBuf[7] = 0;
 }
 
+void MatrixDisplay::Clear()
+{
+	memset(imgBuf, 0x00, 8);
+}
+
 void MatrixDisplay::Refresh()
 {
 	static uint32_t i = 0;
