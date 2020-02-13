@@ -157,8 +157,9 @@ void Car::BasicLabyrinth_StateMachine()
 
             if (map->isDecisionMade() == true)
             {
-                delayDistance->Wait_m(0.80f);
+                delayDistance->Wait_m(1.00f);
                 nextTurn = map->WhichWayToTurn();
+                carProp.lineFollow_Front = lineSensor->GetFrontLine(SelectLineDirection(nextTurn));
                 ChangeState(la_Turn);
                 trace->Transmit("la_Turn", 7);
             }
@@ -395,13 +396,11 @@ void Car::Minimal_StateMachine()
     BaseRace_StateMachine();
 }
 
-
 void Car::Race_StateMachine()
 {
     // Advanced labyrinth
     // Advanced speed run
 }
-
 
 void Car::Maneuver_Reverse()
 {
@@ -457,14 +456,13 @@ void Car::Maneuver_Reverse()
             trace->Transmit("_____REV: Reversing maneuver is finished", 40);
             ChangeState(la_Turn);
             trace->Transmit("la_Turn", 7);
-            delayDistance->Wait_m(0.80f);
+            delayDistance->Wait_m(0.90f);
             break;
         }
         default:
             break;
     }
 }
-
 
 void Car::Maneuver_ChangeLane()     // TODO end feature
 {
@@ -535,7 +533,7 @@ void Car::Maneuver_ChangeLane()     // TODO end feature
     }
 }
 
-void Car::Maneuver_Overtake()   // TODO end feature.
+void Car::Maneuver_Overtake()       // TODO end feature.
 {
     // Steer left.
     // Speed up to overtake.
@@ -554,7 +552,6 @@ void Car::CheckDeadmanSwitch()
         carProp.state = recoverState;
     }
 }
-
 
 void Car::UpdateProperties()
 {
