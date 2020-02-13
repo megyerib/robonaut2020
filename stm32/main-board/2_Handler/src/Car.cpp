@@ -89,7 +89,7 @@ Car::Car()
     navigation    = Navigation::GetInstance();
 
     map = Map::GetInstance();
-    nextTurn = TurnType::NotSet;
+    nextTurn = TurnType::Right;
 
     recoverState             = la_Idle;
     carProp.state            = la_Idle;
@@ -167,7 +167,9 @@ void Car::BasicLabyrinth_StateMachine()
         }
         case la_Turn:
         {
+            carProp.wheel_mode = DualLineFollow_Slow;
             carProp.lineFollow_Front = lineSensor->GetFrontLine(SelectLineDirection(nextTurn));
+            carProp.lineFollow_Rear = -carProp.lineFollow_Front;
             //carProp.lineFollow_Rear  = lineSensor->GetRearLine(SelectLineDirection(nextTurn));
             carProp.targetSpeed      = MAZE_FORWARD_SPEED - 0.015f;
 
@@ -175,6 +177,7 @@ void Car::BasicLabyrinth_StateMachine()
             {
                 ChangeState(la_Straight);
                 trace->Transmit("la_Straight", 11);
+                carProp.wheel_mode = SingleLineFollow_Slow;
             }
             break;
         }
@@ -182,7 +185,7 @@ void Car::BasicLabyrinth_StateMachine()
             Maneuver_Reverse();
             break;
         case la_Exit:
-            if (map->shouldExitMaze() == true){     /*Maneuver_ChangeLane();*/              }   // Q1
+            if (false/*map->shouldExitMaze() == true*/){     /*Maneuver_ChangeLane();*/              }   // Q1
             else{                                   ChangeState(la_Straight);     trace->Transmit("la_Straight", 11); }
             break;
         case la_End:
