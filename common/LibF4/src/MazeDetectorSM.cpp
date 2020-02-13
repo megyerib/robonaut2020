@@ -115,9 +115,13 @@ void MazeDetectorSM::RegExit()
 		{
 			type = Exit;
 		}
-		else
+		else if (prevSectionLen > 0.05f) // Plausibility check (noise is smaller than 5 cm)
 		{
 			type = ExitReverse;
+		}
+		else
+		{
+		    return; // Noise
 		}
 
 		if (lineIndex == 0) // We're going on the left

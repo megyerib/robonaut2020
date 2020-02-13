@@ -210,41 +210,44 @@ void TrackDetector::FilterCnt(LineData& line)
 
 void TrackDetector::EvalRaceTrackType()
 {
-	static enum {slow, accel, fast, brake} state = slow;
+	static enum {wait_3, slow, accel, fast, brake} state = slow;
 	static WaitDistance wait;
-	static int typeIndex;
 
 	switch (state)
 	{
-		case slow:
-		{
-			if (front.filteredCnt == 3)
-			{
-				wait.Wait_m(1.1);
-				state = accel;
-				front.tType = TrackType::Acceleration;
-				typeIndex++;
-			}
-			break;
-		}
+	    case slow: // Single line
+        case fast:
+        {
+            if (front.filteredCnt == 3)
+            {
+                state = wait_3;
+                wait.Wait_m(0); // Just for distance measuring
+            }
+            break;
+        }
+	    case wait_3:
+        {
+            if (front.filteredCnt == 1 && wait.GetDiff() > 0.1f)
+            {
+                wait.Wait_m(1);
+                state = accel;
+                front.tType = TrackType::Acceleration;
+            }
+            else if (wait.GetDiff() > 0.2f)
+            {
+                wait.Wait_m(2.9);
+                state = brake;
+                front.tType = TrackType::Braking;
+            }
+
+            break;
+        }
 		case accel:
 		{
 			if (front.filteredCnt == 1 && wait.IsExpired())
 			{
 				state = fast;
 				front.tType = TrackType::Single;
-				typeIndex++;
-			}
-			break;
-		}
-		case fast:
-		{
-			if (front.filteredCnt == 3)
-			{
-				wait.Wait_m(3.1);
-				state = brake;
-				front.tType = TrackType::Braking;
-				typeIndex++;
 			}
 			break;
 		}
@@ -254,7 +257,6 @@ void TrackDetector::EvalRaceTrackType()
 			{
 				state = slow;
 				front.tType = TrackType::Single;
-				typeIndex++;
 			}
 			break;
 		}
