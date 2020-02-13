@@ -55,7 +55,7 @@ int main(void)
 			flashing = true;
 			cntr = 0;
 			showNum = false;
-			// TODO CLEAR EDGES
+			buttons->ClearRisingEdges();
 		}
 		if (buttons->GetRisingEdge(ButtonB) == true)
 		{

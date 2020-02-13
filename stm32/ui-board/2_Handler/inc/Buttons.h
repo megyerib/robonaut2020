@@ -25,6 +25,7 @@ public:
 
 	bool GetValue(Button b);
 	bool GetRisingEdge(Button b);
+	void ClearRisingEdges();
 	void Process();
 
 private:

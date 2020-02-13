@@ -73,3 +73,8 @@ void Buttons::InitGpio()
 
 	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 }
+
+void Buttons::ClearRisingEdges()
+{
+    risingEdge = 0;
+}
