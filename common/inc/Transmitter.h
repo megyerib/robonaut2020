@@ -8,6 +8,7 @@
 #define TRANSMIT_TARGET_SIZE_INSUFFICIENT  (-2)
 #define TRANSMIT_INTERNAL_ERROR            (-3)
 #define TRANSMIT_BUSY                      (-4)
+#define TRANSMIT_DISABLED                  (-5)
 
 class Transmitter
 {

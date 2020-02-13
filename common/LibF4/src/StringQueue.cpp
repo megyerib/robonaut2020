@@ -14,14 +14,21 @@ StringQueue* StringQueue::GetInstance(STR_QUEUE_ID id)
 
 StringQueue::StringQueue(STR_QUEUE_ID id, size_t size)
 {
-	handle = xMessageBufferCreate(size);
+    this->id = id;
+    handle = xMessageBufferCreate(size);
 }
 
 int32_t StringQueue::Transmit(const void* buffer, size_t size)
 {
-	xMessageBufferSend(handle, buffer, size, 0 /*Ticks to wait*/);
+    int32_t ret = TRANSMIT_OK;
 
-	return TRANSMIT_OK;
+    if (stringQueueEnabled[id])
+    {
+        xMessageBufferSend(handle, buffer, size, 0 /*Ticks to wait*/);
+        ret = TRANSMIT_DISABLED;
+    }
+
+	return ret;
 }
 
 int32_t StringQueue::Receive(void* buffer, size_t& size, size_t targetSize)

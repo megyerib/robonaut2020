@@ -28,13 +28,25 @@ typedef enum
 }
 STR_QUEUE_ID;
 
-const size_t stringQueueSize[] =
+const size_t stringQueueSize[StringQueueNum] =
 {
 	[TestTrace] = 100,
 	[TrackDetectorTrace] = 200,
 	[Race] = 200,
 	[MapModule] = 200,
 	[ServoCalib] = 200
+};
+
+const bool stringQueueEnabled[StringQueueNum] =
+{
+    // Enabled by default
+    // DISABLED == TRUE
+    // ENABLED  == FALSE
+    [TestTrace]          = true,
+    [TrackDetectorTrace] = true,
+    [Race]               = true,
+    [MapModule]          = true,
+    [ServoCalib]         = true
 };
 
 class StringQueue : public Transmitter,
@@ -51,6 +63,7 @@ public:
 
 private:
 	MessageBufferHandle_t handle;
+	STR_QUEUE_ID id;
 
 	StringQueue(STR_QUEUE_ID id, size_t size);
 };
