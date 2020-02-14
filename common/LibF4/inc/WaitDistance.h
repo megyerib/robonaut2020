@@ -10,8 +10,10 @@ public:
 	bool IsExpired();
 	float GetDiff();
 private:
-	float startDistance;
-	float endDistance;
-	bool started = false;
+	float startDistance = 0;
+	float endDistance   = 0;
+	bool started        = false;
 	Encoder* encoder;
+
+	bool positive       = true;
 };
