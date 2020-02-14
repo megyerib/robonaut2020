@@ -24,4 +24,7 @@ public:
 
     void Reset();
     void Set_I_Limit(float const limit);
+
+private:
+    void CalcILimit(float const speed);
 };

@@ -21,6 +21,8 @@ Pid_Controller::Pid_Controller(float const Kp, float const Ki, float const Kd)
 
 void Pid_Controller::Process(float const processValue)
 {
+    CalcILimit(processValue);
+
     // e(t)
     CalculateErrorValue(processValue);
 
@@ -60,4 +62,21 @@ void Pid_Controller::Reset()
 void Pid_Controller::Set_I_Limit(float const limit)
 {
     integrate_limit = limit;
+}
+
+void Pid_Controller::CalcILimit(float const speed)
+{
+    if (speed < 3.0f)
+    {
+        integrate_limit = 9.3707f * speed + 13.806f;
+    }
+    else
+    {
+        integrate_limit = 5.6667f * speed + 33.0f;
+    }
+
+    if (integrate_limit > 67.0f)
+    {
+        integrate_limit = 67.0f;
+    }
 }
