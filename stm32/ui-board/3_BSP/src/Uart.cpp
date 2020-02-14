@@ -9,7 +9,6 @@ Uart::Uart() : Stm32Uart(Uart1)
 Uart* Uart::GetInstance()
 {
 	static Uart instance;
-
 	return &instance;
 }
 
@@ -67,11 +66,7 @@ void Uart::Init()
 	handle.Init.HwFlowCtl              = UART_HWCONTROL_NONE;
 	handle.Init.OverSampling           = UART_OVERSAMPLING_16;
 	handle.Init.OneBitSampling         = UART_ONE_BIT_SAMPLE_DISABLE;
-
-#if (SENSOR_REV == 2)
-	handle.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_SWAP_INIT;
-	handle.AdvancedInit.Swap           = UART_ADVFEATURE_SWAP_ENABLE;
-#endif
+	handle.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
 
 	if (HAL_UART_Init(&handle) != HAL_OK)
 	{
