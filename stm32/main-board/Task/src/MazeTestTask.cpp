@@ -58,16 +58,28 @@ void MazeTestTask::RcRun()
 	float throttle   = remote->GetValue(ThrottleCh);
 	float steerAngle = remote->GetValue(SteeringCh);
 
-	if (throttle > RC_THROTTLE_THRESHOLD || throttle < -RC_THROTTLE_THRESHOLD)
+	if (throttle > RC_THROTTLE_THRESHOLD)
 	{
-		motor->SetDutyCycle(throttle * RC_THROTTLE_FUN_FACTOR); // Don't use the full scale
+		//motor->SetDutyCycle(throttle * RC_THROTTLE_FUN_FACTOR); // Don't use the full scale
+	    motor->SetMode(tmode_Controller);
+	    //motor->SetControllerIntegrationLimit(67);
+	    motor->SetSpeed(1.0f);
+	}
+	else if (throttle < -RC_THROTTLE_THRESHOLD)
+	{
+        motor->SetMode(tmode_Controller);
+        motor->SetSpeed(-1.0f);
 	}
 	else
 	{
-		motor->SetDutyCycle(0);
+	    //motor->SetMode(tmode_Manual);
+		//motor->SetDutyCycle(0);
+	    motor->SetMode(tmode_Controller);
+	    motor->SetSpeed(0.0f);
 	}
 
 	steering->SetAngleManual(-steerAngle, steerAngle);
+	Trace::Print(trace, "v = %d mm/s", (int)(encoder->GetSpeed()*1000));
 }
 
 void MazeTestTask::Follow()

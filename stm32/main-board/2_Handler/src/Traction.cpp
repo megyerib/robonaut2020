@@ -31,6 +31,11 @@ void Traction::SetMode(TractionMode mode)
 	this->mode = mode;
 }
 
+void Traction::SetControllerIntegrationLimit(float const limit)
+{
+    controller->Set_I_Limit(limit);
+}
+
 void Traction::SetDutyCycle(float d /* % [-1;+1] */)
 {
     controller->Reset();
@@ -55,13 +60,13 @@ void Traction::Process()
 	controller->Process(encoder->GetSpeed());
 
 	// Control value ramping
-	if ((controller->GetControlValue() - prevDutyCycle) > 0.01f)
+	if ((controller->GetControlValue() - prevDutyCycle) > 0.002f)
 	{
-	    targetDutyCycle = prevDutyCycle + 0.01f;
+	    targetDutyCycle = prevDutyCycle + 0.002f;
 	}
-	else if ((controller->GetControlValue() - prevDutyCycle) < -0.01f)
+	else if ((controller->GetControlValue() - prevDutyCycle) < -0.06f)
 	{
-	    targetDutyCycle = prevDutyCycle - 0.01f;
+	    targetDutyCycle = prevDutyCycle - 0.06f;
 	}
 	else
 	{
@@ -69,9 +74,9 @@ void Traction::Process()
 	}
 
 	// Saturation
-    if (targetDutyCycle > 0.3f)
+    if (targetDutyCycle > 0.67f)
     {
-        targetDutyCycle = 0.3f;
+        targetDutyCycle = 0.67f;
     }
     else if (targetDutyCycle < -0.3f)
     {
@@ -81,6 +86,13 @@ void Traction::Process()
     {
         targetDutyCycle = targetDutyCycle;
     }
+
+     // Deadband
+    if ((controller->Get_Setpoint() < 0.1f) && (controller->Get_Setpoint() > -0.1f))
+    {
+        targetDutyCycle = 0;
+    }
+
 
     // Actuate
     if (mode == tmode_Controller)

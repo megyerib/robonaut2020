@@ -23,6 +23,7 @@ public:
 	void SetSpeed(float speed /* m/s */);
 	void SetDutyCycle(float d /* % [-1;+1] */);
 	void SetMode(TractionMode mode);
+	void SetControllerIntegrationLimit(float const limit);
 
 	void Process();
 
