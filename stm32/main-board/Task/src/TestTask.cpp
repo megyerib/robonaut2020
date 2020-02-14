@@ -17,13 +17,21 @@ TestTask* TestTask::Init()
 
 void TestTask::TaskInit()
 {
-	msgQueue = StringQueue::GetInstance(TestTrace);
+	ui = Ui::GetInstance();
 }
 
 void TestTask::TaskFunction()
 {
-	static char buffer1[] = "Test";
-	static char buffer2[] = "ASD";
-	msgQueue->Transmit(buffer1, 4);
-	msgQueue->Transmit(buffer2, 3);
+	uint8_t state;
+	bool    stopped;
+	bool    cmd;
+
+	stopped = ui->IsStopped();
+	cmd = ui->GetCommand(&state);
+
+	ui->SetCommand(40);
+
+	UNUSED(state);
+	UNUSED(stopped);
+	UNUSED(cmd);
 }

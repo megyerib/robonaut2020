@@ -1,12 +1,12 @@
 #pragma once
 
 #include "CyclicTask.h"
-#include "Transmitter.h"
+#include "Ui.h"
 
 class TestTask : public CyclicTask
 {
 private:
-	Transmitter* msgQueue = nullptr;
+	Ui* ui = nullptr;
 
 	TestTask();
 
