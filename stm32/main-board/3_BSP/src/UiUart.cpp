@@ -1,20 +1,20 @@
-#include "StarterUart.h"
+#include "UiUart.h"
 #include <cstring>
 #include "NvicPrio.h"
 
-StarterUart::StarterUart()
+UiUart::UiUart()
 {
 	InitGpio();
 	InitUart();
 }
 
-StarterUart* StarterUart::GetInstance()
+UiUart* UiUart::GetInstance()
 {
-	static StarterUart instance;
-	return (&instance);
+	static UiUart instance;
+	return &instance;
 }
 
-int32_t StarterUart::Receive(void* buffer, size_t& size, size_t targetSize)
+int32_t UiUart::Receive(void* buffer, size_t& size, size_t targetSize)
 {
 	if (buffer == nullptr)
 	{
@@ -38,37 +38,33 @@ int32_t StarterUart::Receive(void* buffer, size_t& size, size_t targetSize)
 	return RECEIVE_OK;
 }
 
-void StarterUart::InitUart()
+void UiUart::InitUart()
 {
 	__HAL_RCC_UART4_CLK_ENABLE();
 
-	huart.Instance              = UART4;
+	huart.Instance              = USART1;
 	huart.Init.BaudRate         = 115200;
 	huart.Init.WordLength       = UART_WORDLENGTH_8B;
 	huart.Init.StopBits         = UART_STOPBITS_1;
 	huart.Init.Parity           = UART_PARITY_NONE;
-	huart.Init.Mode             = UART_MODE_RX;
+	huart.Init.Mode             = UART_MODE_TX_RX;
 	huart.Init.HwFlowCtl        = UART_HWCONTROL_NONE;
 	huart.Init.OverSampling     = UART_OVERSAMPLING_16;
 
 	HAL_UART_Init(&huart);
 }
 
-void StarterUart::InitGpio()
+void UiUart::InitGpio()
 {
 	GPIO_InitTypeDef GPIO_InitStruct = {0};
 
-	/**USART4 GPIO Configuration
-	PA0      ------> UART4_TX
-	PA1      ------> UART4_RX
-	*/
 	__HAL_RCC_GPIOA_CLK_ENABLE();
 
-	GPIO_InitStruct.Pin          = GPIO_PIN_0|GPIO_PIN_1;
+	GPIO_InitStruct.Pin          = GPIO_PIN_9|GPIO_PIN_10;
 	GPIO_InitStruct.Mode         = GPIO_MODE_AF_PP;
 	GPIO_InitStruct.Pull         = GPIO_PULLUP;
 	GPIO_InitStruct.Speed        = GPIO_SPEED_FREQ_VERY_HIGH;
-	GPIO_InitStruct.Alternate    = GPIO_AF8_UART4;
+	GPIO_InitStruct.Alternate    = GPIO_AF7_USART1;
 
 	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 }
