@@ -11,6 +11,8 @@ private:
     float derivative;
     float previous_error;
 
+    float integrate_limit;
+
 public:
     Pid_Controller();
     Pid_Controller(float const Kp, float const Ki, float const Kd);
@@ -19,4 +21,7 @@ public:
 
     void Set_I_Term(float const I);
     void Set_D_Term(float const D);
+
+    void Reset();
+    void Set_I_Limit(float const limit);
 };

@@ -1,5 +1,7 @@
 #include "MazeTestTask.h"
 #include "TaskPrio.h"
+#include "StringQueue.h"
+#include "Trace.h"
 
 #define CYCLE_TIME 10
 
@@ -23,6 +25,9 @@ void MazeTestTask::TaskInit()
 	motor    = Traction::GetInstance();
 	steering = Steering::GetInstance();
 	track    = TrackDetector::GetInstance();
+	trace    = StringQueue::GetInstance(TestTrace);
+
+	encoder = Encoder::GetInstance();
 
 	track->SetMode(Speedrun);
 }
@@ -70,19 +75,27 @@ void MazeTestTask::Follow()
 	float throttle  = remote->GetValue(RemoteChannel::ThrottleCh);
 	bool  forward   = throttle >= RC_THROTTLE_THRESHOLD;
 	bool  reverse   = throttle <= -RC_THROTTLE_THRESHOLD;
+	float speed;
 
+	motor->SetMode(tmode_Controller);
 	if (forward)
 	{
+	    speed = 1.2f;
 		steering->SetMode(SingleLineFollow_Slow);
-		motor->SetDutyCycle(0.15);
+
 	}
 	else if (reverse)
 	{
 		steering->SetMode(SteeringReverse);
-		motor->SetDutyCycle(-0.12);
+		speed = -1.0f;
 	}
 	else
 	{
+	    motor->SetMode(tmode_Manual);
 		motor->SetDutyCycle(0);
 	}
+
+	Trace::Print(trace, "v = %d mm/s", (int)(encoder->GetSpeed()*1000));
+
+	motor->SetSpeed(speed);
 }

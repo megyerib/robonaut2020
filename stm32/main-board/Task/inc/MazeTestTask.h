@@ -6,6 +6,8 @@
 #include "Traction.h"
 #include "Steering.h"
 #include "TrackDetector.h"
+#include "Transmitter.h"
+#include "Encoder.h"
 
 class MazeTestTask : public CyclicTask
 {
@@ -23,6 +25,9 @@ private:
 	Traction*      motor     = nullptr;
 	Steering*      steering  = nullptr;
 	TrackDetector* track     = nullptr;
+
+	Transmitter*   trace     = nullptr;
+	Encoder*       encoder   = nullptr;
 
 	void RcRun();
 	void Follow();

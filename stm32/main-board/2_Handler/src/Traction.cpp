@@ -5,8 +5,14 @@ Traction::Traction()
 {
 	uart = MotorUart::GetInstance();
 	encoder = Encoder::GetInstance();
+	controller = new Pid_Controller(0.002f, 0.008f, 0.0f);
+	controller->Set_I_Limit(20.0f);
 
 	targetDutyCycle = 0;
+	prevDutyCycle   = 0;
+	forceDutyCycle  = 0;
+
+	mode = tmode_Manual;
 }
 
 Traction* Traction::GetInstance()
@@ -17,7 +23,7 @@ Traction* Traction::GetInstance()
 
 void Traction::SetSpeed(float speed /* m/s */)
 {
-	//targetSpeed = speed; // TODO
+    controller->SetSetpoint(speed);
 }
 
 void Traction::SetMode(TractionMode mode)
@@ -27,7 +33,8 @@ void Traction::SetMode(TractionMode mode)
 
 void Traction::SetDutyCycle(float d /* % [-1;+1] */)
 {
-	targetDutyCycle = d;
+    controller->Reset();
+    forceDutyCycle = d;
 }
 
 void Traction::SendDutyCycle(float d /* % [-1;+1] */)
@@ -44,6 +51,46 @@ void Traction::SendDutyCycle(float d /* % [-1;+1] */)
 
 void Traction::Process()
 {
-	// TODO
-	SendDutyCycle(targetDutyCycle);
+    // Speed control iteration
+	controller->Process(encoder->GetSpeed());
+
+	// Control value ramping
+	if ((controller->GetControlValue() - prevDutyCycle) > 0.01f)
+	{
+	    targetDutyCycle = prevDutyCycle + 0.01f;
+	}
+	else if ((controller->GetControlValue() - prevDutyCycle) < -0.01f)
+	{
+	    targetDutyCycle = prevDutyCycle - 0.01f;
+	}
+	else
+	{
+	    targetDutyCycle = controller->GetControlValue();
+	}
+
+	// Saturation
+    if (targetDutyCycle > 0.3f)
+    {
+        targetDutyCycle = 0.3f;
+    }
+    else if (targetDutyCycle < -0.3f)
+    {
+        targetDutyCycle = -0.3f;
+    }
+    else
+    {
+        targetDutyCycle = targetDutyCycle;
+    }
+
+    // Actuate
+    if (mode == tmode_Controller)
+    {
+        SendDutyCycle(targetDutyCycle);
+    }
+    else
+    {
+        SendDutyCycle(forceDutyCycle);
+    }
+
+	prevDutyCycle = targetDutyCycle;
 }

@@ -2,11 +2,14 @@
 
 #include "MotorUart.h"
 #include "Encoder.h"
+#include "Pid_Controller.h"
 
 #define TRACTION_CONTROL_CYCLE   10 /* ms */
 
 typedef enum
 {
+    tmode_Manual = 0,
+    tmode_Controller,
 	tmodeAccel,
 	tmodeBraking
 	// ...
@@ -24,12 +27,16 @@ public:
 	void Process();
 
 private:
-	MotorUart* uart;
-	Encoder* encoder;
+	MotorUart*      uart;
+	Encoder*        encoder;
+	Pid_Controller* controller;
 
 	//float targetSpeed;
 	float targetDutyCycle;
-	TractionMode mode = tmodeAccel;
+	float prevDutyCycle;
+	float forceDutyCycle;
+
+	TractionMode mode;
 
 	Traction();
 
