@@ -25,13 +25,6 @@ int main(void)
 	{
 		bool buttonPushed = false;
 
-		size_t size;
-		uart->ReceiveByte(&rxBuf, &size);
-		if (size > 0)
-		{
-			num = rxBuf;
-		}
-
 		if (flashing)
 		{
 			// Set number
@@ -68,8 +61,17 @@ int main(void)
 				}
 			}
 		}
+		else
+		{
+			size_t size;
+			uart->ReceiveByte(&rxBuf, &size);
+			if (size > 0)
+			{
+				num = rxBuf;
+			}
+		}
 
-		// Set flashing
+		// Back button
 		if (buttons->GetRisingEdge(ButtonA) == true)
 		{
 			flashing = true;
@@ -81,11 +83,15 @@ int main(void)
 			uart->Send(&txBuf, 1);
 		}
 
-		// Set mode
+		// Enter button
 		if (buttons->GetRisingEdge(ButtonB) == true)
 		{
 			flashing = false;
 			showNum = true;
+
+			// Clear Rx buffer
+			size_t size;
+			uart->ReceiveByte(&rxBuf, &size);
 
 			txBuf = (uint8_t)num;
 			uart->Send(&txBuf, 1);
