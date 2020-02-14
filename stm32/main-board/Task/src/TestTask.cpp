@@ -4,7 +4,7 @@
 #include "Remote.h"
 #include "StringQueue.h"
 
-TestTask::TestTask() : CyclicTask((char*)"TEST", 1000, MAIN_TASK_PRIO, 256)
+TestTask::TestTask() : CyclicTask((char*)"TEST", 2000, MAIN_TASK_PRIO, 256)
 {
 
 }

@@ -2,6 +2,10 @@
 
 #include "UiUart.h"
 
+// CAUTION! This code is not very nice.
+// Make sure you call the GetCommand/IsStopped
+// command between every button push!
+
 class Ui
 {
 public:

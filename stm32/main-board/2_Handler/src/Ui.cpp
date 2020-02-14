@@ -27,7 +27,6 @@ bool Ui::GetCommand(uint8_t* cmd)
 void Ui::SetCommand(uint8_t command)
 {
 	uart->Transmit(&command, 1);
-	lastChar = command;
 }
 
 void Ui::Receive()

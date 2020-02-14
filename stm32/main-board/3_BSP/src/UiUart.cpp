@@ -40,10 +40,7 @@ int32_t UiUart::Receive(void* buffer, size_t& size, size_t targetSize)
 
 int32_t UiUart::Transmit(const void* buffer, size_t size)
 {
-	if (size == 1)
-	{
-		huart.Instance->DR = ((uint8_t*)buffer)[0];
-	}
+	HAL_UART_Transmit(&huart, (uint8_t*)buffer, 1, 0);
 
 	return TRANSMIT_OK;
 }

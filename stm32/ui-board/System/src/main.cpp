@@ -25,6 +25,13 @@ int main(void)
 	{
 		bool buttonPushed = false;
 
+		size_t size;
+		uart->ReceiveByte(&rxBuf, &size);
+		if (size > 0 && !flashing)
+		{
+			num = rxBuf;
+		}
+
 		if (flashing)
 		{
 			// Set number
@@ -59,15 +66,6 @@ int main(void)
 				{
 					num = 99;
 				}
-			}
-		}
-		else
-		{
-			size_t size;
-			uart->ReceiveByte(&rxBuf, &size);
-			if (size > 0)
-			{
-				num = rxBuf;
 			}
 		}
 
