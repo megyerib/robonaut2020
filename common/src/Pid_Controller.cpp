@@ -64,6 +64,11 @@ void Pid_Controller::Set_I_Limit(float const limit)
     integrate_limit = limit;
 }
 
+float Pid_Controller::Get_Setpoint()
+{
+    return loop.setpoint;
+}
+
 void Pid_Controller::CalcILimit(float const speed)
 {
     if (speed < 3.0f)

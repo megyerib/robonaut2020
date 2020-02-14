@@ -64,9 +64,9 @@ void Traction::Process()
 	{
 	    targetDutyCycle = prevDutyCycle + 0.002f;
 	}
-	else if ((controller->GetControlValue() - prevDutyCycle) < -0.05f)
+	else if ((controller->GetControlValue() - prevDutyCycle) < -0.06f)
 	{
-	    targetDutyCycle = prevDutyCycle - 0.05f;
+	    targetDutyCycle = prevDutyCycle - 0.06f;
 	}
 	else
 	{
@@ -86,6 +86,13 @@ void Traction::Process()
     {
         targetDutyCycle = targetDutyCycle;
     }
+
+     // Deadband
+    if ((controller->Get_Setpoint() < 0.1f) && (controller->Get_Setpoint() > -0.1f))
+    {
+        targetDutyCycle = 0;
+    }
+
 
     // Actuate
     if (mode == tmode_Controller)
