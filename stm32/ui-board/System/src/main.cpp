@@ -18,11 +18,19 @@ int main(void)
 	bool flashing = false;
 	int cntr = 0;
 	bool showNum = true;
-	uint8_t buf;
+	uint8_t txBuf;
+	uint8_t rxBuf;
 
 	while (1)
 	{
 		bool buttonPushed = false;
+
+		size_t size;
+		uart->ReceiveByte(&rxBuf, &size);
+		if (size > 0)
+		{
+			num = rxBuf;
+		}
 
 		if (flashing)
 		{
@@ -69,8 +77,8 @@ int main(void)
 			showNum = false;
 			buttons->ClearRisingEdges();
 
-			buf = (uint8_t)255;
-			uart->Send(&buf, 1);
+			txBuf = (uint8_t)255;
+			uart->Send(&txBuf, 1);
 		}
 
 		// Set mode
@@ -79,8 +87,8 @@ int main(void)
 			flashing = false;
 			showNum = true;
 
-			buf = (uint8_t)num;
-			uart->Send(&buf, 1);
+			txBuf = (uint8_t)num;
+			uart->Send(&txBuf, 1);
 		}
 
 		// Count flashing

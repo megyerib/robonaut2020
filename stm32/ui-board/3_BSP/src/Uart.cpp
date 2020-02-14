@@ -25,6 +25,19 @@ void Uart::Send(uint8_t* buffer, size_t size)
 	HAL_UART_Transmit_IT(&handle, txBuffer, txBufSize);
 }
 
+void Uart::ReceiveByte(uint8_t* byte, size_t* size)
+{
+	if ((handle.Instance->ISR & USART_ISR_RXNE) != 0)
+	{
+		*byte = handle.Instance->RDR;
+		*size = 1;
+	}
+	else
+	{
+		*size = 0;
+	}
+}
+
 void Uart::TxCompleteCallback()
 {
 

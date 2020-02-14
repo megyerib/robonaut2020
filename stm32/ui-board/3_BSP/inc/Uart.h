@@ -19,4 +19,5 @@ public:
 	static Uart* GetInstance();
 
 	void Send(uint8_t* buffer, size_t size);
+	void ReceiveByte(uint8_t* byte, size_t* size);
 };
