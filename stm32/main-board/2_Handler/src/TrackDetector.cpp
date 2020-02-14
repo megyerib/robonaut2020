@@ -321,6 +321,18 @@ void TrackDetector::Process()
 	}
 }
 
+bool TrackDetector::IsFrontLineDetected()
+{
+	if (front.filteredCnt > 0)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 void TrackDetector::EvalLineType(LineData& line)
 {
 	if (line.filteredCnt != line.input.cnt)

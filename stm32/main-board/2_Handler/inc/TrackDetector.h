@@ -26,6 +26,7 @@ public:
 	float GetRearLine(){return rear.pos;} /* m */
 	float GetFrontLine(LineDirection const dir);
 	float GetRearLine(LineDirection const dir);     // TODO pls make it
+	bool  IsFrontLineDetected();
 
 	bool IsJunction(TrackType const track);
 	bool IsFork(TrackType track);
@@ -34,7 +35,7 @@ public:
 private:
 	Transmitter* trace;
 
-	TrackMode mode;
+	TrackMode mode = Maze;
 
 	MazeDetectorSM frontStm;
 
