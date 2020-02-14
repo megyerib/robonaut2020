@@ -9,6 +9,7 @@
 #include "TrackDetector.h"
 #include "Distance.h"
 #include "Navigation.h"
+#include "Ui.h"
 
 #include "Timepiece.h"
 #include "StringQueue.h"
@@ -97,6 +98,7 @@ private:
     WaitDistance*   delayDistance;
     //WaitTime*       delayTime;
     Navigation*     navigation;
+    Ui*             ui;
 
     Map*            map;
     TurnType        nextTurn;

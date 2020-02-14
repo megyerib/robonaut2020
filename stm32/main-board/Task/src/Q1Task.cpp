@@ -33,12 +33,14 @@ void Q1Task::TaskFunction()
 
 	if (mode == RemMode1)
 	{
+		motor->SetMode(tmode_Controller);
 	    car->SetSteeringMode(SteeringMode::SingleLineFollow_Slow);
 		car->StateMachine();
 	}
 
 	if (mode == RemMode2)
 	{
+	    motor->SetMode(tmode_Manual);
 	    steering->SetMode(Free);
 		RcRun(throttle, steerAngle);
 	}
