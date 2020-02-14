@@ -38,9 +38,19 @@ int32_t UiUart::Receive(void* buffer, size_t& size, size_t targetSize)
 	return RECEIVE_OK;
 }
 
+int32_t UiUart::Transmit(const void* buffer, size_t size)
+{
+	if (size == 1)
+	{
+		huart.Instance->DR = ((uint8_t*)buffer)[0];
+	}
+
+	return TRANSMIT_OK;
+}
+
 void UiUart::InitUart()
 {
-	__HAL_RCC_UART4_CLK_ENABLE();
+	__HAL_RCC_USART1_CLK_ENABLE();
 
 	huart.Instance              = USART1;
 	huart.Init.BaudRate         = 115200;

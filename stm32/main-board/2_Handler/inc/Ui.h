@@ -12,6 +12,11 @@ public:
 	void SetCommand(uint8_t command);
 
 private:
+	uint8_t lastChar = 0;
+	bool stopped = false;
+
 	UiUart* uart;
 	Ui();
+
+	void Receive();
 };

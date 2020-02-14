@@ -13,18 +13,39 @@ Ui* Ui::GetInstance()
 
 bool Ui::IsStopped()
 {
-	// TODO
-	return false;
+	Receive();
+	return stopped;
 }
 
 bool Ui::GetCommand(uint8_t* cmd)
 {
-	// TODO
-	return 0;
+	Receive();
+	*cmd = lastChar;
+	return !stopped;
 }
 
 void Ui::SetCommand(uint8_t command)
 {
-	UNUSED(command);
-	// TODO
+	uart->Transmit(&command, 1);
+	lastChar = command;
+}
+
+void Ui::Receive()
+{
+	size_t size;
+	uint8_t buf;
+	uart->Receive(&buf, size, 1);
+
+	if (size > 0)
+	{
+		if (buf == 255)
+		{
+			stopped = true;
+		}
+		else
+		{
+			lastChar = buf;
+			stopped  = false;
+		}
+	}
 }
