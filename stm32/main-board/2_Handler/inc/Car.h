@@ -53,10 +53,11 @@ typedef enum
 typedef enum
 {
     PrepareForLaneChanging = 0,
-    Y_part1,
-    Y_part2,
-    LeaveLine,
-    SearchLineOnRight,
+    right_LeaveLine,
+    right_SearchLineOnRight,
+    rev_Y_Reverse1,
+    rev_Y_TurnLeft,
+    rev_Y_Reverse2,
     LineFound,
     NoLineFound
 } LineSwitch_SM;
@@ -81,6 +82,7 @@ typedef struct
     float        lineFollow_Front;
     float        lineFollow_Rear;
     float        sensorServoAngle;
+    bool         lineDetected;
 } CarProperties;
 
 class Car

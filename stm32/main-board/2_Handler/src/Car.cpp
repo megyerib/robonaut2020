@@ -6,9 +6,10 @@
 #define MAZE_REVERSE_SPEED          (-0.14f)  /*   % */ //!< Speed used for reverse maneuver.
 #define MAZE_REVERSE_P              ( 20.0f)
 #define MAZE_REVERSE_D              (200.0f)
-#define MAZE_EXIT_WAIT_DIST         ( 0.20f)  /*   m */ //!< Distance the robot will make to leave the labyrinth, before searching for the speedrun line.
-#define MAZE_EXIT_WHEEL_ANGLE       ( 0.52f)  /* rad */ //!< The angles of the servos, while leaving the labyrinth.
-#define MAZE_EXIT_DIST_LIMIT        ( 0.70f)  /*   m */ //!< The distance how many meters can the robot drive while searching for the speedrun line.
+#define MAZE_EXIT_WAIT_DIST         ( 0.50f)  /*   m */ //!< Distance the robot will make to leave the labyrinth, before searching for the speedrun line.
+#define MAZE_EXIT_REV_WAIT_DIST     ( 0.90f)
+#define MAZE_EXIT_WHEEL_ANGLE       (-1.74f)  /* rad */ //!< The angles of the servos, while leaving the labyrinth.
+#define MAZE_EXIT_DIST_LIMIT        ( 1.00f)  /*   m */ //!< The distance how many meters can the robot drive while searching for the speedrun line.
 #define MAZE_EXIT_SPEED             ( 0.12f)  /*   % */
 #define MAZE_TURN_WAIT_DIST         ( 0.60f)  /*   m */
 
@@ -98,8 +99,8 @@ Car::Car()
     map = Map::GetInstance();
     nextTurn = TurnType::Right;
 
-    recoverState             = sp_Follow; // la_Idle;   // race starts with la_Idle
-    carProp.state            = sp_Follow; // la_Idle;   // race starts with la_Idle
+    recoverState             = la_Idle;
+    carProp.state            = la_Idle;
     carProp.speed            = encoder->GetSpeed();
     carProp.dist_travelled   = encoder->GetDistance();
     carProp.track            = lineSensor->GetTrackType();
@@ -110,8 +111,9 @@ Car::Car()
     carProp.lineFollow_Front = lineSensor->GetFrontLine();
     carProp.lineFollow_Rear  = 0U;
     carProp.sensorServoAngle = 0U;
+    carProp.lineDetected     = false;
 
-    speedRunStarted = true;     //false;
+    speedRunStarted = false;
     roadSegment     = RoadSegment_SM::rs_Straight;
     segmentCounter  = 0U;
     lapFinished     = false;
@@ -129,8 +131,12 @@ Car::Car()
 
     prescaler = 0;
 
-    map->TurnOff();     // remove
-    lineSensor->SetMode(Speedrun); // Move to the end of the wait before speedrun
+    // test
+    recoverState             = la_Exit;
+    carProp.state            = la_Exit;
+    //speedRunStarted = true;
+    //map->TurnOff();     // remove
+    //lineSensor->SetMode(Speedrun); // Move to the end of the wait before speedrun
 }
 
 void Car::BasicLabyrinth_StateMachine()
@@ -194,14 +200,11 @@ void Car::BasicLabyrinth_StateMachine()
             Maneuver_Reverse();
             break;
         case la_Exit:
-            if (false/*map->shouldExitMaze() == true*/){     /*Maneuver_ChangeLane();*/              }   // Q1
+            if (true/*map->shouldExitMaze() == true*/){     Maneuver_ChangeLane();          }   // Q1
             else{                                   ChangeState(la_Straight);     trace->Transmit("la_Straight", 11); }
             break;
         case la_End:
-            //ChangeState(sp_Wait);
-            //trace->Transmit("Labyrinth is over. sp_Follow", 28);
-            // speedRunStarted = true;
-            // map->TurnOff();          // TODO don'T forget to activate for the race
+            map->TurnOff();             // TODO don'T forget to activate for the race
             carProp.targetSpeed = 0U;   // TODO remove just for test
             break;
         default:
@@ -215,6 +218,15 @@ void Car::BaseRace_StateMachine()
 {
     switch (carProp.state)
     {
+        case sp_Wait:
+        {
+            ChangeState(sp_Follow);
+            trace->Transmit("Speedrun is starting.", 21);
+            speedRunStarted = true;
+            map->TurnOff();
+            lineSensor->SetMode(Speedrun);
+            break;
+        }
         case sp_Follow:
         {
             Follow_StateMachine();
@@ -407,10 +419,12 @@ void Car::Minimal_StateMachine()
 {
     if (speedRunStarted == true)
     {
+        motor->SetMode(tmode_Controller);
         RoadSegment_StateMachine();
     }
     else
     {
+        motor->SetMode(tmode_Manual);
         BasicLabyrinth_StateMachine();
     }
 
@@ -491,54 +505,51 @@ void Car::Maneuver_ChangeLane()     // TODO end feature
     {
         case LineSwitch_SM::PrepareForLaneChanging:
         {
-            exitType = carProp.track;
+            exitType = TrackType::Exit; //carProp.track;
             carProp.wheel_mode = SteeringMode::Free;
 
             if (exitType == TrackType::Exit)
             {
                 delayDistance->Wait_m(MAZE_EXIT_WAIT_DIST);
-                switchState = LineSwitch_SM::LeaveLine;
+                switchState = LineSwitch_SM::right_LeaveLine;
+                trace->Transmit("Exit: Started right", 19);
             }
             else if (exitType == TrackType::ExitReverse)
             {
-                delayDistance->Wait_m(MAZE_EXIT_WAIT_DIST);
-                switchState = LineSwitch_SM::Y_part1;
+                delayDistance->Wait_m(MAZE_EXIT_REV_WAIT_DIST);
+                switchState = LineSwitch_SM::rev_Y_Reverse1;
+                trace->Transmit("Exit started Y", 14);
             }
             else {} // Invalid state
             break;
         }
-        case LineSwitch_SM::Y_part1:
-            //TODO
-            switchState = LineSwitch_SM::Y_part2;
-            break;
-        case LineSwitch_SM::Y_part2:
-            //TODO
-            switchState = LineSwitch_SM::LineFound;
-            break;
-        case LineSwitch_SM::LeaveLine:
+        case LineSwitch_SM::right_LeaveLine:
         {
             // Special case. Mode is changed manually.
-            wheels->SetMode(SteeringMode::Free);
+            carProp.wheel_mode = SteeringMode::Free;
             wheels->SetAngleManual(MAZE_EXIT_WHEEL_ANGLE, MAZE_EXIT_WHEEL_ANGLE);
             carProp.targetSpeed = MAZE_EXIT_SPEED;
 
-            if (delayDistance->IsExpired() == true)
+            if (delayDistance->IsExpired() == true && !carProp.lineDetected)
             {
                 delayDistance->Wait_m(MAZE_EXIT_DIST_LIMIT);
-                switchState = LineSwitch_SM::SearchLineOnRight;
+                switchState = LineSwitch_SM::right_SearchLineOnRight;
+                trace->Transmit("Exit: Left the maze", 19);
             }
             break;
         }
-        case LineSwitch_SM::SearchLineOnRight:
+        case LineSwitch_SM::right_SearchLineOnRight:
         {
-            wheels->SetMode(SteeringMode::Free);
+            carProp.wheel_mode = SteeringMode::Free;
             wheels->SetAngleManual(MAZE_EXIT_WHEEL_ANGLE, MAZE_EXIT_WHEEL_ANGLE);
             carProp.targetSpeed = MAZE_EXIT_SPEED;
 
-            if (carProp.track == TrackType::Single)
+            // Wait until 1 line
+            if (carProp.lineDetected)
             {
                 carProp.wheel_mode = SteeringMode::SingleLineFollow_Slow;
                 switchState = LineSwitch_SM::LineFound;
+                trace->Transmit("Exit: Line found", 16);
             }
 
             if (delayDistance->IsExpired() == true)
@@ -547,8 +558,33 @@ void Car::Maneuver_ChangeLane()     // TODO end feature
             }
             break;
         }
-        case LineSwitch_SM::LineFound:     ChangeState(la_End); /* sp_Follow; */  switchState = LineSwitch_SM::PrepareForLaneChanging;   break;
-        case LineSwitch_SM::NoLineFound:   ChangeState(la_End);     switchState = LineSwitch_SM::PrepareForLaneChanging;      break;
+        case LineSwitch_SM::rev_Y_Reverse1:
+        {
+            //TODO
+            carProp.wheel_mode = SteeringMode::Free;
+            wheels->SetAngleManual(-MAZE_EXIT_WHEEL_ANGLE, 0);
+
+//            if ((carProp.track == TrackType::Single) && ())
+//            {
+//
+//                switchState = LineSwitch_SM::Y_part2;
+//            }
+            break;
+        }
+        case LineSwitch_SM::rev_Y_TurnLeft:
+        {
+            //TODO
+            carProp.wheel_mode = SteeringMode::Free;
+
+            switchState = LineSwitch_SM::LineFound;
+            break;
+        }
+        case LineSwitch_SM::rev_Y_Reverse2:
+        {
+            break;
+        }
+        case LineSwitch_SM::LineFound:     ChangeState(sp_Wait);  switchState = LineSwitch_SM::PrepareForLaneChanging;  trace->Transmit("Labyrinth is over.", 18);   break;
+        case LineSwitch_SM::NoLineFound:   ChangeState(la_End);   switchState = LineSwitch_SM::PrepareForLaneChanging;  trace->Transmit("Lost", 4); break;
         default:
             break;
     }
@@ -589,11 +625,19 @@ void Car::UpdateProperties()
     carProp.track           = lineSensor->GetTrackType();
     carProp.position        = navigation->GetPosition();
     carProp.front_distance  = distance->GetDistance(DistanceSensor::ToF_Front);
+    carProp.lineDetected    = lineSensor->IsFrontLineDetected();
 }
 
 void Car::Actuate()
 {
-    motor->SetSpeed(carProp.targetSpeed);
+    if (speedRunStarted == true){
+        motor->SetMode(tmode_Controller);
+        motor->SetSpeed(carProp.targetSpeed);
+    }
+    else{
+        motor->SetDutyCycle(carProp.targetSpeed);
+    }
+
     wheels->SetMode(carProp.wheel_mode);
     wheels->SetLine(carProp.lineFollow_Front, carProp.lineFollow_Rear);
 
