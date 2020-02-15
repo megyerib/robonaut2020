@@ -28,12 +28,12 @@
 
 #define CAR_SPEED_STRAIGHT          ( 2.80f)   /* m/s */    // 2.8
 #define CAR_SPEED_DECEL             ( 2.30f)   /* m/s */    // 2.3
-#define CAR_SPEED_TURN              ( 1.90f)   /* m/s */    // 1.9
+#define CAR_SPEED_TURN              ( 1.80f)   /* m/s */    // 1.8
 #define CAR_SPEED_ACCEL             ( 2.10f)   /* m/s */    // 2.1
 
 #define CAR_SPEED_STRAIGHT_L2       ( 3.00f)   /* m/s */    // 3.0
 #define CAR_SPEED_DECEL_L2          ( 2.50f)   /* m/s */    // 2.5
-#define CAR_SPEED_TURN_L2           ( 2.00f)   /* m/s */    // 2.0
+#define CAR_SPEED_TURN_L2           ( 1.90f)   /* m/s */    // 1.9
 #define CAR_SPEED_ACCEL_L2          ( 2.20f)   /* m/s */    // 2.2
 
 #define CAR_SPEED_STRAIGHT_L3       ( 3.50f)   /* m/s */    // 3.5
@@ -145,11 +145,11 @@ Car::Car()
     prescaler = 0;
 
     // test
-    recoverState             = sp_Lap1;
-    carProp.state            = sp_Lap1;
+    recoverState             = sp_Follow;
+    carProp.state            = sp_Follow;
     speedRunStarted = true;
     map->TurnOff();     // remove
-    lineSensor->SetMode(Speedrun); // Move to the end of the wait before speedrun
+     lineSensor->SetMode(Speedrun); // Move to the end of the wait before speedrun
 }
 
 void Car::BasicLabyrinth_StateMachine()
@@ -223,8 +223,6 @@ void Car::BasicLabyrinth_StateMachine()
         default:
             break;  // Not a valid labyrinth state.
     }
-
-    ui->SetCommand(carProp.state);
 }
 
 void Car::BaseRace_StateMachine()
@@ -243,11 +241,14 @@ void Car::BaseRace_StateMachine()
             speedRunStarted = true;
             map->TurnOff();
             lineSensor->SetMode(Speedrun);
+            ui->SetCommand(1);
             break;
         }
         case sp_Follow:
         {
             Follow_StateMachine();
+
+            ui->SetCommand(followLapCnt * 16 + segmentCounter + 1);
 
             // Transitions
             if ((segmentCounter == OVERTAKE_SEGMENT) && (tryOvertake == true))  // Overtake is allowed and in the right segment.
@@ -308,17 +309,20 @@ void Car::BaseRace_StateMachine()
         }
         case sp_Lap1:
         {
-            if (lapFinished == true){   ChangeState(sp_Lap2);    lapFinished = false;   trace->Transmit("sp_Lap2", 7); }
+        	ui->SetCommand(segmentCounter + 32 + 1);
+        	if (lapFinished == true){   ChangeState(sp_Lap2);    lapFinished = false;   trace->Transmit("sp_Lap2", 7); }
             break;
         }
         case sp_Lap2:
         {
-            if (lapFinished == true){   ChangeState(sp_Lap3);    lapFinished = false;   trace->Transmit("sp_Lap3", 7); }
+        	ui->SetCommand(segmentCounter + 48 + 1);
+        	if (lapFinished == true){   ChangeState(sp_Lap3);    lapFinished = false;   trace->Transmit("sp_Lap3", 7); }
             break;
         }
         case sp_Lap3:
         {
-            if (lapFinished == true)
+        	ui->SetCommand(segmentCounter + 64 + 1);
+        	if (lapFinished == true)
             {
                 ChangeState(sp_Stop);
                 lapFinished = false;
@@ -436,7 +440,7 @@ void Car::Follow_StateMachine()
         }
         else
         {
-            carProp.targetSpeed = 0;
+            carProp.targetSpeed = 1.0f;
         }
     }
 
@@ -762,7 +766,6 @@ void Car::ChangeState(RaceState const State)
 void Car::ChangeRoadSegment(RoadSegment_SM const Segment)
 {
     roadSegment = Segment;
-    ui->SetCommand(segmentCounter);
 
     if (segmentCounter < SEGMENT_COUNT - 1)
     {
@@ -827,33 +830,39 @@ void Car::SetSegmentManual(uint8_t ui_segment)
 
 			if (segment == 0)
 			{
-				carProp.state = sp_Wait;
+				//carProp.state = sp_Wait;
+				ChangeState(sp_Wait);
 			}
 			else
 			{
-				carProp.state = sp_Follow;
+				//carProp.state = sp_Follow;
+				ChangeState(sp_Follow);
 			}
 			break;
 		}
 		case 1:
 		{
 			followLapCnt = 1;
-			carProp.state = sp_Follow;
+			//carProp.state = sp_Follow;
+			ChangeState(sp_Follow);
 			break;
 		}
 		case 2:
 		{
-			carProp.state = sp_Lap1;
+			//carProp.state = sp_Lap1;
+			ChangeState(sp_Lap1);
 			break;
 		}
 		case 3:
 		{
-			carProp.state = sp_Lap2;
+			//carProp.state = sp_Lap2;
+			ChangeState(sp_Lap2);
 			break;
 		}
 		case 4:
 		{
-			carProp.state = sp_Lap3;
+			//carProp.state = sp_Lap3;
+			ChangeState(sp_Lap3);
 			break;
 		}
 		default:

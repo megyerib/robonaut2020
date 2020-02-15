@@ -60,9 +60,9 @@ void Traction::Process()
 	controller->Process(encoder->GetSpeed());
 
 	// Control value ramping
-	if ((controller->GetControlValue() - prevDutyCycle) > 0.002f)
+	if ((controller->GetControlValue() - prevDutyCycle) > 0.01f)
 	{
-	    targetDutyCycle = prevDutyCycle + 0.002f;
+	    targetDutyCycle = prevDutyCycle + 0.01f;
 	}
 	else if ((controller->GetControlValue() - prevDutyCycle) < -0.06f)
 	{
@@ -88,7 +88,7 @@ void Traction::Process()
     }
 
      // Deadband
-    if ((controller->Get_Setpoint() < 0.1f) && (controller->Get_Setpoint() > -0.1f))
+    if ((controller->Get_Setpoint() < 0.05f) && (controller->Get_Setpoint() > -0.05f))
     {
         targetDutyCycle = 0;
     }
