@@ -6,8 +6,11 @@
 #define MAZE_REVERSE_SPEED          (-0.14f)  /*   % */ //!< Speed used for reverse maneuver.
 #define MAZE_REVERSE_P              ( 20.0f)
 #define MAZE_REVERSE_D              (200.0f)
-#define MAZE_EXIT_WAIT_DIST         ( 0.50f)  /*   m */ //!< Distance the robot will make to leave the labyrinth, before searching for the speedrun line.
-#define MAZE_EXIT_REV_WAIT_DIST     ( 0.90f)
+#define MAZE_EXIT_WAIT_DIST         ( 0.90f)  /*   m */ //!< Distance the robot will make to leave the labyrinth, before searching for the speedrun line.
+#define MAZE_EXIT_REV_WAIT_DIST_1   ( 0.30f)
+#define MAZE_EXIT_REV_WAIT_DIST_2   ( 0.80f)
+#define MAZE_EXIT_REV_WAIT_DIST_3   ( 0.80f)
+#define MAZE_EXIT_REV_WAIT_DIST_4   ( 0.80f)
 #define MAZE_EXIT_WHEEL_ANGLE       (-1.74f)  /* rad */ //!< The angles of the servos, while leaving the labyrinth.
 #define MAZE_EXIT_DIST_LIMIT        ( 1.00f)  /*   m */ //!< The distance how many meters can the robot drive while searching for the speedrun line.
 #define MAZE_EXIT_SPEED             ( 0.12f)  /*   % */
@@ -132,8 +135,8 @@ Car::Car()
     prescaler = 0;
 
     // test
-    recoverState             = la_Exit;
-    carProp.state            = la_Exit;
+    recoverState             = la_Straight;
+    carProp.state            = la_Straight;
     //speedRunStarted = true;
     //map->TurnOff();     // remove
     //lineSensor->SetMode(Speedrun); // Move to the end of the wait before speedrun
@@ -205,7 +208,7 @@ void Car::BasicLabyrinth_StateMachine()
             break;
         case la_End:
             map->TurnOff();             // TODO don'T forget to activate for the race
-            carProp.targetSpeed = 0U;   // TODO remove just for test
+            carProp.targetSpeed = 0U;
             break;
         default:
             break;  // Not a valid labyrinth state.
@@ -505,29 +508,46 @@ void Car::Maneuver_ChangeLane()     // TODO end feature
     {
         case LineSwitch_SM::PrepareForLaneChanging:
         {
-            exitType = TrackType::Exit; //carProp.track;
+            exitType = carProp.track;
             carProp.wheel_mode = SteeringMode::Free;
 
             if (exitType == TrackType::Exit)
             {
-                delayDistance->Wait_m(MAZE_EXIT_WAIT_DIST);
-                switchState = LineSwitch_SM::right_LeaveLine;
+                delayDistance->Wait_m(-0.6f);
+                switchState = LineSwitch_SM::right_Prep;
                 trace->Transmit("Exit: Started right", 19);
             }
             else if (exitType == TrackType::ExitReverse)
             {
-                delayDistance->Wait_m(MAZE_EXIT_REV_WAIT_DIST);
-                switchState = LineSwitch_SM::rev_Y_Reverse1;
+                delayDistance->Wait_m(1.4f);
+                switchState = LineSwitch_SM::rev_Y_Prep;
                 trace->Transmit("Exit started Y", 14);
             }
             else {} // Invalid state
+            break;
+        }
+        case LineSwitch_SM::right_Prep:
+        {
+            carProp.wheel_mode = SteeringMode::DualLineFollow_Slow;
+            carProp.lineFollow_Front = 0;
+            carProp.lineFollow_Rear  = lineSensor->GetRearLine();
+            carProp.targetSpeed      = -MAZE_FORWARD_SPEED;
+
+            if (delayDistance->IsExpired() == true)
+            {
+                delayDistance->Wait_m(MAZE_EXIT_WAIT_DIST);
+                carProp.wheel_mode = SteeringMode::Free;
+                switchState = LineSwitch_SM::right_LeaveLine;
+                trace->Transmit("Exit: R back", 13);
+            }
+            break;
             break;
         }
         case LineSwitch_SM::right_LeaveLine:
         {
             // Special case. Mode is changed manually.
             carProp.wheel_mode = SteeringMode::Free;
-            wheels->SetAngleManual(MAZE_EXIT_WHEEL_ANGLE, MAZE_EXIT_WHEEL_ANGLE);
+            wheels->SetAngleManual(MAZE_EXIT_WHEEL_ANGLE, MAZE_EXIT_WHEEL_ANGLE+0.2f);
             carProp.targetSpeed = MAZE_EXIT_SPEED;
 
             if (delayDistance->IsExpired() == true && !carProp.lineDetected)
@@ -558,33 +578,89 @@ void Car::Maneuver_ChangeLane()     // TODO end feature
             }
             break;
         }
+        case LineSwitch_SM::rev_Y_Prep:
+        {
+            carProp.wheel_mode = SteeringMode::SingleLineFollow_Slow;
+            carProp.lineFollow_Front = lineSensor->GetFrontLine(LineDirection::ld_Middle);
+            carProp.lineFollow_Rear  = 0;
+            carProp.targetSpeed      = MAZE_FORWARD_SPEED;
+
+            if (delayDistance->IsExpired() == true)
+            {
+                delayDistance->Wait_m(-MAZE_EXIT_REV_WAIT_DIST_1);
+                carProp.wheel_mode = SteeringMode::Free;
+                switchState = LineSwitch_SM::rev_Y_Reverse1;
+                trace->Transmit("Exit: Y turn back", 17);
+            }
+            break;
+        }
         case LineSwitch_SM::rev_Y_Reverse1:
         {
-            //TODO
             carProp.wheel_mode = SteeringMode::Free;
-            wheels->SetAngleManual(-MAZE_EXIT_WHEEL_ANGLE, 0);
+            wheels->SetAngleManual(MAZE_EXIT_WHEEL_ANGLE, -MAZE_EXIT_WHEEL_ANGLE);
+            carProp.targetSpeed = -MAZE_EXIT_SPEED;
 
-//            if ((carProp.track == TrackType::Single) && ())
-//            {
-//
-//                switchState = LineSwitch_SM::Y_part2;
-//            }
+            if (delayDistance->IsExpired() == true)
+            {
+                delayDistance->Wait_m(MAZE_EXIT_REV_WAIT_DIST_2);
+                carProp.wheel_mode = SteeringMode::Free;
+                switchState = LineSwitch_SM::rev_Y_TurnLeft;
+                trace->Transmit("Exit: Y turn left", 17);
+            }
             break;
         }
         case LineSwitch_SM::rev_Y_TurnLeft:
         {
-            //TODO
             carProp.wheel_mode = SteeringMode::Free;
+            wheels->SetAngleManual(-MAZE_EXIT_WHEEL_ANGLE, MAZE_EXIT_WHEEL_ANGLE);
+            carProp.targetSpeed = MAZE_EXIT_SPEED;
 
-            switchState = LineSwitch_SM::LineFound;
+            if (delayDistance->IsExpired() == true)
+            {
+                delayDistance->Wait_m(-MAZE_EXIT_REV_WAIT_DIST_3);
+                carProp.wheel_mode = SteeringMode::Free;
+                switchState = LineSwitch_SM::rev_Y_LeaveLine;
+                trace->Transmit("Exit: Y rev 2", 13);
+            }
             break;
         }
         case LineSwitch_SM::rev_Y_Reverse2:
         {
+            carProp.wheel_mode = SteeringMode::Free;
+            wheels->SetAngleManual(MAZE_EXIT_WHEEL_ANGLE, -MAZE_EXIT_WHEEL_ANGLE);
+            carProp.targetSpeed = -MAZE_EXIT_SPEED;
+
+            if (delayDistance->IsExpired() == true)
+            {
+                delayDistance->Wait_m(MAZE_EXIT_REV_WAIT_DIST_4);
+                carProp.wheel_mode = SteeringMode::Free;
+                switchState = LineSwitch_SM::rev_Y_LeaveLine;
+                trace->Transmit("Exit: Y search line", 19);
+            }
+            break;
+        }
+        case LineSwitch_SM::rev_Y_LeaveLine:
+        {
+            carProp.wheel_mode = SteeringMode::Free;
+            wheels->SetAngleManual(MAZE_EXIT_WHEEL_ANGLE/2, 0);
+            carProp.targetSpeed = MAZE_EXIT_SPEED;
+
+            // Wait until 1 line
+            if (carProp.lineDetected == true)
+            {
+                carProp.wheel_mode = SteeringMode::SingleLineFollow_Slow;
+                switchState = LineSwitch_SM::LineFound;
+                trace->Transmit("Exit: Line found", 16);
+            }
+
+            if (delayDistance->IsExpired() == true)
+            {
+                switchState = LineSwitch_SM::NoLineFound;
+            }
             break;
         }
         case LineSwitch_SM::LineFound:     ChangeState(sp_Wait);  switchState = LineSwitch_SM::PrepareForLaneChanging;  trace->Transmit("Labyrinth is over.", 18);   break;
-        case LineSwitch_SM::NoLineFound:   ChangeState(la_End);   switchState = LineSwitch_SM::PrepareForLaneChanging;  trace->Transmit("Lost", 4); break;
+        case LineSwitch_SM::NoLineFound:   ChangeState(la_End);   switchState = LineSwitch_SM::PrepareForLaneChanging;  trace->Transmit("Lost", 4);                  break;
         default:
             break;
     }

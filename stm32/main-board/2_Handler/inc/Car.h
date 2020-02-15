@@ -53,11 +53,14 @@ typedef enum
 typedef enum
 {
     PrepareForLaneChanging = 0,
+    right_Prep,
     right_LeaveLine,
     right_SearchLineOnRight,
+    rev_Y_Prep,
     rev_Y_Reverse1,
     rev_Y_TurnLeft,
     rev_Y_Reverse2,
+    rev_Y_LeaveLine,
     LineFound,
     NoLineFound
 } LineSwitch_SM;
