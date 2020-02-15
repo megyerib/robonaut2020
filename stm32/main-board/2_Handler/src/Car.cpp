@@ -145,11 +145,11 @@ Car::Car()
     prescaler = 0;
 
     // test
-    recoverState             = sp_Follow;
+    /*recoverState             = sp_Follow;
     carProp.state            = sp_Follow;
     speedRunStarted = true;
     map->TurnOff();     // remove
-     lineSensor->SetMode(Speedrun); // Move to the end of the wait before speedrun
+     lineSensor->SetMode(Speedrun); // Move to the end of the wait before speedrun*/
 }
 
 void Car::BasicLabyrinth_StateMachine()
@@ -158,11 +158,13 @@ void Car::BasicLabyrinth_StateMachine()
     {
         case la_Idle:
         {
-            if ((USE_RADIO_STARTER == 0) || (radio->GetState() == Go))
+            ui->SetCommand(0);
+        	if ((USE_RADIO_STARTER == 0) || (radio->GetState() == Go))
             {
                 lineSensor->SetMode(Maze);
                 ChangeState(la_Straight);
                 trace->Transmit("la_Straight", 11);
+                map->TurnOn();
             }
             break;
         }
@@ -213,12 +215,12 @@ void Car::BasicLabyrinth_StateMachine()
             Maneuver_Reverse();
             break;
         case la_Exit:
-            if (true/*map->shouldExitMaze() == true*/){     Maneuver_ChangeLane();          }   // Q1
+            if (map->shouldExitMaze() == true){     Maneuver_ChangeLane();          }   // Q1
             else{                                   ChangeState(la_Straight);     trace->Transmit("la_Straight", 11); }
             break;
         case la_End:
-            map->TurnOff();             // TODO don'T forget to activate for the race
             carProp.targetSpeed = 0U;
+
             break;
         default:
             break;  // Not a valid labyrinth state.
@@ -324,7 +326,8 @@ void Car::BaseRace_StateMachine()
         	ui->SetCommand(segmentCounter + 64 + 1);
         	if (lapFinished == true)
             {
-                ChangeState(sp_Stop);
+        		ui->SetCommand(81);
+        		ChangeState(sp_Stop);
                 lapFinished = false;
                 delayDistance->Wait_m(CAR_WAIT_IN_LAST_LAP);
                 trace->Transmit("sp_Stop", 7);
@@ -706,23 +709,26 @@ void Car::Maneuver_Overtake()       // TODO end feature.
 
 void Car::CheckDeadmanSwitch()
 {
-    if (remote->GetValue(RemoteChannel::ThrottleCh) < 0.1f)
-    {
-        // No throttle
-        motor->SetMode(tmode_Manual);
-        carProp.targetSpeed = 0.0f;
-        carProp.state       = RaceState::la_End;
-    }
-    else
-    {
-        // Throttle
-        if (carProp.state != recoverState)
-        {
-            Trace::Print(trace, "Dead-man switch recovered state");
-        }
+	if (USE_DEADMAN_SWITCH)
+	{
+		if (remote->GetValue(RemoteChannel::ThrottleCh) < 0.1f)
+		{
+			// No throttle
+			motor->SetMode(tmode_Manual);
+			carProp.targetSpeed = 0.0f;
+			carProp.state       = RaceState::la_End;
+		}
+		else
+		{
+			// Throttle
+			if (carProp.state != recoverState)
+			{
+				Trace::Print(trace, "Dead-man switch recovered state");
+			}
 
-        carProp.state = recoverState;
-    }
+			carProp.state = recoverState;
+		}
+	}
 }
 
 void Car::UpdateProperties()
@@ -754,7 +760,7 @@ void Car::Actuate()
     if (speedRunStarted == true){   distance->SetFrontServo(carProp.sensorServoAngle); }
     else{                           distance->SetFrontServo(0);   }
 
-    Trace::Print(trace, "v = %d mm/s", (int)(encoder->GetSpeed()*1000));
+    //Trace::Print(trace, "v = %d mm/s", (int)(encoder->GetSpeed()*1000));
 }
 
 void Car::ChangeState(RaceState const State)
@@ -822,6 +828,10 @@ void Car::SetSegmentManual(uint8_t ui_segment)
 	uint8_t lap     = (ui_segment - 1) / 16;
 	uint8_t segment = (ui_segment - 1) % 16;
 
+	speedRunStarted = true;
+	map->TurnOff();
+	lineSensor->SetMode(Speedrun);
+
 	switch (lap)
 	{
 		case 0:
@@ -830,12 +840,10 @@ void Car::SetSegmentManual(uint8_t ui_segment)
 
 			if (segment == 0)
 			{
-				//carProp.state = sp_Wait;
 				ChangeState(sp_Wait);
 			}
 			else
 			{
-				//carProp.state = sp_Follow;
 				ChangeState(sp_Follow);
 			}
 			break;

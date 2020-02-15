@@ -146,26 +146,10 @@ void Map::DecideNextTurn()
     {
         nextTurn = RollDiceOnTurn();
 
-//        if (timeElapsed > TIME_GIVE_UP)       // TODO for exit maneuver
-//        {
-//            shouldExit = true;
-//
-//            switch (actualTrackType)
-//            {
-//                case TrackType::Exit:
-//                {
-//                    nextTurn = TurnType::ExitRight;
-//                    break;
-//                }
-//                case TrackType::ExitReverse:
-//                {
-//                    nextTurn = TurnType::ExitLeft;
-//                    break;
-//                }
-//                default:
-//                    break;
-//            }
-//        }
+        if (timeElapsed > TIME_GIVE_UP)       // TODO for exit maneuver
+        {
+            shouldExit = true;
+        }
     }
 }
 
@@ -194,12 +178,12 @@ TurnType Map::RollDiceOnTurn()
     }
 
     // Magic
-    if (magic <= 15)
+    /*if (magic <= 15)
     {
         turn = TurnType::Right;
         trace->Transmit("__MAP: Force Right", 18);
         magic++;
-    }
+    }*/
 
     return turn;
 }

@@ -14,7 +14,7 @@
 #define TIME_LIMIT              (  190000000U)    /* Max time that can be spent in the labyrinth in us. */
 #define TIME_START              (   20000000U)    /* Time available at the start in us. */
 #define TIME_SEGM_FOUND         (   10000000U)    /* Tied for adjacent not found yet in us. */
-#define TIME_GIVE_UP            (  100000000U)    /* In random mode search for the exit after this time */
+#define TIME_GIVE_UP            (  120000000U)    /* In random mode search for the exit after this time */
 #define INVALID_SEGMENT_ID      (        255U)    /* Segment ID used for not discovered adjacent and initial value. */
 
 typedef enum
