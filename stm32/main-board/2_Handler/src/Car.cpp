@@ -26,13 +26,13 @@
 #define OVERTAKE_SEGMENT            (    8U)  /* Overtake can be done starting from this segment */
 #define SEGMENT_COUNT               (   16U)  /* Total number of the segments */
 
-#define CAR_SPEED_STRAIGHT          ( 1.80f)   /* m/s */
-#define CAR_SPEED_DECEL             ( 1.50f)   /* m/s */
-#define CAR_SPEED_TURN              ( 1.20f)   /* m/s */
-#define CAR_SPEED_ACCEL             ( 1.50f)   /* m/s */
+#define CAR_SPEED_STRAIGHT          ( 3.00f)   /* m/s */    // 2.0
+#define CAR_SPEED_DECEL             ( 2.50f)   /* m/s */    // 1.8
+#define CAR_SPEED_TURN              ( 2.00f)   /* m/s */    // 1.5
+#define CAR_SPEED_ACCEL             ( 2.20f)   /* m/s */    // 1.6
 
 #define CAR_WAIT_BEFORE_BRAKING     ( 2.00f)   /*   m */
-#define CAR_WAIT_BEFORE_ACCEL       ( 0.30f)   /*   m */
+#define CAR_WAIT_BEFORE_ACCEL       ( 0.60f)   /*   m */
 #define CAR_WAIT_IN_LAST_LAP        ( 4.00f)   /*   m */
 
 #define CAR_DIST_CTRL_P             ( 0.10f)
@@ -135,11 +135,11 @@ Car::Car()
     prescaler = 0;
 
     // test
-    recoverState             = la_Straight;
-    carProp.state            = la_Straight;
-    //speedRunStarted = true;
-    //map->TurnOff();     // remove
-    //lineSensor->SetMode(Speedrun); // Move to the end of the wait before speedrun
+    recoverState             = sp_Lap1;
+    carProp.state            = sp_Lap1;
+    speedRunStarted = true;
+    map->TurnOff();     // remove
+    lineSensor->SetMode(Speedrun); // Move to the end of the wait before speedrun
 }
 
 void Car::BasicLabyrinth_StateMachine()
@@ -356,7 +356,7 @@ void Car::RoadSegment_StateMachine()
         }
         case RoadSegment_SM::rs_Turn:
         {
-            carProp.wheel_mode = SteeringMode::SingleLine_Race_Turn;        // TODO check double axles turn
+            carProp.wheel_mode = SteeringMode::DualLine_Race_Turn;        // TODO check double axles turn
             carProp.targetSpeed = CAR_SPEED_TURN;
 
             if (lineSensor->GetTrackType() == TrackType::Acceleration)
@@ -502,7 +502,7 @@ void Car::Maneuver_Reverse()
     }
 }
 
-void Car::Maneuver_ChangeLane()     // TODO end feature
+void Car::Maneuver_ChangeLane()
 {
     switch (switchState)
     {
@@ -719,6 +719,8 @@ void Car::Actuate()
 
     if (speedRunStarted == true){   distance->SetFrontServo(carProp.sensorServoAngle); }
     else{                           distance->SetFrontServo(0);   }
+
+    Trace::Print(trace, "v = %d mm/s", (int)(encoder->GetSpeed()*1000));
 }
 
 void Car::ChangeState(RaceState const State)

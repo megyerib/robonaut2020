@@ -7,17 +7,17 @@
 #define SINGLE_FAST_P   ( 20.0f)
 #define SINGLE_FAST_D   (200.0f)
 
-#define SINGLE_RACE_TURN_P      ( 20.0f)
-#define SINGLE_RACE_TURN_D      (200.0f)
+#define SINGLE_RACE_TURN_P      ( 19.0f)    // 20
+#define SINGLE_RACE_TURN_D      (190.0f)    // 200
 
-#define SINGLE_RACE_ACCEL_P     ( 20.0f)
-#define SINGLE_RACE_ACCEL_D     (200.0f)
+#define SINGLE_RACE_ACCEL_P     ( 19.0f)
+#define SINGLE_RACE_ACCEL_D     (190.0f)
 
-#define SINGLE_RACE_STRAIGHT_P  ( 20.0f)
-#define SINGLE_RACE_STRAIGHT_D  (100.0f)
+#define SINGLE_RACE_STRAIGHT_P  ( 10.0f)    // 10
+#define SINGLE_RACE_STRAIGHT_D  (100.0f)    // 100
 
-#define SINGLE_RACE_DECEL_P     ( 20.0f)
-#define SINGLE_RACE_DECEL_D     (200.0f)
+#define SINGLE_RACE_DECEL_P     ( 19.0f)
+#define SINGLE_RACE_DECEL_D     (190.0f)
 
 #define FRONT_OFFSET    ( 0.194f)
 #define REAR_OFFSET     (-0.474f)
@@ -76,6 +76,7 @@ void Steering::SetMode(SteeringMode mode)
             break;
         }
         case SingleLine_Race_Turn:
+        case DualLine_Race_Turn:
         {
             front.controller->Set_P_Term(SINGLE_RACE_TURN_P);
             front.controller->Set_D_Term(SINGLE_RACE_TURN_D);
@@ -172,6 +173,14 @@ void Steering::Process()
 
     	    SetFrontAngle(front.controller->GetControlValue());
     	    SetRearAngle(-front.controller->GetControlValue());
+    	    break;
+    	}
+    	case DualLine_Race_Turn:
+    	{
+    	    front.controller->Process(front.line);
+
+            SetFrontAngle(front.controller->GetControlValue());
+            SetRearAngle(-front.controller->GetControlValue());
     	    break;
     	}
         case Free:

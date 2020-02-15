@@ -21,6 +21,7 @@ typedef enum
 	SingleLineFollow_Slow,
 
 	DualLine_Race_Straight,
+	DualLine_Race_Turn,
 
 	SingleLine_Race_Straight,
 	SingleLine_Race_Decel,
