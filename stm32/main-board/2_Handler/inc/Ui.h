@@ -16,8 +16,9 @@ public:
 	void SetCommand(uint8_t command);
 
 private:
-	uint8_t lastChar = 0;
-	bool stopped = false;
+	uint8_t lastChar  = 0;
+	bool stopped      = false;
+	bool stateNew     = false;
 
 	UiUart* uart;
 	Ui();

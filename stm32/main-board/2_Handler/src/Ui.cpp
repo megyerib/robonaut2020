@@ -21,7 +21,10 @@ bool Ui::GetCommand(uint8_t* cmd)
 {
 	Receive();
 	*cmd = lastChar;
-	return !stopped;
+
+	bool ret     = stateNew;
+	stateNew     = false;
+	return ret;
 }
 
 void Ui::SetCommand(uint8_t command)
@@ -43,8 +46,9 @@ void Ui::Receive()
 		}
 		else
 		{
-			lastChar = buf;
-			stopped  = false;
+			lastChar     = buf;
+			stopped      = false;
+			stateNew     = true;
 		}
 	}
 }

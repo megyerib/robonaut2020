@@ -86,6 +86,10 @@ typedef struct
     float        lineFollow_Rear;
     float        sensorServoAngle;
     bool         lineDetected;
+
+    bool         uiStopRequested;
+    bool         uiChangeRequested;
+    uint8_t      uiRequestedSegment;
 } CarProperties;
 
 class Car
@@ -126,6 +130,7 @@ private:
 
 
 
+
     void WaitState();
 
 public:
@@ -155,6 +160,8 @@ private:
 
     void ChangeState(RaceState const State);
     void ChangeRoadSegment(RoadSegment_SM const Segment);
+
+    void SetSegmentManual(uint8_t ui_cmd);
 
     LineDirection SelectLineDirection(TurnType const turn);
     int prescaler;

@@ -229,7 +229,12 @@ void Car::BasicLabyrinth_StateMachine()
 
 void Car::BaseRace_StateMachine()
 {
-    switch (carProp.state)
+    if (carProp.uiChangeRequested)
+    {
+    	SetSegmentManual(carProp.uiRequestedSegment);
+    }
+
+	switch (carProp.state)
     {
         case sp_Wait:
         {
@@ -724,6 +729,9 @@ void Car::UpdateProperties()
     carProp.position        = navigation->GetPosition();
     carProp.front_distance  = distance->GetDistance(DistanceSensor::ToF_Front);
     carProp.lineDetected    = lineSensor->IsFrontLineDetected();
+
+    carProp.uiStopRequested = ui->IsStopped();
+    carProp.uiChangeRequested      = ui->GetCommand(&carProp.uiRequestedSegment);
 }
 
 void Car::Actuate()
@@ -763,21 +771,21 @@ void Car::ChangeRoadSegment(RoadSegment_SM const Segment)
 
         switch (segmentCounter)
         {
-            case 1:     trace->Transmit("SP segment: 1",  13);   break;
-            case 2:     trace->Transmit("SP segment: 2",  13);   break;
-            case 3:     trace->Transmit("SP segment: 3",  13);   break;
-            case 4:     trace->Transmit("SP segment: 4",  13);   break;
-            case 5:     trace->Transmit("SP segment: 5",  13);   break;
-            case 6:     trace->Transmit("SP segment: 6",  13);   break;
-            case 7:     trace->Transmit("SP segment: 7",  13);   break;
-            case 8:     trace->Transmit("SP segment: 8 overtake possible",  13);   break;
-            case 9:     trace->Transmit("SP segment: 9",  13);   break;
-            case 10:    trace->Transmit("SP segment: 10", 14);   break;
-            case 11:    trace->Transmit("SP segment: 11", 14);   break;
-            case 12:    trace->Transmit("SP segment: 12", 14);   break;
-            case 13:    trace->Transmit("SP segment: 13", 14);   break;
-            case 14:    trace->Transmit("SP segment: 14", 14);   break;
-            case 15:    trace->Transmit("SP segment: 15", 14);   break;
+            case 1:     Trace::Print(trace, "SP segment: 1");   break;
+            case 2:     Trace::Print(trace, "SP segment: 2");   break;
+            case 3:     Trace::Print(trace, "SP segment: 3");   break;
+            case 4:     Trace::Print(trace, "SP segment: 4");   break;
+            case 5:     Trace::Print(trace, "SP segment: 5");   break;
+            case 6:     Trace::Print(trace, "SP segment: 6");   break;
+            case 7:     Trace::Print(trace, "SP segment: 7");   break;
+            case 8:     Trace::Print(trace, "SP segment: 8 overtake possible");   break;
+            case 9:     Trace::Print(trace, "SP segment: 9");   break;
+            case 10:    Trace::Print(trace, "SP segment: 10");  break;
+            case 11:    Trace::Print(trace, "SP segment: 11");  break;
+            case 12:    Trace::Print(trace, "SP segment: 12");  break;
+            case 13:    Trace::Print(trace, "SP segment: 13");  break;
+            case 14:    Trace::Print(trace, "SP segment: 14");  break;
+            case 15:    Trace::Print(trace, "SP segment: 15");  break;
             default:
                 break;
         }
@@ -804,4 +812,53 @@ LineDirection Car::SelectLineDirection(TurnType const turn)
     }
 
     return dir;
+}
+
+void Car::SetSegmentManual(uint8_t ui_segment)
+{
+	uint8_t lap     = (ui_segment - 1) / 16;
+	uint8_t segment = (ui_segment - 1) % 16;
+
+	switch (lap)
+	{
+		case 0:
+		{
+			followLapCnt = 0;
+
+			if (segment == 0)
+			{
+				carProp.state = sp_Wait;
+			}
+			else
+			{
+				carProp.state = sp_Follow;
+			}
+			break;
+		}
+		case 1:
+		{
+			followLapCnt = 1;
+			carProp.state = sp_Follow;
+			break;
+		}
+		case 2:
+		{
+			carProp.state = sp_Lap1;
+			break;
+		}
+		case 3:
+		{
+			carProp.state = sp_Lap2;
+			break;
+		}
+		case 4:
+		{
+			carProp.state = sp_Lap3;
+			break;
+		}
+		default:
+			break;
+	}
+
+	segmentCounter = segment;
 }
