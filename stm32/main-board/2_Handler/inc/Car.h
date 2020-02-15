@@ -18,8 +18,8 @@
 #include "Map.h"
 #include "Pid_Controller.h"
 
-#define USE_RADIO_STARTER      (0U)    /* 0 = with radio, 1 = can start without radio */
-#define USE_DEADMAN_SWITCH     (1U)    /* 0 = no remote,  1 = starts/stops with remote */
+#define USE_RADIO_STARTER      (1U)    /* 0 = with radio, 1 = can start without radio */
+#define USE_DEADMAN_SWITCH     (0U)    /* 0 = no remote,  1 = starts/stops with remote */
 #define USE_MINIMAL_STRATEGY   (1U)    /* 0 = algorithms, 1 = basic drive */
 
 typedef enum

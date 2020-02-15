@@ -1,5 +1,7 @@
 #include "Car.h"
 #include "Trace.h"
+#include "FreeRTOS.h"
+#include "task.h"
 
 #define MAZE_FORWARD_SPEED          ( 0.17f)  /*   % */ //!< Speed used in the labyrinth when the robot is over a Single line.
 #define MAZE_FORWARD_SLOW_SPEED     ( 0.16f)  /*   % */
@@ -13,7 +15,7 @@
 #define MAZE_EXIT_REV_WAIT_DIST_4   ( 0.80f)
 #define MAZE_EXIT_WHEEL_ANGLE       (-1.74f)  /* rad */ //!< The angles of the servos, while leaving the labyrinth.
 #define MAZE_EXIT_DIST_LIMIT        ( 1.00f)  /*   m */ //!< The distance how many meters can the robot drive while searching for the speedrun line.
-#define MAZE_EXIT_SPEED             ( 0.12f)  /*   % */
+#define MAZE_EXIT_SPEED             ( 0.14f)  /*   % */
 #define MAZE_TURN_WAIT_DIST         ( 0.60f)  /*   m */
 
 #define CAR_FOLLOW_MAX_APPROX       ( 1.80f)
@@ -877,5 +879,19 @@ void Car::SetSegmentManual(uint8_t ui_segment)
 			break;
 	}
 
+	if (lap == 2 || lap == 3 || lap == 4) // Race laps
+	{
+		if (segment == 3 || segment == 7 || segment == 11 || segment == 15) // Accel 3 7 11 15
+		{
+			delayDistance->Wait_m(CAR_WAIT_BEFORE_ACCEL);
+		}
+		if (segment == 1 || segment == 5 || segment == 9 || segment == 13) // Decel 1 5 9 13
+		{
+			delayDistance->Wait_m(CAR_WAIT_BEFORE_BRAKING);
+		}
+	}
+
 	segmentCounter = segment;
+
+	vTaskDelay(500);
 }

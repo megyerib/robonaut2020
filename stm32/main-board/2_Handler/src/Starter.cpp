@@ -14,7 +14,7 @@ Starter* Starter::GetInstance()
 
 StarterState Starter::GetState()
 {
-	uint8_t c;
+	uint8_t c = '\0';
 	size_t receivedChars;
 
 	uart->Receive(&c, receivedChars, 1);
