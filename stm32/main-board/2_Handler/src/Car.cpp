@@ -26,10 +26,20 @@
 #define OVERTAKE_SEGMENT            (    8U)  /* Overtake can be done starting from this segment */
 #define SEGMENT_COUNT               (   16U)  /* Total number of the segments */
 
-#define CAR_SPEED_STRAIGHT          ( 3.00f)   /* m/s */    // 2.0
-#define CAR_SPEED_DECEL             ( 2.50f)   /* m/s */    // 1.8
-#define CAR_SPEED_TURN              ( 2.00f)   /* m/s */    // 1.5
-#define CAR_SPEED_ACCEL             ( 2.20f)   /* m/s */    // 1.6
+#define CAR_SPEED_STRAIGHT          ( 2.80f)   /* m/s */    // 2.8
+#define CAR_SPEED_DECEL             ( 2.30f)   /* m/s */    // 2.3
+#define CAR_SPEED_TURN              ( 1.90f)   /* m/s */    // 1.9
+#define CAR_SPEED_ACCEL             ( 2.10f)   /* m/s */    // 2.1
+
+#define CAR_SPEED_STRAIGHT_L2       ( 3.00f)   /* m/s */    // 3.0
+#define CAR_SPEED_DECEL_L2          ( 2.50f)   /* m/s */    // 2.5
+#define CAR_SPEED_TURN_L2           ( 2.00f)   /* m/s */    // 2.0
+#define CAR_SPEED_ACCEL_L2          ( 2.20f)   /* m/s */    // 2.2
+
+#define CAR_SPEED_STRAIGHT_L3       ( 3.50f)   /* m/s */    // 3.5
+#define CAR_SPEED_DECEL_L3          ( 2.70f)   /* m/s */    // 2.7
+#define CAR_SPEED_TURN_L3           ( 2.00f)   /* m/s */    // 2.0
+#define CAR_SPEED_ACCEL_L3          ( 2.20f)   /* m/s */    // 2.2
 
 #define CAR_WAIT_BEFORE_BRAKING     ( 2.00f)   /*   m */
 #define CAR_WAIT_BEFORE_ACCEL       ( 0.60f)   /*   m */
@@ -332,7 +342,10 @@ void Car::RoadSegment_StateMachine()
         case RoadSegment_SM::rs_Straight:
         {
             carProp.wheel_mode = SteeringMode::SingleLine_Race_Straight;    // PD parameters
-            carProp.targetSpeed = CAR_SPEED_STRAIGHT;
+            if (carProp.state == RaceState::sp_Lap1){        carProp.targetSpeed = CAR_SPEED_STRAIGHT;      }
+            else if (carProp.state == RaceState::sp_Lap2){   carProp.targetSpeed = CAR_SPEED_STRAIGHT_L2;   }
+            else if (carProp.state == RaceState::sp_Lap3){   carProp.targetSpeed = CAR_SPEED_STRAIGHT_L3;   }
+            else{}
 
             if (lineSensor->GetTrackType() == TrackType::Braking)
             {
@@ -345,7 +358,10 @@ void Car::RoadSegment_StateMachine()
         case RoadSegment_SM::rs_Decelerate:
         {
             carProp.wheel_mode= SteeringMode::SingleLine_Race_Decel;
-            carProp.targetSpeed = CAR_SPEED_DECEL;
+            if (carProp.state == RaceState::sp_Lap1){        carProp.targetSpeed = CAR_SPEED_DECEL;      }
+            else if (carProp.state == RaceState::sp_Lap2){   carProp.targetSpeed = CAR_SPEED_DECEL_L2;   }
+            else if (carProp.state == RaceState::sp_Lap3){   carProp.targetSpeed = CAR_SPEED_DECEL_L3;   }
+            else{}
 
             if (delayDistance->IsExpired() == true)
             {
@@ -356,8 +372,11 @@ void Car::RoadSegment_StateMachine()
         }
         case RoadSegment_SM::rs_Turn:
         {
-            carProp.wheel_mode = SteeringMode::DualLine_Race_Turn;        // TODO check double axles turn
-            carProp.targetSpeed = CAR_SPEED_TURN;
+            carProp.wheel_mode = SteeringMode::DualLine_Race_Turn;
+            if (carProp.state == RaceState::sp_Lap1){        carProp.targetSpeed = CAR_SPEED_TURN;      }
+            else if (carProp.state == RaceState::sp_Lap2){   carProp.targetSpeed = CAR_SPEED_TURN_L2;   }
+            else if (carProp.state == RaceState::sp_Lap3){   carProp.targetSpeed = CAR_SPEED_TURN_L3;   }
+            else{}
 
             if (lineSensor->GetTrackType() == TrackType::Acceleration)
             {
@@ -370,7 +389,10 @@ void Car::RoadSegment_StateMachine()
         case RoadSegment_SM::rs_Accelerate:
         {
             carProp.wheel_mode = SteeringMode::SingleLine_Race_Accel;
-            carProp.targetSpeed = CAR_SPEED_ACCEL;
+            if (carProp.state == RaceState::sp_Lap1){        carProp.targetSpeed = CAR_SPEED_ACCEL;      }
+            else if (carProp.state == RaceState::sp_Lap2){   carProp.targetSpeed = CAR_SPEED_ACCEL_L2;   }
+            else if (carProp.state == RaceState::sp_Lap3){   carProp.targetSpeed = CAR_SPEED_ACCEL_L3;   }
+            else{}
 
             if (delayDistance->IsExpired() == true)
             {
