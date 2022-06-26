@@ -1,2 +1,6 @@
 *.png filter=lfs diff=lfs merge=lfs -text
 *.xlsx filter=lfs diff=lfs merge=lfs -text
+
+stm32/Cots/** linguist-vendored
+stm32/Driver/** linguist-vendored
+stm32/Middleware/FreeRTOS/** linguist-vendored
